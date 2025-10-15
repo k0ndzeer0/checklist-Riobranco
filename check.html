@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist - Supermercado Rio Branco</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background: white;
+            color: #3d4b7a;
+        }
+        .content {
+            padding: 20px;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        h2 {
+            color: #3d4b7a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .setor-btn {
+            background: white;
+            border: 3px solid #3d4b7a;
+            color: #3d4b7a;
+            padding: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .setor-btn:hover {
+            background: #3d4b7a;
+            color: white;
+            transform: translateY(-3px);
+        }
+        .setor-btn.hortifruti {
+            border-color: #d63031;
+            color: #d63031;
+        }
+        .setor-btn.hortifruti:hover {
+            background: #d63031;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #3d4b7a;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3d4b7a;
+        }
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(61, 75, 122, 0.4);
+        }
+        .btn-voltar {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .checklist-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .checklist-header h3 {
+            color: #3d4b7a;
+            margin-bottom: 10px;
+        }
+        .checklist-header p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .checklist-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .checklist-item:active {
+            transform: scale(0.98);
+        }
+        .checklist-item:hover {
+            border-color: #3d4b7a;
+            transform: translateX(5px);
+        }
+        .checklist-item.checked {
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            border-color: #3d4b7a;
+            color: white;
+        }
+        .checkbox-custom {
+            width: 35px;
+            height: 35px;
+            border: 3px solid #3d4b7a;
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-size: 24px;
+        }
+        .checklist-item.checked .checkbox-custom {
+            background: white;
+            border-color: white;
+            color: #3d4b7a;
+        }
+        .item-content {
+            flex: 1;
+        }
+        .item-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .item-time {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .signature-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        .signature-section.active {
+            display: block;
+        }
+        .signature-section h4 {
+            color: #3d4b7a;
+            margin-bottom: 15px;
+        }
+        .signature-pad {
+            border: 3px solid #3d4b7a;
+            border-radius: 10px;
+            background: white;
+            cursor: crosshair;
+            touch-action: none;
+            width: 100%;
+            height: 200px;
+            display: block;
+        }
+        .signature-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-secondary {
+            flex: 1;
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .dashboard-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .dashboard-buttons button {
+            padding: 12px;
+            border: 2px solid white;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .dashboard-buttons button:hover {
+            background: white;
+            color: #3d4b7a;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3d4b7a;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .history-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .history-setor {
+            font-weight: bold;
+            color: #3d4b7a;
+            font-size: 16px;
+        }
+        .history-turno {
+            background: #3d4b7a;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .history-info {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .history-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .mini-progress {
+            flex: 1;
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .mini-progress-fill {
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            height: 100%;
+        }
+        .admin-panel {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .admin-panel h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .fiscal-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="logout()">🚪 Sair</button>
+            <h1>🏪 Supermercado Rio Branco</h1>
+            <p>Sistema de Checklist Operacional</p>
+        </div>
+
+        <div class="content">
+            <!-- LOGIN FISCAL -->
+            <div id="screenLogin" class="screen">
+                <h2>🔐 Login Fiscal</h2>
+                <div class="form-group">
+                    <label>Nome do Fiscal</label>
+                    <select id="fiscalNome">
+                        <option value="">Selecione...</option>
+                        <option value="Cadu">Cadu</option>
+                        <option value="Mari">Mari</option>
+                        <option value="Junior">Junior</option>
+                        <option value="Carlos">Carlos (Admin)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="fiscalSenha" placeholder="Digite a senha">
+                </div>
+                <button class="btn-primary" onclick="fazerLogin()">Entrar →</button>
+                <button class="btn-voltar" onclick="voltarTela(1)">← Voltar</button>
+            </div>
+
+            <!-- TELA 1: ESCOLHA DO SETOR -->
+            <div id="screen1" class="screen active">
+                <h2>Selecione o Setor</h2>
+                <button class="setor-btn" onclick="escolherSetor('caixa')">💰 CAIXA</button>
+                <button class="setor-btn hortifruti" onclick="escolherSetor('hortifruti')">🥬 HORTIFRUTI</button>
+                <button class="btn-primary" onclick="mostrarTela('screenLogin')">📊 Acesso Fiscal</button>
+            </div>
+
+            <!-- TELA 2: INFORMAÇÕES DO OPERADOR -->
+            <div id="screen2" class="screen">
+                <h2>Informações do Operador</h2>
+                <div class="form-group">
+                    <label>Nome do Operador *</label>
+                    <input type="text" id="nomeInput" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label>Turno *</label>
+                    <select id="turnoSelect">
+                        <option value="">Selecione o turno</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="iniciarChecklist()">Iniciar Checklist →</button>
+                <button class="btn-voltar" onclick="voltarTela(1)">← Voltar</button>
+            </div>
+
+            <!-- TELA 3: CHECKLIST -->
+            <div id="screen3" class="screen">
+                <div class="checklist-header">
+                    <h3 id="setorTitulo"></h3>
+                    <p><strong>Operador:</strong> <span id="nomeDisplay"></span></p>
+                    <p><strong>Turno:</strong> <span id="turnoDisplay"></span></p>
+                    <p><strong>Data:</strong> <span id="dataDisplay"></span></p>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">0% Completo (0/0)</div>
+
+                <div id="checklistContainer"></div>
+
+                <div class="signature-section" id="signatureSection">
+                    <h4>✍️ Assinatura Digital</h4>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 10px;">Desenhe sua assinatura abaixo:</p>
+                    <canvas class="signature-pad" id="signaturePad" width="560" height="200"></canvas>
+                    <div class="signature-buttons">
+                        <button class="btn-secondary" onclick="limparAssinatura()">🗑️ Limpar</button>
+                        <button class="btn-primary" onclick="finalizarChecklist()">✅ Finalizar</button>
+                    </div>
+                </div>
+
+                <button class="btn-voltar" onclick="voltarTela(1)">← Cancelar</button>
+            </div>
+
+            <!-- TELA 4: DASHBOARD -->
+            <div id="screen4" class="screen">
+                <div class="dashboard-header">
+                    <h2>📊 Dashboard Fiscal</h2>
+                    <p id="dashboardData"></p>
+                    <p><strong>Fiscal:</strong> <span id="fiscalLogado"></span></p>
+                    <div class="dashboard-buttons">
+                        <button onclick="exportarPDF()">📄 Exportar PDF</button>
+                        <button onclick="limparHistorico()">🗑️ Limpar Tudo</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalChecklists">0</div>
+                        <div class="stat-label">Checklists Hoje</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mediaCompleto">0%</div>
+                        <div class="stat-label">Média de Conclusão</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: #3d4b7a; margin: 20px 0;">Histórico de Hoje</h3>
+                    <div id="historyList"></div>
+                </div>
+
+                <!-- PAINEL ADMIN (só Carlos) -->
+                <div id="adminPanel" style="display: none;">
+                    <div class="admin-panel">
+                        <h4>⚙️ Painel de Administração (Carlos)</h4>
+                        <div id="fiscalList"></div>
+                        <h5 style="margin-top: 15px; color: #856404;">Adicionar Novo Fiscal:</h5>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <input type="text" id="novoFiscalNome" placeholder="Nome do fiscal" style="width: 100%; margin-bottom: 5px;">
+                            <input type="password" id="novoFiscalSenha" placeholder="Senha" style="width: 100%;">
+                        </div>
+                        <button class="btn-success" onclick="adicionarFiscal()">➕ Adicionar Fiscal</button>
+                    </div>
+                </div>
+
+                <button class="btn-voltar" onclick="logout()">← Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados
+        const CHECKLISTS = {
+            caixa: [
+                'Verificar troco',
+                'Verificar sacolas',
+                'Verificar bobinas',
+                'Colocar 2x bobinas reservas',
+                'Verificar carregamento das maquininhas',
+                'Verificar carregamento do celular',
+                'Verificar telefone fixo',
+                'Organização dos caixas',
+                'Organização frente caixa',
+                'Limpeza frente caixa',
+                'Retirar os lixos',
+                'Colocar que estamos entregando',
+                'Verificar mensagens/ligações'
+            ],
+            hortifruti: [
+                'Verificar geladeiras',
+                'Verificar bancadas',
+                'Retirar material podre ou estragado',
+                'Trocar papel se necessário',
+                'Verificar sacos plásticos',
+                'Correção de preços',
+                'Abastecer setor'
+            ]
+        };
+
+        const TURNOS = {
+            caixa: [
+                { valor: '07:30', texto: '07:30 - Manhã' },
+                { valor: '10:30', texto: '10:30 - Meio-dia' },
+                { valor: '16:30', texto: '16:30 - Tarde' }
+            ],
+            hortifruti: [
+                { valor: '09:00', texto: '09:00 - Manhã' },
+                { valor: '13:30', texto: '13:30 - Tarde' },
+                { valor: '17:00', texto: '17:00 - Noite' }
+            ]
+        };
+
+        // Sistema de fiscais
+        let FISCAIS = {
+            'Cadu': '1228',
+            'Mari': '2992',
+            'Junior': '0701',
+            'Carlos': '5875'
+        };
+
+        // Carregar fiscais do localStorage
+        const fiscaisSalvos = localStorage.getItem('fiscais');
+        if (fiscaisSalvos) {
+            FISCAIS = JSON.parse(fiscaisSalvos);
+        }
+
+        let setorAtual = '';
+        let operadorAtual = {};
+        let itensChecados = {};
+        let fiscalLogado = null;
+        let canvas, ctx, isDrawing = false, lastX = 0, lastY = 0;
+
+        // Navegação
+        function mostrarTela(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function voltarTela(numero) {
+            mostrarTela('screen' + numero);
+        }
+
+        // Login
+        function fazerLogin() {
+            const nome = document.getElementById('fiscalNome').value;
+            const senha = document.getElementById('fiscalSenha').value;
+
+            if (!nome || !senha) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            if (FISCAIS[nome] && FISCAIS[nome] === senha) {
+                fiscalLogado = nome;
+                document.getElementById('logoutBtn').style.display = 'block';
+                irParaDashboard();
+            } else {
+                alert('❌ Usuário ou senha incorretos!');
+            }
+        }
+
+        function logout() {
+            fiscalLogado = null;
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('fiscalNome').value = '';
+            document.getElementById('fiscalSenha').value = '';
+            voltarTela(1);
+        }
+
+        // Escolher setor
+        function escolherSetor(setor) {
+            setorAtual = setor;
+            
+            const select = document.getElementById('turnoSelect');
+            select.innerHTML = '<option value="">Selecione o turno</option>';
+            
+            TURNOS[setor].forEach(turno => {
+                select.innerHTML += `<option value="${turno.valor}">${turno.texto}</option>`;
+            });
+            
+            mostrarTela('screen2');
+        }
+
+        // Iniciar checklist
+        function iniciarChecklist() {
+            const nome = document.getElementById('nomeInput').value.trim();
+            const turno = document.getElementById('turnoSelect').value;
+            
+            if (!nome || !turno) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            operadorAtual = {
+                nome: nome,
+                turno: turno,
+                setor: setorAtual,
+                data: new Date().toLocaleDateString('pt-BR'),
+                timestamp: new Date().toISOString()
+            };
+            
+            const setorNome = setorAtual === 'caixa' ? '💰 CAIXA' : '🥬 HORTIFRUTI';
+            document.getElementById('setorTitulo').textContent = setorNome;
+            document.getElementById('nomeDisplay').textContent = nome;
+            document.getElementById('turnoDisplay').textContent = turno;
+            document.getElementById('dataDisplay').textContent = operadorAtual.data;
+            
+            criarChecklist();
+            inicializarAssinatura();
+            mostrarTela('screen3');
+        }
+
+        // Criar checklist
+        function criarChecklist() {
+            const container = document.getElementById('checklistContainer');
+            container.innerHTML = '';
+            itensChecados = {};
+            
+            CHECKLISTS[setorAtual].forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item';
+                div.onclick = () => marcarItem(index);
+                div.innerHTML = `
+                    <div class="checkbox-custom"></div>
+                    <div class="item-content">
+                        <div class="item-title">${item}</div>
+                        <div class="item-time" id="time-${index}"></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            atualizarProgresso();
+        }
+
+        // Marcar item
+        function marcarItem(index) {
+            const items = document.querySelectorAll('.checklist-item');
+            const item = items[index];
+            const timeEl = document.getElementById('time-' + index);
+            
+            if (itensChecados[index]) {
+                delete itensChecados[index];
+                item.classList.remove('checked');
+                item.querySelector('.checkbox-custom').textContent = '';
+                timeEl.textContent = '';
+            } else {
+                const hora = new Date().toLocaleTimeString('pt-BR');
+                itensChecados[index] = hora;
+                item.classList.add('checked');
+                item.querySelector('.checkbox-custom').textContent = '✓';
+                timeEl.textContent = `✓ Marcado às ${hora}`;
+            }
+            
+            atualizarProgresso();
+        }
+
+        // Atualizar progresso
+        function atualizarProgresso() {
+            const total = CHECKLISTS[setorAtual].length;
+            const completos = Object.keys(itensChecados).length;
+            const porcentagem = Math.round((completos / total) * 100);
+            
+            document.getElementById('progressBar').style.width = porcentagem + '%';
+            document.getElementById('progressText').textContent = 
+                `${porcentagem}% Completo (${completos}/${total})`;
+            
+            if (porcentagem === 100) {
+                document.getElementById('signatureSection').classList.add('active');
+            } else {
+                document.getElementById('signatureSection').classList.remove('active');
+            }
+        }
+
+        // Assinatura
+        function inicializarAssinatura() {
+            canvas = document.getElementById('signaturePad');
+            ctx = canvas.getContext('2d');
+            
+            // Garantir tamanho correto
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 200;
+            
+            // Configurar estilo
+            ctx.strokeStyle = '#3d4b7a';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', iniciarDesenho);
+            canvas.addEventListener('mousemove', desenhar);
+            canvas.addEventListener('mouseup', pararDesenho);
+            canvas.addEventListener('mouseleave', pararDesenho);
+            
+            // Touch events
+            canvas.addEventListener('touchstart', iniciarDesenho);
+            canvas.addEventListener('touchmove', desenhar);
+            canvas.addEventListener('touchend', pararDesenho);
+        }
+
+        function iniciarDesenho(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = (e.clientX || e.touches[0].clientX) - rect.left;
+            lastY = (e.clientY || e.touches[0].clientY) - rect.top;
+        }
+
+        function desenhar(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            lastX = x;
+            lastY = y;
+        }
+
+        function pararDesenho() {
+            isDrawing = false;
+        }
+
+        function limparAssinatura() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Finalizar checklist
+        function finalizarChecklist() {
+            const dados = {
+                ...operadorAtual,
+                itens: itensChecados,
+                total: CHECKLISTS[setorAtual].length,
+                completos: Object.keys(itensChecados).length,
+                porcentagem: Math.round((Object.keys(itensChecados).length / CHECKLISTS[setorAtual].length) * 100),
+                assinatura: canvas.toDataURL()
+            };
+            
+            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
+            historico.push(dados);
+            localStorage.setItem('checklists', JSON.stringify(historico));
+            
+            alert('✅ Checklist finalizado com sucesso!');
+            
+            document.getElementById('nomeInput').value = '';
+            document.getElementById('turnoSelect').value = '';
+            mostrarTela('screen1');
+        }
+
+        // Dashboard
+        function irParaDashboard() {
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('dashboardData').textContent = `Checklists de ${hoje}`;
+            document.getElementById('fiscalLogado').textContent = fiscalLogado;
+            
+            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
+            const checklistsHoje = historico.filter(c => c.data === hoje);
+            
+            document.getElementById('totalChecklists').textContent = checklistsHoje.length;
+            
+            if (checklistsHoje.length > 0) {
+                const media = checklistsHoje.reduce((acc, c) => acc + c.porcentagem, 0) / checklistsHoje.length;
+                document.getElementById('mediaCompleto').textContent = Math.round(media) + '%';
+            } else {
+                document.getElementById('mediaCompleto').textContent = '0%';
+            }
+            
+            const lista = document.getElementById('historyList');
+            lista.innerHTML = '';
+            
+            if (checklistsHoje.length === 0) {
+                lista.innerHTML = '<p style="text-align: center; color: #666;">Nenhum checklist realizado hoje</p>';
+            } else {
+                checklistsHoje.reverse().forEach(c => {
+                    const setorNome = c.setor === 'caixa' ? '💰 CAIXA' : '🥬 HORTIFRUTI';
+                    lista.innerHTML += `
+                        <div class="history-item">
+                            <div class="history-header">
+                                <span class="history-setor">${setorNome}</span>
+                                <span class="history-turno">${c.turno}</span>
+                            </div>
+                            <div class="history-info"><strong>Operador:</strong> ${c.nome}</div>
+                            <div class="history-info"><strong>Horário:</strong> ${new Date(c.timestamp).toLocaleTimeString('pt-BR')}</div>
+                            <div class="history-progress">
+                                <div class="mini-progress">
+                                    <div class="mini-progress-fill" style="width: ${c.porcentagem}%"></div>
+                                </div>
+                                <span style="color: #3d4b7a; font-weight: bold;">${c.porcentagem}%</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Mostrar painel admin se for Carlos
+            if (fiscalLogado === 'Carlos') {
+                document.getElementById('adminPanel').style.display = 'block';
+                carregarFiscais();
+            } else {
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+            
+            mostrarTela('screen4');
+        }
+
+        // Exportar PDF
+        function exportarPDF() {
+            alert('📄 Funcionalidade de exportar PDF será implementada em breve!\n\nPor enquanto, você pode usar Print (Ctrl+P) para salvar como PDF.');
+            window.print();
+        }
+
+        // Limpar histórico
+        function limparHistorico() {
+            if (confirm('⚠️ Tem certeza que deseja limpar TODO o histórico?\n\nEsta ação não pode ser desfeita!')) {
+                localStorage.removeItem('checklists');
+                alert('✅ Histórico limpo com sucesso!');
+                irParaDashboard();
+            }
+        }
+
+        // Admin - Carregar fiscais
+        function carregarFiscais() {
+            const lista = document.getElementById('fiscalList');
+            lista.innerHTML = '';
+            
+            for (let nome in FISCAIS) {
+                const bloqueado = nome === 'Carlos' ? ' (Admin - Não pode remover)' : '';
+                const btnRemover = nome !== 'Carlos' ? 
+                    `<button class="btn-danger" onclick="removerFiscal('${nome}')">🗑️ Remover</button>` : '';
+                
+                lista.innerHTML += `
+                    <div class="fiscal-item">
+                        <span><strong>${nome}</strong> - Senha: ${FISCAIS[nome]}${bloqueado}</span>
+                        ${btnRemover}
+                    </div>
+                `;
+            }
+        }
+
+        // Admin - Adicionar fiscal
+        function adicionarFiscal() {
+            const nome = document.getElementById('novoFiscalNome').value.trim();
+            const senha = document.getElementById('novoFiscalSenha').value.trim();
+            
+            if (!nome || !senha) {
+                alert('Por favor, preencha nome e senha!');
+                return;
+            }
+            
+            if (FISCAIS[nome]) {
+                alert('❌ Já existe um fiscal com esse nome!');
+                return;
+            }
+            
+            FISCAIS[nome] = senha;
+            localStorage.setItem('fiscais', JSON.stringify(FISCAIS));
+            
+            // Atualizar select de login
+            const select = document.getElementById('fiscalNome');
+            const option = document.createElement('option');
+            option.value = nome;
+            option.textContent = nome;
+            select.appendChild(option);
+            
+            document.getElementById('novoFiscalNome').value = '';
+            document.getElementById('novoFiscalSenha').value = '';
+            
+            alert(`✅ Fiscal "${nome}" adicionado com sucesso!`);
+            carregarFiscais();
+        }
+
+        // Admin - Remover fiscal
+        function removerFiscal(nome) {
+            if (nome === 'Carlos') {
+                alert('❌ Não é possível remover o administrador!');
+                return;
+            }
+            
+            if (confirm(`Tem certeza que deseja remover o fiscal "${nome}"?`)) {
+                delete FISCAIS[nome];
+                localStorage.setItem('fiscais', JSON.stringify(FISCAIS));
+                
+                // Remover do select
+                const select = document.getElementById('fiscalNome');
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value === nome) {
+                        select.remove(i);
+                        break;
+                    }
+                }
+                
+                alert(`✅ Fiscal "${nome}" removido com sucesso!`);
+                carregarFiscais();
+            }
+        }
+
+        // Inicializar select de fiscais no carregamento
+        window.addEventListener('load', function() {
+            const select = document.getElementById('fiscalNome');
+            select.innerHTML = '<option value="">Selecione...</option>';
+            
+            for (let nome in FISCAIS) {
+                const label = nome === 'Carlos' ? `${nome} (Admin)` : nome;
+                select.innerHTML += `<option value="${nome}">${label}</option>`;
+            }
+        });
+    </script>
+</body>
+</html>
