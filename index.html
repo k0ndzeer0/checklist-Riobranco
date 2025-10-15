@@ -19,6 +19,8 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            position: relative; /* Para o footer fixo */
+            padding-bottom: 70px; /* Espaço para o footer */
         }
         .container {
             max-width: 600px;
@@ -37,10 +39,19 @@
             padding: 30px 20px;
             text-align: center;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+        /* REMOVIDO: Estilo para o Contêiner da Logo - SVG Placeholder */
+        .logo-container {
+            display: none; 
+        }
+
         .header h1 {
             font-size: 28px;
             margin-bottom: 5px;
+            display: block; /* Volta a exibir o H1 */
         }
         .header p {
             font-size: 16px;
@@ -212,7 +223,6 @@
             display: block;
         }
 
-
         /* Dashboard */
         .dashboard-header {
             background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
@@ -257,6 +267,29 @@
         }
         .stat-number { font-size: 32px; font-weight: bold; color: #3d4b7a; }
         .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
+
+        /* NOVO: Estilo para Painel de Pontuação removido do Dashboard principal */
+        .pontos-card {
+            display: none; /* REMOVIDO DO DASHBOARD PRINCIPAL */
+            background: #ffe0b2;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pontos-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #d63031;
+            margin-bottom: 5px;
+        }
+        .pontos-label {
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
         .admin-panel {
             background: #e0f7fa; /* Light Blue for Admin */
             border: 2px solid #007bff;
@@ -265,7 +298,7 @@
             margin-top: 20px;
         }
         .admin-panel h4 { color: #007bff; margin-bottom: 10px; }
-        .fiscal-item, .checklist-manager-item {
+        .fiscal-item, .checklist-manager-item, .colaborador-item {
             background: white;
             border: 1px solid #e0e0e0;
             padding: 10px;
@@ -274,6 +307,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        .colaborador-item { 
+            border-left: 5px solid #d63031;
+            padding: 10px 15px;
+            cursor: pointer; /* Torna o item clicável */
+            transition: background 0.2s;
+        }
+        .colaborador-item:hover {
+            background: #f8f9fa;
+        }
+        .colaborador-details {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+        }
+        .colaborador-points {
+            font-weight: bold;
+            color: #d63031;
+            font-size: 18px;
+            margin-right: 20px;
         }
         .btn-danger {
             background: #dc3545;
@@ -338,7 +392,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Novo Estilo para Detalhes do Checklist */
+        /* Estilo para Detalhes do Checklist */
         .detail-item {
             padding: 10px 0;
             border-bottom: 1px solid #eee;
@@ -356,9 +410,182 @@
             flex: 1;
         }
         .detail-item-time {
-            color: #28a745; /* Green for time */
+            color: #28a745; 
             font-weight: bold;
             font-size: 14px;
+        }
+
+        /* Estilos de Status e Botões de Ação no Histórico */
+        .history-item {
+            position: relative;
+        }
+        .status-tag {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        .status-tag.aprovado {
+            background: #28a745;
+            color: white;
+        }
+        .status-tag.reprovado {
+            background: #dc3545;
+            color: white;
+        }
+        .review-btn {
+            background: #3d4b7a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+        }
+        .review-btn:hover {
+            background: #2c3a5c;
+        }
+
+        /* Botões de Aprovação/Reprovação na Tela de Detalhes */
+        .approval-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-aprovar {
+            flex: 1;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-aprovar:hover { background: #1e7e34; }
+        .btn-reprovar {
+            flex: 1;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-reprovar:hover { background: #c82333; }
+        .review-status-display {
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        .review-status-display.active { display: block; }
+
+        /* Estilo para Botões de Edição/Remoção em Linha */
+        .admin-item-actions {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .btn-edit-inline {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn-edit-inline:hover {
+            background: #0056b3;
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        /* Botões de Ação na Gestão de Colaborador (Screen 7) */
+        .colab-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .colab-actions button {
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .btn-add-points {
+            background: #28a745;
+            color: white;
+        }
+        .btn-remove-points {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-full-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* NOVO: Estilo para o Rodapé */
+        .app-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #333;
+            color: #aaa;
+            text-align: center;
+            padding: 10px 20px;
+            font-size: 10px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .app-footer p {
+            margin: 0;
+            line-height: 1.4;
+        }
+        .app-footer strong {
+            color: white;
+        }
+
+        /* NOVO: Painel de Troca de Senha de Fiscal */
+        #fiscalChangePwdPanel {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
     </style>
 </head>
@@ -366,6 +593,8 @@
     <div class="container">
         <div class="header">
             <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="logout()">🚪 Sair</button>
+            <!-- REMOVIDO: Contêiner para a Logo SVG -->
+            
             <h1>🏪 Supermercado Rio Branco</h1>
             <p>Sistema de Checklist Operacional</p>
         </div>
@@ -373,7 +602,7 @@
         <div class="content">
             <div id="messageBox"></div>
 
-            <!-- LOGIN FISCAL -->
+            <!-- LOGIN FISCAL (TELA 0) -->
             <div id="screenLogin" class="screen">
                 <h2>🔐 Login Fiscal</h2>
                 <div class="form-group">
@@ -387,6 +616,24 @@
                 <button class="btn-primary" onclick="fazerLogin()">Entrar →</button>
                 <button class="btn-voltar" onclick="voltarTela('screen1')">← Voltar</button>
             </div>
+            
+            <!-- TELA 6: TROCA DE SENHA INICIAL (NOVO) -->
+            <div id="screen6" class="screen">
+                <h2>Definir Nova Senha</h2>
+                <p style="text-align: center; color: #d63031; font-weight: bold; margin-bottom: 20px;">
+                    Este é seu primeiro login ou sua senha foi resetada. Defina uma nova senha.
+                </p>
+                <div class="form-group">
+                    <label>Nova Senha *</label>
+                    <input type="password" id="novaSenha1" placeholder="Mínimo 4 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Nova Senha *</label>
+                    <input type="password" id="novaSenha2" placeholder="Repita a senha">
+                </div>
+                <button class="btn-primary" onclick="salvarNovaSenha()">Salvar e Continuar →</button>
+                <button class="btn-voltar" onclick="logout()">← Cancelar e Sair</button>
+            </div>
 
             <!-- TELA 1: ESCOLHA DO SETOR -->
             <div id="screen1" class="screen active">
@@ -395,15 +642,19 @@
                 <button class="setor-btn hortifruti" onclick="escolherSetor('hortifruti')">🥦 HORTIFRUTI</button>
                 <button class="setor-btn bebidas" onclick="escolherSetor('bebidas')">🍹 BEBIDAS</button>
                 <button class="setor-btn corredor" onclick="escolherSetor('corredor')">🛒 CORREDOR</button>
-                <button class="btn-primary" onclick="mostrarTela('screenLogin')">📊 Acesso Fiscal</button>
+                <button class="btn-primary" onclick="mostrarTela('screenLogin')">📊 Acesso Fiscal/ADM</button>
             </div>
 
-            <!-- TELA 2: INFORMAÇÕES DO OPERADOR -->
+            <!-- TELA 2: LOGIN DO COLABORADOR -->
             <div id="screen2" class="screen">
-                <h2 id="operadorTitulo">Informações do Operador</h2>
+                <h2 id="operadorTitulo">Login Colaborador</h2>
                 <div class="form-group">
-                    <label>Nome do Operador *</label>
-                    <input type="text" id="nomeInput" placeholder="Digite seu nome">
+                    <label>Usuário Colaborador *</label>
+                    <select id="colaboradorUser"></select>
+                </div>
+                <div class="form-group">
+                    <label>Senha *</label>
+                    <input type="password" id="colaboradorSenha" placeholder="Digite sua senha">
                 </div>
                 <div class="form-group">
                     <label>Turno *</label>
@@ -411,7 +662,7 @@
                         <option value="">Selecione o turno</option>
                     </select>
                 </div>
-                <button class="btn-primary" onclick="iniciarChecklist()">Iniciar Checklist →</button>
+                <button class="btn-primary" onclick="fazerLoginColaborador()">Iniciar Checklist →</button>
                 <button class="btn-voltar" onclick="voltarTela('screen1')">← Voltar</button>
             </div>
 
@@ -419,7 +670,7 @@
             <div id="screen3" class="screen">
                 <div class="checklist-header">
                     <h3 id="setorTitulo"></h3>
-                    <p><strong>Operador:</strong> <span id="nomeDisplay"></span></p>
+                    <p><strong>Colaborador:</strong> <span id="nomeDisplay"></span></p>
                     <p><strong>Turno:</strong> <span id="turnoDisplay"></span></p>
                     <p><strong>Data:</strong> <span id="dataDisplay"></span></p>
                 </div>
@@ -447,9 +698,25 @@
                     <p><strong>Fiscal:</strong> <span id="fiscalLogado"></span></p>
                     <div class="dashboard-buttons">
                         <button onclick="exportarPDF()">📄 Exportar PDF</button>
-                        <button onclick="tentarLimparHistorico()">🗑️ Limpar Tudo</button>
+                        <!-- Botão Limpar Tudo visível apenas para Carlos -->
+                        <button id="limparHistoricoBtn" onclick="tentarLimparHistorico()" style="display: none;">🗑️ Limpar Tudo</button>
                     </div>
                 </div>
+
+                <!-- Painel de Troca de Senha de Fiscal (Marilu, etc.) -->
+                <div id="fiscalChangePwdPanel" style="display: none;">
+                    <h4 style="color: #3d4b7a; margin-bottom: 15px;">🔒 Trocar Minha Senha de Fiscal</h4>
+                    <div class="form-group">
+                        <label>Nova Senha *</label>
+                        <input type="password" id="fiscalNovaSenha1" placeholder="Mínimo 4 caracteres">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar Nova Senha *</label>
+                        <input type="password" id="fiscalNovaSenha2" placeholder="Repita a senha">
+                    </div>
+                    <button class="btn-primary" onclick="trocarSenhaFiscal()">Salvar Nova Senha</button>
+                </div>
+                <!-- Fim do Painel de Troca de Senha de Fiscal -->
 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -467,17 +734,20 @@
                     <div id="historyList"></div>
                 </div>
 
-                <!-- PAINEL ADMIN (só Carlos) -->
+                <!-- PAINEL ADMIN (só Carlos/Cadu/Junior) -->
                 <div id="adminPanel" style="display: none;">
                     <div class="admin-panel">
-                        <h4>⚙️ Painel de Administração (Carlos)</h4>
+                        <h4>⚙️ Painel de Administração (<span id="adminName"></span>)</h4>
 
                         <div class="admin-tab">
                             <button id="tabFiscais" class="active" onclick="changeAdminTab('fiscais')">Fiscais</button>
+                            <button id="tabColaboradores" onclick="changeAdminTab('colaboradores')">Colaboradores</button>
                             <button id="tabChecklist" onclick="changeAdminTab('checklist')">Checklists</button>
                         </div>
 
+                        <!-- 4.1. GERENCIAR FISCAIS -->
                         <div id="adminContentFiscais" class="admin-content active">
+                            <h5 style="color: #007bff; margin-bottom: 10px;">Fiscais Cadastrados:</h5>
                             <div id="fiscalList"></div>
                             <h5 style="margin-top: 15px; color: #007bff;">Adicionar Novo Fiscal:</h5>
                             <div class="form-group" style="margin-top: 10px;">
@@ -487,6 +757,19 @@
                             <button class="btn-success" onclick="adicionarFiscal()">➕ Adicionar Fiscal</button>
                         </div>
                         
+                        <!-- 4.2. GERENCIAR COLABORADORES (NOVO) -->
+                        <div id="adminContentColaboradores" class="admin-content">
+                            <h5 style="color: #007bff; margin-bottom: 10px;">Colaboradores Cadastrados (Clique para Gestão):</h5>
+                            <div id="colaboradorList"></div>
+                            <h5 style="margin-top: 15px; color: #007bff;">Adicionar Novo Colaborador:</h5>
+                            <div class="form-group" style="margin-top: 10px;">
+                                <input type="text" id="novoColaboradorUser" placeholder="Usuário (ex: JoaoCaixa)" style="width: 100%; margin-bottom: 5px;">
+                                <input type="password" id="novoColaboradorSenha" placeholder="Senha" style="width: 100%;">
+                            </div>
+                            <button class="btn-success" onclick="adicionarColaborador()">➕ Adicionar Colaborador</button>
+                        </div>
+
+                        <!-- 4.3. GERENCIAR CHECKLISTS -->
                         <div id="adminContentChecklist" class="admin-content">
                             <h5 style="margin-top: 15px; color: #007bff; margin-bottom: 10px;">Gerenciar Itens de Checklist:</h5>
                             <div class="form-group">
@@ -497,6 +780,7 @@
                             <h5 style="margin-top: 15px; color: #007bff; margin-bottom: 10px;">Adicionar Novo Item:</h5>
                             <div class="form-group">
                                 <input type="text" id="novoItemText" placeholder="Descrição do novo item">
+                                <input type="number" id="novoItemPontos" placeholder="Pontos (ex: 10)" value="10" style="width: 100%; margin-top: 10px;">
                             </div>
                             <button class="btn-success" onclick="adicionarItemChecklist()">➕ Adicionar Item</button>
                         </div>
@@ -507,13 +791,17 @@
                 <button class="btn-voltar" onclick="logout()">← Sair</button>
             </div>
 
-            <!-- TELA 5: DETALHES DO CHECKLIST (NOVA TELA) -->
+            <!-- TELA 5: DETALHES DO CHECKLIST -->
             <div id="screen5" class="screen">
                 <div class="checklist-header">
                     <h3 id="detailsSetorTitulo"></h3>
-                    <p><strong>Operador:</strong> <span id="detailsNomeDisplay"></span></p>
+                    <p><strong>Colaborador:</strong> <span id="detailsNomeDisplay"></span></p>
                     <p><strong>Turno:</strong> <span id="detailsTurnoDisplay"></span></p>
                     <p><strong>Data/Hora:</strong> <span id="detailsDataDisplay"></span></p>
+                    <p><strong>Pontos Potenciais:</strong> <span id="detailsPontosPotenciais" style="font-weight: bold; color: #d63031;"></span></p>
+                    
+                    <div class="review-status-display" id="reviewStatusDisplay"></div>
+
                     <div class="history-progress" style="margin-top: 10px;">
                         <div class="mini-progress">
                             <div class="mini-progress-fill" id="detailsProgressBar"></div>
@@ -526,32 +814,80 @@
                 <div id="detailsListContainer" style="background: #f8f9fa; border-radius: 10px; padding: 10px;">
                     <!-- Detalhes serão carregados aqui -->
                 </div>
+                
+                <!-- BOTÕES DE APROVAÇÃO (SÓ VISÍVEL PARA FISCAIS EM CHECKLISTS PENDENTES) -->
+                <div class="approval-actions" id="approvalActions">
+                    <!-- ADM/Fiscal pode editar os pontos aqui -->
+                    <button class="btn-aprovar" onclick="aprovarChecklist()">✅ Aprovar e Conceder Pontos</button>
+                    <button class="btn-reprovar" onclick="reprovarChecklist()">❌ Reprovar Pontos</button>
+                </div>
 
                 <button class="btn-voltar" onclick="voltarTela('screen4')">← Voltar para Dashboard</button>
             </div>
+
+            <!-- TELA 7: GESTÃO INDIVIDUAL DE COLABORADOR (NOVA TELA) -->
+            <div id="screen7" class="screen">
+                <h2 id="gestaoTitulo">Gestão de Colaborador</h2>
+                <div class="checklist-header">
+                    <p>Colaborador: <strong><span id="colabGestaoNome"></span></strong></p>
+                    <p>Senha: <strong><span id="colabGestaoSenha"></span></strong></p>
+                    <h3 style="margin-top: 10px;">Pontuação Atual: <span id="colabGestaoPontos" style="color: #d63031;">0 Pts</span></h3>
+                </div>
+
+                <div class="colab-actions">
+                    <button class="btn-add-points" onclick="ajustarPontos('adicionar')">➕ Adicionar Pontos</button>
+                    <button class="btn-remove-points" onclick="ajustarPontos('remover')">➖ Retirar Pontos</button>
+                </div>
+
+                <div class="colab-actions">
+                    <button class="btn-reset" onclick="resetarSenhaColaboradorAcao()">🔒 Resetar Senha</button>
+                    <button class="btn-full-danger" onclick="tentarRemoverColaboradorAcao()">🗑️ Remover Usuário</button>
+                </div>
+
+                <h4 style="color: #3d4b7a; margin: 20px 0 10px;">Histórico de Ajustes</h4>
+                <div id="ajusteHistoricoList" style="background: #f8f9fa; border-radius: 10px; padding: 10px;">
+                    <p style="color: #666; text-align: center;">Nenhum ajuste manual realizado.</p>
+                </div>
+                
+                <button class="btn-voltar" onclick="voltarGestao()">← Voltar</button>
+            </div>
+
         </div>
+    </div>
+
+    <!-- NOVO: Rodapé de Marca D'água -->
+    <div class="app-footer">
+        <p>© 2025 AutoVizion. Todos os direitos reservados.</p>
+        <p>Soluções inteligentes em automação e marketing digital.</p>
     </div>
 
     <script>
         // --- DATA STRUCTURES & LOCAL STORAGE SETUP ---
         const DEFAULT_CHECKLISTS = {
             caixa: [
-                'Verificar troco', 'Verificar sacolas', 'Verificar bobinas', 
-                'Colocar 2x bobinas reservas', 'Verificar carregamento das maquininhas', 
-                'Organização dos caixas', 'Limpeza frente caixa', 'Retirar os lixos'
+                { item: 'Verificar troco', points: 5 }, { item: 'Verificar sacolas', points: 5 }, 
+                { item: 'Verificar bobinas', points: 3 }, { item: 'Colocar 2x bobinas reservas', points: 3 }, 
+                { item: 'Verificar carregamento das maquininhas', points: 10 }, 
+                { item: 'Organização dos caixas', points: 5 }, { item: 'Limpeza frente caixa', points: 8 }, 
+                { item: 'Retirar os lixos', points: 3 }
             ],
             hortifruti: [
-                'Verificar geladeiras', 'Verificar bancadas', 'Retirar material podre ou estragado', 
-                'Trocar papel se necessário', 'Verificar sacos plásticos', 'Correção de preços', 
-                'Abastecer setor'
+                { item: 'Verificar geladeiras', points: 10 }, { item: 'Verificar bancadas', points: 8 }, 
+                { item: 'Retirar material podre ou estragado', points: 15 }, 
+                { item: 'Trocar papel se necessário', points: 3 }, { item: 'Verificar sacos plásticos', points: 3 }, 
+                { item: 'Correção de preços', points: 10 }, { item: 'Abastecer setor', points: 12 }
             ],
             bebidas: [
-                'Abastecimento das geladeiras (Água, Refrigerante, Cerveja)', 'Verificar refrigeração (temperatura)',
-                'Conferir validade (principalmente lácteos e sucos)', 'Organização e limpeza das prateleiras'
+                { item: 'Abastecimento das geladeiras (Água, Refrigerante, Cerveja)', points: 15 }, 
+                { item: 'Verificar refrigeração (temperatura)', points: 10 },
+                { item: 'Conferir validade (principalmente lácteos e sucos)', points: 15 }, 
+                { item: 'Organização e limpeza das prateleiras', points: 8 }
             ],
             corredor: [
-                'Limpeza dos corredores (chão, prateleiras)', 'Conferir preços (se batem com o sistema)',
-                'Garantir frente de gôndola e organização de estoque', 'Verificar produtos em falta'
+                { item: 'Limpeza dos corredores (chão, prateleiras)', points: 10 }, 
+                { item: 'Conferir preços (se batem com o sistema)', points: 15 },
+                { item: 'Garantir frente de gôndola e organização de estoque', points: 12 }, 
+                { item: 'Verificar produtos em falta', points: 8 }
             ]
         };
 
@@ -563,17 +899,35 @@
         };
 
         let FISCAIS = {
-            'Cadu': '1228', 'Mari': '2992', 'Junior': '0701', 'Carlos': '5875'
+            'Carlos': '5875', 
+            'Cadu': '1228', 
+            'Junior': '0701',
+            'Marilu': '2992' 
+        };
+
+        const ADMINS = ['Carlos', 'Junior', 'Cadu'];
+        const NON_REMOVABLE_FISCAL = ['Carlos', 'Junior', 'Cadu']; // Cadu agora não é removível
+        
+        let COLABORADORES = {
+            'Andre Lopes': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+            'Hugo Aguiar': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+            'Katia': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+            'Maria Eduarda': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+            'Jonatan Piva': { senha: '1234', requirePwdChange: true, ajustesPontos: [] }
         };
 
         let CHECKLISTS = DEFAULT_CHECKLISTS;
         let setorAtual = '';
+        let colaboradorLogado = null; 
+        let colaboradorAguardandoSenha = null; 
         let operadorAtual = {};
         let itensChecados = {};
-        let fiscalLogado = null;
+        let fiscalLogado = null; 
+        let checklistEmRevisaoIndex = -1;
+        let colaboradorEmGestao = null; 
         
         let currentAdminTab = 'fiscais';
-        let currentChecklistSetor = 'caixa'; // Default for admin view
+        let currentChecklistSetor = 'caixa';
 
         // --- GLOBAL MESSAGE HANDLER (Substitui alert/confirm) ---
         function showMessage(message, type = 'warning', timeout = 4000) {
@@ -612,19 +966,75 @@
                     FISCAIS = JSON.parse(fiscaisSalvos);
                 } catch (e) { console.error("Erro ao carregar fiscais:", e); }
             }
+            
+            const colaboradoresSalvos = localStorage.getItem('colaboradores');
+            if (colaboradoresSalvos) {
+                try {
+                    const savedColabs = JSON.parse(colaboradoresSalvos);
+                    for (const user in savedColabs) {
+                        COLABORADORES[user] = savedColabs[user];
+                    }
+                    for (const user in COLABORADORES) {
+                        if (typeof COLABORADORES[user] === 'string') {
+                            COLABORADORES[user] = { senha: COLABORADORES[user], requirePwdChange: false, ajustesPontos: [] };
+                        } else {
+                            if (!COLABORADORES[user].hasOwnProperty('requirePwdChange')) {
+                                COLABORADORES[user].requirePwdChange = false;
+                            }
+                            if (!COLABORADORES[user].hasOwnProperty('ajustesPontos')) { 
+                                COLABORADORES[user].ajustesPontos = [];
+                            }
+                        }
+                    }
+                } catch (e) { console.error("Erro ao carregar colaboradores:", e); }
+            }
+            saveColaboradores();
 
             const checklistsSalvos = localStorage.getItem('baseChecklists');
             if (checklistsSalvos) {
                 try {
                     CHECKLISTS = JSON.parse(checklistsSalvos);
-                } catch (e) { console.error("Erro ao carregar checklists base:", e); }
+                    let dataChanged = false;
+                    
+                    for (const setor in CHECKLISTS) {
+                        if (Array.isArray(CHECKLISTS[setor])) {
+                            CHECKLISTS[setor] = CHECKLISTS[setor].map(item => {
+                                if (typeof item === 'string') {
+                                    dataChanged = true;
+                                    return { item: item, points: 0 };
+                                }
+                                if (typeof item === 'object' && item !== null) {
+                                    const normalizedItem = { 
+                                        item: item.item || 'Item Indefinido (Corrigido)', 
+                                        points: item.points || 0 
+                                    };
+                                    if (!item.item || !item.points) {
+                                        dataChanged = true;
+                                    }
+                                    return normalizedItem;
+                                }
+                                dataChanged = true;
+                                return null; 
+                            }).filter(item => item !== null); 
+                        }
+                    }
+                    
+                    if (dataChanged) {
+                        saveBaseChecklists(); 
+                    }
+
+
+                } catch (e) { 
+                    console.error("Erro ao carregar checklists base:", e); 
+                    CHECKLISTS = DEFAULT_CHECKLISTS; 
+                    saveBaseChecklists(); 
+                }
             } else {
-                 // Salva os defaults se for a primeira execução
                 saveBaseChecklists();
             }
 
-            // Atualiza o select de fiscais no login
             updateFiscalSelect();
+            updateColaboradorSelect(); 
             updateChecklistSetorSelect();
         }
 
@@ -632,8 +1042,15 @@
             const select = document.getElementById('fiscalNome');
             select.innerHTML = '<option value="">Selecione...</option>';
             for (let nome in FISCAIS) {
-                const label = nome === 'Carlos' ? `${nome} (Admin)` : nome;
-                select.innerHTML += `<option value="${nome}">${label}</option>`;
+                select.innerHTML += `<option value="${nome}">${nome}</option>`;
+            }
+        }
+        
+        function updateColaboradorSelect() {
+            const select = document.getElementById('colaboradorUser');
+            select.innerHTML = '<option value="">Selecione o usuário...</option>';
+            for (let user in COLABORADORES) {
+                select.innerHTML += `<option value="${user}">${user}</option>`;
             }
         }
 
@@ -645,6 +1062,10 @@
             localStorage.setItem('fiscais', JSON.stringify(FISCAIS));
         }
 
+        function saveColaboradores() {
+             localStorage.setItem('colaboradores', JSON.stringify(COLABORADORES));
+        }
+        
         // --- NAVIGATION ---
         function mostrarTela(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -654,11 +1075,19 @@
         function voltarTela(id) {
             mostrarTela(id);
         }
+        
+        // Voltar para a tela de ADM
+        function voltarGestao() {
+            colaboradorEmGestao = null;
+            carregarColaboradores(); 
+            changeAdminTab('colaboradores');
+            voltarTela('screen4'); 
+        }
 
-        // --- LOGIN/LOGOUT ---
+        // --- LOGIN FISCAL ---
         function fazerLogin() {
             const nome = document.getElementById('fiscalNome').value;
-            const senha = document.getElementById('fiscalSenha').value.trim(); // Corrigido: Aplica trim() para remover espaços acidentais
+            const senha = document.getElementById('fiscalSenha').value.trim();
 
             if (!nome || !senha) {
                 showMessage('Por favor, preencha todos os campos!', 'error');
@@ -668,17 +1097,124 @@
             if (FISCAIS[nome] && FISCAIS[nome] === senha) {
                 fiscalLogado = nome;
                 document.getElementById('logoutBtn').style.display = 'block';
+                
+                // Configurações de Dashboard
+                if (ADMINS.includes(fiscalLogado)) {
+                     document.getElementById('adminName').textContent = fiscalLogado;
+                     // Mostra o Painel ADM e esconde o painel de troca de senha individual
+                     document.getElementById('adminPanel').style.display = 'block';
+                     document.getElementById('fiscalChangePwdPanel').style.display = 'none';
+
+                     // Mostra o botão Limpar Tudo apenas para Carlos
+                     document.getElementById('limparHistoricoBtn').style.display = (fiscalLogado === 'Carlos') ? 'block' : 'none';
+                } else {
+                    // Se for Fiscal normal (Marilu, etc.), esconde o ADM e mostra o painel de troca de senha
+                    document.getElementById('adminPanel').style.display = 'none';
+                    document.getElementById('fiscalChangePwdPanel').style.display = 'block';
+                }
+
                 irParaDashboard();
             } else {
                 showMessage('❌ Usuário ou senha incorretos!', 'error');
             }
         }
+        
+        // NOVO: Função para Fiscal trocar a própria senha
+        function trocarSenhaFiscal() {
+            const novaSenha1 = document.getElementById('fiscalNovaSenha1').value.trim();
+            const novaSenha2 = document.getElementById('fiscalNovaSenha2').value.trim();
+            
+            if (!novaSenha1 || novaSenha1.length < 4) {
+                showMessage('A nova senha deve ter no mínimo 4 caracteres.', 'error');
+                return;
+            }
+            
+            if (novaSenha1 !== novaSenha2) {
+                showMessage('As senhas não coincidem. Tente novamente.', 'error');
+                return;
+            }
+            
+            // Atualiza a senha
+            FISCAIS[fiscalLogado] = novaSenha1;
+            saveFiscais();
+
+            // Limpa os campos
+            document.getElementById('fiscalNovaSenha1').value = '';
+            document.getElementById('fiscalNovaSenha2').value = '';
+            
+            showMessage(`✅ Sua senha de Fiscal foi alterada com sucesso!`, 'success');
+        }
+
+        // --- NOVO: LOGIN COLABORADOR ---
+        function fazerLoginColaborador() {
+            const user = document.getElementById('colaboradorUser').value;
+            const senha = document.getElementById('colaboradorSenha').value.trim();
+            const turno = document.getElementById('turnoSelect').value;
+
+            if (!user || !senha || !turno) {
+                showMessage('Por favor, preencha todos os campos!', 'error');
+                return;
+            }
+            
+            const colabData = COLABORADORES[user];
+
+            if (colabData && colabData.senha === senha) {
+                if (colabData.requirePwdChange) {
+                    colaboradorAguardandoSenha = user;
+                    mostrarTela('screen6');
+                    showMessage('⚠️ Primeiro acesso ou senha resetada. Defina uma nova senha.', 'warning', 6000);
+                    return;
+                }
+                
+                colaboradorLogado = user;
+                iniciarChecklist(turno);
+            } else {
+                showMessage('❌ Usuário ou senha do Colaborador incorretos!', 'error');
+            }
+        }
+        
+        // --- TELA 6: TROCA DE SENHA ---
+        function salvarNovaSenha() {
+            const user = colaboradorAguardandoSenha;
+            const novaSenha1 = document.getElementById('novaSenha1').value.trim();
+            const novaSenha2 = document.getElementById('novaSenha2').value.trim();
+            
+            if (!novaSenha1 || novaSenha1.length < 4) {
+                showMessage('A senha deve ter no mínimo 4 caracteres.', 'error');
+                return;
+            }
+            
+            if (novaSenha1 !== novaSenha2) {
+                showMessage('As senhas não coincidem. Tente novamente.', 'error');
+                return;
+            }
+            
+            COLABORADORES[user].senha = novaSenha1;
+            COLABORADORES[user].requirePwdChange = false; 
+            saveColaboradores();
+            
+            showMessage('✅ Senha alterada com sucesso! Prossiga com o checklist.', 'success');
+
+            colaboradorLogado = user;
+            colaboradorAguardandoSenha = null;
+            
+            const turno = document.getElementById('turnoSelect').value;
+            iniciarChecklist(turno);
+        }
+
 
         function logout() {
             fiscalLogado = null;
+            colaboradorLogado = null;
+            colaboradorAguardandoSenha = null;
             document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('fiscalNome').value = '';
             document.getElementById('fiscalSenha').value = '';
+            document.getElementById('colaboradorUser').value = '';
+            document.getElementById('colaboradorSenha').value = '';
+            document.getElementById('turnoSelect').value = '';
+            document.getElementById('limparHistoricoBtn').style.display = 'none'; 
+            document.getElementById('fiscalChangePwdPanel').style.display = 'none'; 
             voltarTela('screen1');
             showMessage('Deslogado com sucesso!', 'info');
         }
@@ -701,21 +1237,16 @@
                 corredor: 'Corredor'
             }[setor] || 'Setor';
 
-            document.getElementById('operadorTitulo').textContent = `Informações do Operador - ${setorNome}`;
+            document.getElementById('operadorTitulo').textContent = `Login Colaborador - ${setorNome}`;
+            document.getElementById('colaboradorSenha').value = ''; 
             mostrarTela('screen2');
         }
 
-        function iniciarChecklist() {
-            const nome = document.getElementById('nomeInput').value.trim();
-            const turno = document.getElementById('turnoSelect').value;
-            
-            if (!nome || !turno) {
-                showMessage('Por favor, preencha nome e turno para iniciar!', 'error');
-                return;
-            }
+        function iniciarChecklist(turno) {
+            const user = colaboradorLogado;
             
             operadorAtual = {
-                nome: nome,
+                nome: user, 
                 turno: turno,
                 setor: setorAtual,
                 data: new Date().toLocaleDateString('pt-BR'),
@@ -730,7 +1261,7 @@
             }[setorAtual];
 
             document.getElementById('setorTitulo').textContent = setorNomeDisplay;
-            document.getElementById('nomeDisplay').textContent = nome;
+            document.getElementById('nomeDisplay').textContent = user;
             document.getElementById('turnoDisplay').textContent = TURNOS[setorAtual].find(t => t.valor === turno).texto;
             document.getElementById('dataDisplay').textContent = operadorAtual.data;
             
@@ -752,8 +1283,8 @@
                 div.innerHTML = `
                     <div class="checkbox-custom"></div>
                     <div class="item-content">
-                        <div class="item-title">${item}</div>
-                        <div class="item-time" id="time-${index}"></div>
+                        <div class="item-title">${item.item}</div>
+                        <div class="item-time" id="time-${index}">(${item.points} Pontos)</div>
                     </div>
                 `;
                 container.appendChild(div);
@@ -772,16 +1303,17 @@
                 delete itensChecados[index];
                 item.classList.remove('checked');
                 item.querySelector('.checkbox-custom').textContent = '';
-                timeEl.textContent = '';
+                timeEl.textContent = `(${listaItens[index].points} Pontos)`;
             } else {
                 const hora = new Date().toLocaleTimeString('pt-BR');
                 itensChecados[index] = {
-                    item: listaItens[index], // Salva o nome do item para o histórico
+                    item: listaItens[index].item,
+                    points: listaItens[index].points,
                     hora: hora
                 };
                 item.classList.add('checked');
                 item.querySelector('.checkbox-custom').textContent = '✓';
-                timeEl.textContent = `✓ Marcado às ${hora}`;
+                timeEl.textContent = `✓ Marcado às ${hora} (${listaItens[index].points} Pontos)`;
             }
             
             atualizarProgresso();
@@ -796,7 +1328,6 @@
             document.getElementById('progressText').textContent = 
                 `${porcentagem}% Completo (${completos}/${total})`;
             
-            // Exibe o botão Finalizar apenas se 100% estiver completo
             if (porcentagem === 100) {
                 document.getElementById('finishSection').classList.add('active');
             } else {
@@ -804,8 +1335,12 @@
             }
         }
 
-        
         // --- FINALIZAÇÃO E HISTÓRICO ---
+        function calcularPontosPotenciais(setor) {
+            const listaItens = CHECKLISTS[setor] || [];
+            return listaItens.reduce((sum, item) => sum + item.points, 0);
+        }
+
         function finalizarChecklist() {
             const total = CHECKLISTS[setorAtual] ? CHECKLISTS[setorAtual].length : 0;
             const completos = Object.keys(itensChecados).length;
@@ -815,23 +1350,32 @@
                 return;
             }
             
+            const pontosPotenciais = calcularPontosPotenciais(setorAtual);
+
             const dados = {
                 ...operadorAtual,
-                itens: JSON.stringify(itensChecados), // Guarda como string JSON
+                itens: JSON.stringify(itensChecados), 
                 total: total,
                 completos: completos,
                 porcentagem: Math.round((completos / total) * 100),
-                assinatura: null 
+                pontosPotenciais: pontosPotenciais,
+                pontosAprovados: 0,
+                status: 'PENDENTE',
+                fiscalAprovador: null,
             };
             
             let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
             historico.push(dados);
             localStorage.setItem('checklists', JSON.stringify(historico));
             
-            showMessage('✅ Checklist finalizado com sucesso! Dados salvos.', 'success');
+            showMessage('✅ Checklist finalizado! Aguardando aprovação fiscal.', 'success');
             
-            document.getElementById('nomeInput').value = '';
+            // Logoff automático do colaborador
+            colaboradorLogado = null;
+            document.getElementById('colaboradorUser').value = '';
+            document.getElementById('colaboradorSenha').value = '';
             document.getElementById('turnoSelect').value = '';
+            
             mostrarTela('screen1');
         }
 
@@ -843,7 +1387,7 @@
             
             const historico = JSON.parse(localStorage.getItem('checklists') || '[]');
             const checklistsHoje = historico.filter(c => c.data === hoje);
-            
+
             document.getElementById('totalChecklists').textContent = checklistsHoje.length;
             
             let media = 0;
@@ -853,14 +1397,6 @@
             document.getElementById('mediaCompleto').textContent = Math.round(media) + '%';
             
             renderHistoryList(checklistsHoje);
-            
-            // Mostrar painel admin se for Carlos
-            if (fiscalLogado === 'Carlos') {
-                document.getElementById('adminPanel').style.display = 'block';
-                changeAdminTab(currentAdminTab); // Renderiza o painel ativo
-            } else {
-                document.getElementById('adminPanel').style.display = 'none';
-            }
             
             mostrarTela('screen4');
         }
@@ -872,7 +1408,6 @@
             if (checklistsHoje.length === 0) {
                 lista.innerHTML = '<p style="text-align: center; color: #666; margin-top: 15px;">Nenhum checklist realizado hoje</p>';
             } else {
-                // É crucial recarregar o histórico completo aqui para que os índices de visualização funcionem corretamente.
                 const historicoCompleto = JSON.parse(localStorage.getItem('checklists') || '[]');
                 
                 checklistsHoje.reverse().forEach((c) => {
@@ -883,17 +1418,27 @@
                         corredor: '🛒 CORREDOR'
                     }[c.setor] || 'Setor Desconhecido';
                     
-                    // Encontra o índice no histórico completo para passar para visualizarDetalhes
                     const index = historicoCompleto.findIndex(item => item.timestamp === c.timestamp && item.nome === c.nome);
                     
-                    // Clicar no item do histórico para ver os detalhes
+                    let statusTag = `<span class="status-tag">${c.status}</span>`;
+                    let pontosAprovados = '';
+
+                    if (c.status === 'APROVADO') {
+                        statusTag = `<span class="status-tag aprovado">APROVADO</span>`;
+                        pontosAprovados = `<div class="history-info" style="color: #28a745;"><strong>Pontos:</strong> +${c.pontosAprovados}</div>`;
+                    } else if (c.status === 'REPROVADO') {
+                        statusTag = `<span class="status-tag reprovado">REPROVADO</span>`;
+                    }
+
                     lista.innerHTML += `
                         <div class="history-item" onclick="visualizarDetalhes(${index})" style="cursor: pointer;">
                             <div class="history-header">
                                 <span class="history-setor">${setorNome}</span>
                                 <span class="history-turno">${c.turno}</span>
+                                ${statusTag}
                             </div>
-                            <div class="history-info"><strong>Operador:</strong> ${c.nome}</div>
+                            <div class="history-info"><strong>Colaborador:</strong> ${c.nome}</div>
+                            ${pontosAprovados}
                             <div class="history-info"><strong>Horário:</strong> ${new Date(c.timestamp).toLocaleTimeString('pt-BR')}</div>
                             <div class="history-progress">
                                 <div class="mini-progress">
@@ -907,11 +1452,12 @@
             }
         }
         
-        // --- NOVA FUNÇÃO: VISUALIZAR DETALHES ---
+        // --- TELA 5: VISUALIZAR DETALHES E APROVAÇÃO ---
         function visualizarDetalhes(index) {
             const historico = JSON.parse(localStorage.getItem('checklists') || '[]');
             const checklist = historico[index];
-            
+            checklistEmRevisaoIndex = index;
+
             if (!checklist) {
                 showMessage('Checklist não encontrado.', 'error');
                 return;
@@ -932,47 +1478,179 @@
             
             document.getElementById('detailsDataDisplay').textContent = new Date(checklist.timestamp).toLocaleString('pt-BR');
             
+            document.getElementById('detailsPontosPotenciais').textContent = checklist.pontosPotenciais;
+
             document.getElementById('detailsProgressBar').style.width = checklist.porcentagem + '%';
             document.getElementById('detailsProgressText').textContent = checklist.porcentagem + '%';
 
-            // Carregar lista de itens
+            // Status Display
+            const statusDisplay = document.getElementById('reviewStatusDisplay');
+            statusDisplay.classList.remove('active');
+            statusDisplay.style.background = '';
+            statusDisplay.style.color = '';
+            statusDisplay.innerHTML = '';
+            
+            if (checklist.status === 'APROVADO') {
+                statusDisplay.classList.add('active');
+                statusDisplay.style.background = '#d4edda';
+                statusDisplay.style.color = '#155724';
+                
+                let pontosInfo = `Pontos concedidos: ${checklist.pontosAprovados}.`;
+                if (checklist.pontosAjustados) {
+                    pontosInfo += `<br><small>Ajustado por ${checklist.fiscalAprovador}: ${checklist.motivoAjuste}</small>`;
+                }
+
+                statusDisplay.innerHTML = `✅ APROVADO por ${checklist.fiscalAprovador} em ${new Date(checklist.dataAprovacao).toLocaleDateString('pt-BR')}. ${pontosInfo}`;
+                document.getElementById('approvalActions').style.display = 'none';
+            } else if (checklist.status === 'REPROVADO') {
+                statusDisplay.classList.add('active');
+                statusDisplay.style.background = '#f8d7da';
+                statusDisplay.style.color = '#721c24';
+                // Exibe o motivo da reprovação
+                statusDisplay.innerHTML = `❌ REPROVADO por ${checklist.fiscalAprovador} em ${new Date(checklist.dataAprovacao).toLocaleDateString('pt-BR')}. Pontos perdidos.<br><small>Motivo: <strong>${checklist.motivoReprovacao || 'Não especificado'}</strong></small>`;
+                document.getElementById('approvalActions').style.display = 'none';
+            } else {
+                // PENDENTE: Mostra botões
+                statusDisplay.classList.add('active');
+                statusDisplay.style.background = '#fff3cd';
+                statusDisplay.style.color = '#856404';
+                statusDisplay.innerHTML = `🟡 PENDENTE. Necessita de aprovação para conceder ${checklist.pontosPotenciais} pontos.`;
+                
+                // Só mostra botões de aprovação/reprovação se o usuário for um FISCAL ou ADM
+                if (FISCAIS[fiscalLogado]) {
+                    document.getElementById('approvalActions').style.display = 'flex';
+                } else {
+                    document.getElementById('approvalActions').style.display = 'none';
+                    // Se não for fiscal/adm, mostra um aviso
+                    if (fiscalLogado) { 
+                         statusDisplay.innerHTML += `<br><small style="color: red;">Faça login como Fiscal/ADM para aprovar.</small>`;
+                    }
+                }
+            }
+
+
+            // Carregar lista de itens (visualização)
             const itensChecados = JSON.parse(checklist.itens);
             const container = document.getElementById('detailsListContainer');
             container.innerHTML = '';
             
-            // O histórico guarda o índice e o objeto {item: nome, hora: hora}
-            const itemKeys = Object.keys(itensChecados).map(Number).sort((a, b) => a - b);
+            const listaCompleta = CHECKLISTS[checklist.setor] || [];
             
-            itemKeys.forEach(index => {
-                const itemData = itensChecados[index];
-                container.innerHTML += `
-                    <div class="detail-item">
-                        <span class="detail-item-title">${itemData.item}</span>
-                        <span class="detail-item-time">✓ ${itemData.hora}</span>
-                    </div>
-                `;
+            // Correção: Iterar sobre a lista completa do setor para garantir a ordem e o nome original
+            listaCompleta.forEach((itemOriginal, index) => {
+                const itemChecado = itensChecados[index];
+                
+                if (itemChecado) {
+                    // Item checado - usa dados salvos no histórico
+                    container.innerHTML += `
+                        <div class="detail-item">
+                            <span class="detail-item-title">${itemChecado.item}</span>
+                            <span class="detail-item-time">✓ ${itemChecado.hora} (${itemChecado.points} Pts)</span>
+                        </div>
+                    `;
+                } else {
+                    // Item não checado (deveria ser raro, já que exige 100%)
+                     container.innerHTML += `
+                        <div class="detail-item" style="opacity: 0.5;">
+                            <span class="detail-item-title">${itemOriginal.item}</span>
+                            <span class="detail-item-time" style="color: #dc3031;">(NÃO CHECADO - ${itemOriginal.points} Pts)</span>
+                        </div>
+                    `;
+                }
             });
-            
-            // Garante que se o checklist tem mais itens, eles aparecem (embora o app só salve 100%)
-            if (itemKeys.length < checklist.total) {
-                // Adiciona itens que ficaram de fora, se existirem (improvável, mas seguro)
-                const todosItens = CHECKLISTS[checklist.setor];
-                todosItens.forEach((item, originalIndex) => {
-                    if (!itensChecados.hasOwnProperty(originalIndex)) {
-                         container.innerHTML += `
-                            <div class="detail-item" style="opacity: 0.5;">
-                                <span class="detail-item-title">${item}</span>
-                                <span class="detail-item-time" style="color: #dc3545;">(Não Checado)</span>
-                            </div>
-                        `;
-                    }
-                });
-            }
+
 
             mostrarTela('screen5');
         }
-        
-        // --- FUNÇÕES DE ADMIN E EXPORTAÇÃO (inalteradas) ---
+
+        // --- FUNÇÕES DE APROVAÇÃO FISCAL ---
+        function salvarHistorico(historico) {
+            localStorage.setItem('checklists', JSON.stringify(historico));
+        }
+
+        function aprovarChecklist() {
+            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM para aprovar.', 'error');
+            if (checklistEmRevisaoIndex === -1) return showMessage('Nenhum checklist selecionado para aprovação.', 'error');
+
+            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
+            let checklist = historico[checklistEmRevisaoIndex];
+            
+            let pontosAprovados = checklist.pontosPotenciais;
+            let pontosAjustados = false;
+            let motivoAjuste = '';
+
+            // Se for ADM (Carlos, Cadu, Junior), permite ajustar a pontuação
+            if (ADMINS.includes(fiscalLogado)) {
+                const novoPontoStr = prompt(`O colaborador completou o checklist (Potencial: ${pontosAprovados} pts).\n\nComo ADM, você pode ajustar a pontuação. Digite a PONTUAÇÃO FINAL a ser concedida:`, pontosAprovados);
+                
+                if (novoPontoStr === null) {
+                    showMessage('Aprovação cancelada.', 'info');
+                    return;
+                }
+
+                const novoPonto = parseInt(novoPontoStr);
+                
+                if (isNaN(novoPonto) || novoPonto < 0) {
+                    showMessage('❌ Pontuação inválida! Deve ser um número inteiro positivo ou zero.', 'error');
+                    return;
+                }
+                
+                pontosAprovados = novoPonto;
+
+                if (pontosAprovados !== checklist.pontosPotenciais) {
+                    pontosAjustados = true;
+                    motivoAjuste = prompt(`Ajuste de Pontos: ${pontosAprovados} (Original: ${checklist.pontosPotenciais}).\n\nDigite o MOTIVO do ajuste (Obrigatório):`);
+                    if (!motivoAjuste) {
+                         showMessage('Motivo de ajuste obrigatório. Aprovação cancelada.', 'error');
+                         return;
+                    }
+                }
+            }
+
+            checklist.status = 'APROVADO';
+            checklist.fiscalAprovador = fiscalLogado;
+            checklist.pontosAprovados = pontosAprovados;
+            checklist.dataAprovacao = new Date().toISOString();
+            checklist.pontosAjustados = pontosAjustados; // Novo campo
+            checklist.motivoAjuste = motivoAjuste; // Novo campo
+
+            salvarHistorico(historico);
+            
+            showMessage(`✅ Checklist APROVADO! ${checklist.pontosAprovados} pontos concedidos ao colaborador ${checklist.nome}.`, 'success');
+            
+            irParaDashboard();
+        }
+
+        function reprovarChecklist() {
+            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM para reprovar.', 'error');
+            if (checklistEmRevisaoIndex === -1) return showMessage('Nenhum checklist selecionado para reprovação.', 'error');
+            
+            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
+            let checklist = historico[checklistEmRevisaoIndex];
+
+            // Pede uma justificativa simples
+            const motivo = prompt('Por favor, digite o motivo da REPROVAÇÃO (Obrigatório):');
+            
+            if (!motivo || motivo.trim() === '') {
+                 showMessage('Reprovação cancelada. O motivo é obrigatório.', 'error');
+                 return;
+            }
+
+            checklist.status = 'REPROVADO';
+            checklist.fiscalAprovador = fiscalLogado;
+            checklist.pontosAprovados = 0;
+            checklist.dataAprovacao = new Date().toISOString();
+            checklist.motivoReprovacao = motivo; // Motivo salvo
+
+            salvarHistorico(historico);
+            
+            showMessage(`❌ Checklist REPROVADO. Pontos negados. Motivo: ${motivo}`, 'error');
+            
+            irParaDashboard();
+        }
+
+
+        // --- FUNÇÕES DE ADMIN ---
         function exportarPDF() {
             showMessage('📄 Funcionalidade de exportar para PDF. Use a função nativa de Imprimir (Ctrl+P ou menu do navegador) e "Salvar como PDF".', 'info', 6000);
             window.print();
@@ -980,7 +1658,7 @@
 
         function tentarLimparHistorico() {
             if (fiscalLogado !== 'Carlos') {
-                showMessage('❌ Apenas o administrador (Carlos) pode limpar o histórico.', 'error');
+                showMessage('❌ Apenas o administrador CARLOS pode limpar o histórico.', 'error');
                 return;
             }
             
@@ -996,6 +1674,8 @@
         }
 
         function changeAdminTab(tab) {
+            if (!ADMINS.includes(fiscalLogado)) return;
+
             currentAdminTab = tab;
             document.querySelectorAll('.admin-tab button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
@@ -1004,25 +1684,38 @@
                 document.getElementById('tabFiscais').classList.add('active');
                 document.getElementById('adminContentFiscais').classList.add('active');
                 carregarFiscais();
-            } else if (tab === 'checklist') {
+            } else if (tab === 'colaboradores') { 
+                document.getElementById('tabColaboradores').classList.add('active');
+                document.getElementById('adminContentColaboradores').classList.add('active');
+                carregarColaboradores();
+            } 
+             else if (tab === 'checklist') {
                 document.getElementById('tabChecklist').classList.add('active');
                 document.getElementById('adminContentChecklist').classList.add('active');
                 renderChecklistManager();
             }
         }
 
+        // --- ADMIN: FISCAIS ---
         function carregarFiscais() {
             const lista = document.getElementById('fiscalList');
             lista.innerHTML = '';
             
             for (let nome in FISCAIS) {
-                const bloqueado = nome === 'Carlos' ? ' (Admin - Não removível)' : '';
-                const btnRemover = nome !== 'Carlos' ? 
-                    `<button class="btn-danger" onclick="tentarRemoverFiscal('${nome}')">🗑️ Remover</button>` : '';
+                const isAdmin = ADMINS.includes(nome);
+                const isNonRemovable = NON_REMOVABLE_FISCAL.includes(nome);
+
+                const status = isAdmin ? ' (ADM)' : ' (Fiscal)';
+                const bloqueado = isNonRemovable ? ' (Não Removível)' : '';
+                
+                let btnRemover = '';
+                if (!isNonRemovable && ADMINS.includes(fiscalLogado)) {
+                    btnRemover = `<button class="btn-danger" onclick="tentarRemoverFiscal('${nome}')">🗑️ Remover</button>`;
+                }
                 
                 lista.innerHTML += `
                     <div class="fiscal-item">
-                        <span><strong>${nome}</strong> - Senha: ${FISCAIS[nome]}${bloqueado}</span>
+                        <span><strong>${nome}</strong> ${status} - Senha: ${FISCAIS[nome]}${bloqueado}</span>
                         ${btnRemover}
                     </div>
                 `;
@@ -1030,6 +1723,8 @@
         }
 
         function adicionarFiscal() {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar fiscais.', 'error');
+            
             const nome = document.getElementById('novoFiscalNome').value.trim();
             const senha = document.getElementById('novoFiscalSenha').value.trim();
             
@@ -1055,8 +1750,9 @@
         }
 
         function tentarRemoverFiscal(nome) {
-            if (nome === 'Carlos') {
-                showMessage('❌ Não é possível remover o administrador!', 'error');
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover fiscais.', 'error');
+            if (NON_REMOVABLE_FISCAL.includes(nome)) {
+                showMessage(`❌ O fiscal ${nome} é um ADM de segurança e não pode ser removido.`, 'error');
                 return;
             }
             
@@ -1073,7 +1769,227 @@
                 showMessage('O nome digitado não corresponde. A remoção foi cancelada.', 'error');
             }
         }
+
+        // --- ADMIN: COLABORADORES (NOVAS FUNÇÕES) ---
+        function calcularPontosPorColaborador() {
+            const historico = JSON.parse(localStorage.getItem('checklists') || '[]');
+            const pontosPorColaborador = {};
+
+            // Inicializa todos os colaboradores com 0 pontos
+            for (const user in COLABORADORES) {
+                pontosPorColaborador[user] = 0;
+            }
+
+            // Soma os pontos aprovados
+            historico
+                .filter(c => c.status === 'APROVADO')
+                .forEach(c => {
+                    if (pontosPorColaborador.hasOwnProperty(c.nome)) {
+                        pontosPorColaborador[c.nome] += c.pontosAprovados;
+                    } else {
+                        pontosPorColaborador[c.nome] = c.pontosAprovados;
+                    }
+                });
+            
+            // Adiciona/Subtrai ajustes manuais
+            for (const user in COLABORADORES) {
+                if (COLABORADORES[user].ajustesPontos) {
+                    COLABORADORES[user].ajustesPontos.forEach(ajuste => {
+                        pontosPorColaborador[user] = (pontosPorColaborador[user] || 0) + ajuste.pontos;
+                    });
+                }
+            }
+            
+            return pontosPorColaborador;
+        }
+
+        function carregarColaboradores() {
+            const lista = document.getElementById('colaboradorList');
+            lista.innerHTML = '';
+            
+            const pontos = calcularPontosPorColaborador();
+
+            for (let user in COLABORADORES) {
+                const totalPontos = pontos[user] || 0;
+                
+                // Item clicável que chama a nova tela de gestão
+                lista.innerHTML += `
+                    <div class="colaborador-item" onclick="abrirGestaoColaborador('${user}')">
+                        <div class="colaborador-details">
+                            <span><strong>${user}</strong></span>
+                            <span class="colaborador-points">${totalPontos} Pts →</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Se houver colaboradores no histórico que não estão mais cadastrados
+            for (const user in pontos) {
+                if (!COLABORADORES.hasOwnProperty(user)) {
+                    lista.innerHTML += `
+                        <div class="colaborador-item" style="opacity: 0.6; border-left: 5px solid #6c757d; cursor: default;">
+                            <div class="colaborador-details">
+                                <span><strong>${user}</strong> (Removido)</span>
+                                <span class="colaborador-points">${pontos[user]} Pts</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
         
+        // NOVO: Abre a tela de Gestão Individual (Screen 7)
+        function abrirGestaoColaborador(user) {
+            if (!ADMINS.includes(fiscalLogado)) {
+                showMessage('❌ Apenas ADMs podem gerenciar colaboradores.', 'error');
+                return;
+            }
+            
+            colaboradorEmGestao = user;
+            const colabData = COLABORADORES[user];
+            const pontos = calcularPontosPorColaborador();
+            const totalPontos = pontos[user] || 0;
+            
+            document.getElementById('colabGestaoNome').textContent = user;
+            document.getElementById('colabGestaoSenha').textContent = colabData.senha;
+            document.getElementById('colabGestaoPontos').textContent = `${totalPontos} Pts`;
+            
+            renderAjusteHistorico();
+            mostrarTela('screen7');
+        }
+
+        function renderAjusteHistorico() {
+            const user = colaboradorEmGestao;
+            const lista = document.getElementById('ajusteHistoricoList');
+            lista.innerHTML = '';
+
+            const ajustes = COLABORADORES[user].ajustesPontos.slice().reverse(); // Copia e inverte
+
+            if (ajustes.length === 0) {
+                lista.innerHTML = '<p style="color: #666; text-align: center;">Nenhum ajuste manual realizado.</p>';
+                return;
+            }
+
+            ajustes.forEach(ajuste => {
+                const tipo = ajuste.pontos > 0 ? '➕ Adição' : '➖ Retirada';
+                const cor = ajuste.pontos > 0 ? '#28a745' : '#dc3545';
+                
+                lista.innerHTML += `
+                    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <div style="font-weight: bold; color: ${cor};">${tipo}: ${ajuste.pontos} Pts</div>
+                        <div style="font-size: 12px; color: #6c757d;">
+                            ADM: ${ajuste.adm} | Data: ${new Date(ajuste.timestamp).toLocaleDateString('pt-BR')}
+                        </div>
+                        <div style="font-size: 14px; margin-top: 3px;">Motivo: <em>${ajuste.motivo}</em></div>
+                    </div>
+                `;
+            });
+        }
+        
+        // NOVO: Adicionar/Remover pontos manualmente
+        function ajustarPontos(acao) {
+            const user = colaboradorEmGestao;
+            const isAdd = acao === 'adicionar';
+            const acaoDisplay = isAdd ? 'ADICIONAR' : 'RETIRAR';
+
+            const pontosStr = prompt(`Digite a quantidade de pontos que deseja ${acaoDisplay}:`);
+            if (pontosStr === null) return;
+            
+            const pontos = parseInt(pontosStr);
+
+            if (isNaN(pontos) || pontos <= 0) {
+                showMessage('❌ Pontuação inválida! Digite um número positivo.', 'error');
+                return;
+            }
+
+            const motivo = prompt(`Digite o MOTIVO para ${acaoDisplay} ${pontos} pontos de ${user} (Obrigatório):`);
+            if (!motivo || motivo.trim() === '') {
+                showMessage('Motivo obrigatório. Ação cancelada.', 'error');
+                return;
+            }
+
+            const ajustePontos = isAdd ? pontos : -pontos;
+
+            const novoAjuste = {
+                pontos: ajustePontos,
+                motivo: motivo,
+                adm: fiscalLogado,
+                timestamp: new Date().toISOString(),
+                tipo: acao
+            };
+
+            COLABORADORES[user].ajustesPontos.push(novoAjuste);
+            saveColaboradores();
+            
+            showMessage(`✅ ${pontos} Pontos ${isAdd ? 'adicionados' : 'removidos'} de ${user}.`, 'success');
+            
+            // Recarrega a tela de gestão e a lista de colaboradores (para atualizar a pontuação)
+            abrirGestaoColaborador(user);
+        }
+
+        // NOVO: Ações de Gestão de Usuário
+        function resetarSenhaColaboradorAcao() {
+             const user = colaboradorEmGestao;
+             const confirmation = prompt(`⚠️ Para resetar a senha do colaborador "${user}" para o padrão temporário (1234), digite "RESET":`);
+            
+            if (confirmation === 'RESET') {
+                if (COLABORADORES[user]) {
+                    COLABORADORES[user].senha = '1234';
+                    COLABORADORES[user].requirePwdChange = true;
+                    saveColaboradores();
+                    
+                    showMessage(`✅ Senha de "${user}" resetada para 1234. Troca obrigatória no próximo login.`, 'success', 6000);
+                    abrirGestaoColaborador(user); // Recarrega para mostrar a nova senha
+                }
+            } else if (confirmation !== null) {
+                showMessage('Reset cancelado.', 'info');
+            }
+        }
+
+        function tentarRemoverColaboradorAcao() {
+            const user = colaboradorEmGestao;
+            const confirmation = prompt(`⚠️ Para remover PERMANENTEMENTE o colaborador "${user}", digite o nome de usuário:`);
+            
+            if (confirmation === user) {
+                delete COLABORADORES[user];
+                saveColaboradores();
+                updateColaboradorSelect();
+                showMessage(`✅ Colaborador "${user}" removido com sucesso!`, 'success');
+                voltarGestao(); // Volta para a lista principal
+            } else if (confirmation !== null) {
+                showMessage('O nome de usuário digitado não corresponde. A remoção foi cancelada.', 'error');
+            }
+        }
+        
+        function adicionarColaborador() {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar colaboradores.', 'error');
+
+            const user = document.getElementById('novoColaboradorUser').value.trim().toLowerCase();
+            const senha = document.getElementById('novoColaboradorSenha').value.trim();
+            
+            if (!user || !senha) {
+                showMessage('Por favor, preencha usuário e senha!', 'error');
+                return;
+            }
+            
+            if (COLABORADORES[user]) {
+                showMessage(`❌ Já existe um colaborador com o usuário "${user}"!`, 'error');
+                return;
+            }
+            
+            // Define a estrutura completa com histórico de ajuste vazio
+            COLABORADORES[user] = { senha: senha, requirePwdChange: false, ajustesPontos: [] }; 
+            saveColaboradores();
+            updateColaboradorSelect();
+            
+            document.getElementById('novoColaboradorUser').value = '';
+            document.getElementById('novoColaboradorSenha').value = '';
+            
+            showMessage(`✅ Colaborador "${user}" adicionado com sucesso!`, 'success');
+            carregarColaboradores();
+        }
+
+        // --- ADMIN: CHECKLISTS ---
         function updateChecklistSetorSelect() {
             const select = document.getElementById('checklistSetorSelect');
             select.innerHTML = ''; 
@@ -1106,19 +2022,62 @@
             itens.forEach((item, index) => {
                 lista.innerHTML += `
                     <div class="checklist-manager-item">
-                        <span>${index + 1}. ${item}</span>
-                        <button class="btn-danger" onclick="removerItemChecklist(${index})">🗑️</button>
+                        <span>${index + 1}. ${item.item} (${item.points} Pts)</span>
+                        <div class="admin-item-actions">
+                            <button class="btn-edit-inline" onclick="editarItemChecklist(${index})">📝 Editar</button>
+                            <button class="btn-danger" onclick="removerItemChecklist(${index})">🗑️</button>
+                        </div>
                     </div>
                 `;
             });
         }
+
+        // NOVO: Função para editar o item e a pontuação
+        function editarItemChecklist(index) {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem editar checklists.', 'error');
+
+            const setor = document.getElementById('checklistSetorSelect').value;
+            const itemAtual = CHECKLISTS[setor][index];
+
+            const novoNome = prompt(`Editar Item: ${itemAtual.item}\n\nDigite a NOVA DESCRIÇÃO (ou deixe em branco para manter a atual):`, itemAtual.item);
+            
+            if (novoNome === null) { // Cancelado no primeiro prompt
+                showMessage('Edição cancelada.', 'info');
+                return;
+            }
+
+            const novoPontoStr = prompt(`Item: ${novoNome || itemAtual.item}\n\nDigite a NOVA PONTUAÇÃO (valor numérico):`, itemAtual.points);
+            
+            if (novoPontoStr === null) { // Cancelado no segundo prompt
+                showMessage('Edição cancelada.', 'info');
+                return;
+            }
+
+            const novoPonto = parseInt(novoPontoStr);
+            
+            if (isNaN(novoPonto) || novoPonto < 0) {
+                showMessage('❌ Pontuação inválida! Deve ser um número inteiro positivo.', 'error');
+                return;
+            }
+
+            // Aplica as mudanças
+            CHECKLISTS[setor][index].item = novoNome || itemAtual.item;
+            CHECKLISTS[setor][index].points = novoPonto;
+
+            saveBaseChecklists();
+            showMessage(`✅ Item editado: ${CHECKLISTS[setor][index].item} (${novoPonto} Pts)!`, 'success');
+            renderChecklistManager();
+        }
         
         function adicionarItemChecklist() {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar itens ao checklist.', 'error');
+            
             const nome = document.getElementById('novoItemText').value.trim();
+            const pontos = parseInt(document.getElementById('novoItemPontos').value);
             const setor = document.getElementById('checklistSetorSelect').value;
             
-            if (!nome) {
-                showMessage('Por favor, digite a descrição do item.', 'error');
+            if (!nome || isNaN(pontos) || pontos <= 0) {
+                showMessage('Por favor, digite a descrição e uma pontuação válida (maior que zero).', 'error');
                 return;
             }
             
@@ -1126,20 +2085,23 @@
                 CHECKLISTS[setor] = [];
             }
             
-            CHECKLISTS[setor].push(nome);
+            CHECKLISTS[setor].push({ item: nome, points: pontos });
             saveBaseChecklists();
             
             document.getElementById('novoItemText').value = '';
+            document.getElementById('novoItemPontos').value = '10';
             
             showMessage(`✅ Item adicionado ao setor ${setor.toUpperCase()}!`, 'success');
             renderChecklistManager();
         }
         
         function removerItemChecklist(index) {
-            const setor = document.getElementById('checklistSetorSelect').value;
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover itens do checklist.', 'error');
             
-            // Simulação de confirmação com prompt simples
-            const confirmation = prompt(`⚠️ Para remover o item "${CHECKLISTS[setor][index]}", digite "SIM":`);
+            const setor = document.getElementById('checklistSetorSelect').value;
+            const nomeItem = CHECKLISTS[setor][index].item;
+
+            const confirmation = prompt(`⚠️ Para remover o item "${nomeItem}", digite "SIM":`);
             
             if (confirmation === 'SIM') {
                 CHECKLISTS[setor].splice(index, 1);
