@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checklist - Supermercado Rio Branco</title>
+    <!-- Configurações PWA Otimizadas para máxima compatibilidade -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Check RB">
+    <meta name="theme-color" content="#3d4b7a">
+    <!-- O MANIFEST agora está embutido para garantir que não haja problemas de caminho -->
+    <!-- FIM PWA -->
     <style>
         /* Estilos base */
         * {
@@ -587,6 +595,31 @@
             margin-top: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+
+        /* NOVO: Painel de Instruções PWA */
+        .pwa-instructions {
+            background: #e6f3ff;
+            border: 1px solid #007bff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 25px;
+            color: #007bff;
+        }
+        .pwa-instructions h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #3d4b7a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pwa-instructions p {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        .pwa-instructions strong {
+            color: #d63031;
+        }
     </style>
 </head>
 <body>
@@ -643,6 +676,18 @@
                 <button class="setor-btn bebidas" onclick="escolherSetor('bebidas')">🍹 BEBIDAS</button>
                 <button class="setor-btn corredor" onclick="escolherSetor('corredor')">🛒 CORREDOR</button>
                 <button class="btn-primary" onclick="mostrarTela('screenLogin')">📊 Acesso Fiscal/ADM</button>
+
+                <!-- NOVO: Painel de Instruções PWA -->
+                <div class="pwa-instructions">
+                    <h3>
+                        <span>📱 Instalar o App (PWA)</span>
+                    </h3>
+                    <p>Para usar como aplicativo em tela cheia no celular, siga:</p>
+                    <p>1. Abra o menu do navegador (Geralmente <strong>'⋮'</strong> ou <strong>'↑'</strong>).</p>
+                    <p>2. Selecione <strong>"Adicionar à Tela de Início"</strong> (ou "Instalar App").</p>
+                    <p>O ícone **Check RB** aparecerá na sua tela principal!</p>
+                </div>
+                <!-- FIM PWA INSTRUCTIONS -->
             </div>
 
             <!-- TELA 2: LOGIN DO COLABORADOR -->
@@ -1572,7 +1617,7 @@
             if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM para aprovar.', 'error');
             if (checklistEmRevisaoIndex === -1) return showMessage('Nenhum checklist selecionado para aprovação.', 'error');
 
-            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
+            let historico = JSON.PARSE(localStorage.getItem('checklists') || '[]');
             let checklist = historico[checklistEmRevisaoIndex];
             
             let pontosAprovados = checklist.pontosPotenciais;
