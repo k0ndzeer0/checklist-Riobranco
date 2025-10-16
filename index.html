@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checklist - Supermercado Rio Branco</title>
+    <!-- Inclui a biblioteca Supabase (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Configurações PWA Otimizadas para máxima compatibilidade -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Check RB">
     <meta name="theme-color" content="#3d4b7a">
-    <!-- O MANIFEST agora está embutido para garantir que não haja problemas de caminho -->
     <!-- FIM PWA -->
     <style>
         /* Estilos base */
@@ -27,8 +29,8 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            position: relative; /* Para o footer fixo */
-            padding-bottom: 70px; /* Espaço para o footer */
+            position: relative;
+            padding-bottom: 70px;
         }
         .container {
             max-width: 600px;
@@ -51,15 +53,10 @@
             flex-direction: column;
             align-items: center;
         }
-        /* REMOVIDO: Estilo para o Contêiner da Logo - SVG Placeholder */
-        .logo-container {
-            display: none; 
-        }
-
         .header h1 {
             font-size: 28px;
             margin-bottom: 5px;
-            display: block; /* Volta a exibir o H1 */
+            display: block;
         }
         .header p {
             font-size: 16px;
@@ -225,7 +222,7 @@
         /* Botão Finalizar */
         .finish-section {
             margin-top: 30px;
-            display: none;
+            display: block; 
         }
         .finish-section.active {
             display: block;
@@ -276,30 +273,9 @@
         .stat-number { font-size: 32px; font-weight: bold; color: #3d4b7a; }
         .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
 
-        /* NOVO: Estilo para Painel de Pontuação removido do Dashboard principal */
-        .pontos-card {
-            display: none; /* REMOVIDO DO DASHBOARD PRINCIPAL */
-            background: #ffe0b2;
-            border: 2px solid #ff9800;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .pontos-number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #d63031;
-            margin-bottom: 5px;
-        }
-        .pontos-label {
-            color: #333;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
+        /* Painel Admin */
         .admin-panel {
-            background: #e0f7fa; /* Light Blue for Admin */
+            background: #e0f7fa;
             border: 2px solid #007bff;
             border-radius: 10px;
             padding: 15px;
@@ -319,7 +295,7 @@
         .colaborador-item { 
             border-left: 5px solid #d63031;
             padding: 10px 15px;
-            cursor: pointer; /* Torna o item clicável */
+            cursor: pointer;
             transition: background 0.2s;
         }
         .colaborador-item:hover {
@@ -426,6 +402,49 @@
         /* Estilos de Status e Botões de Ação no Histórico */
         .history-item {
             position: relative;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .history-setor {
+            font-weight: bold;
+            font-size: 16px;
+            color: #3d4b7a;
+        }
+        .history-turno {
+            font-size: 14px;
+            color: #666;
+        }
+        .history-info {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .history-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .mini-progress {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .mini-progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            transition: width 0.3s;
         }
         .status-tag {
             background: #ffc107;
@@ -434,9 +453,6 @@
             border-radius: 8px;
             font-size: 12px;
             font-weight: bold;
-            position: absolute;
-            top: 15px;
-            right: 15px;
         }
         .status-tag.aprovado {
             background: #28a745;
@@ -550,6 +566,8 @@
             font-weight: bold;
             font-size: 16px;
             transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
         .btn-add-points {
             background: #28a745;
@@ -564,7 +582,7 @@
             color: white;
         }
 
-        /* NOVO: Estilo para o Rodapé */
+        /* Estilo para o Rodapé */
         .app-footer {
             position: fixed;
             bottom: 0;
@@ -586,7 +604,7 @@
             color: white;
         }
 
-        /* NOVO: Painel de Troca de Senha de Fiscal */
+        /* Painel de Troca de Senha de Fiscal */
         #fiscalChangePwdPanel {
             background: #f8f9fa;
             border: 1px solid #ddd;
@@ -596,7 +614,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* NOVO: Painel de Instruções PWA */
+        /* Painel de Instruções PWA */
         .pwa-instructions {
             background: #e6f3ff;
             border: 1px solid #007bff;
@@ -620,13 +638,46 @@
         .pwa-instructions strong {
             color: #d63031;
         }
+
+        .checklist-header {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .checklist-header h3 {
+            color: #3d4b7a;
+            margin-bottom: 10px;
+        }
+        .checklist-header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0 5px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+            transition: width 0.3s;
+        }
+        .progress-text {
+            text-align: center;
+            color: #3d4b7a;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="logout()">🚪 Sair</button>
-            <!-- REMOVIDO: Contêiner para a Logo SVG -->
             
             <h1>🏪 Supermercado Rio Branco</h1>
             <p>Sistema de Checklist Operacional</p>
@@ -650,7 +701,7 @@
                 <button class="btn-voltar" onclick="voltarTela('screen1')">← Voltar</button>
             </div>
             
-            <!-- TELA 6: TROCA DE SENHA INICIAL (NOVO) -->
+            <!-- TELA 6: TROCA DE SENHA INICIAL (COLABORADOR) -->
             <div id="screen6" class="screen">
                 <h2>Definir Nova Senha</h2>
                 <p style="text-align: center; color: #d63031; font-weight: bold; margin-bottom: 20px;">
@@ -677,7 +728,7 @@
                 <button class="setor-btn corredor" onclick="escolherSetor('corredor')">🛒 CORREDOR</button>
                 <button class="btn-primary" onclick="mostrarTela('screenLogin')">📊 Acesso Fiscal/ADM</button>
 
-                <!-- NOVO: Painel de Instruções PWA -->
+                <!-- Painel de Instruções PWA -->
                 <div class="pwa-instructions">
                     <h3>
                         <span>📱 Instalar o App (PWA)</span>
@@ -687,7 +738,6 @@
                     <p>2. Selecione <strong>"Adicionar à Tela de Início"</strong> (ou "Instalar App").</p>
                     <p>O ícone **Check RB** aparecerá na sua tela principal!</p>
                 </div>
-                <!-- FIM PWA INSTRUCTIONS -->
             </div>
 
             <!-- TELA 2: LOGIN DO COLABORADOR -->
@@ -727,8 +777,10 @@
 
                 <div id="checklistContainer"></div>
                 
-                <!-- Nova seção de Finalização Simples -->
                 <div class="finish-section" id="finishSection">
+                    <p style="text-align: center; color: #d63031; font-weight: bold; margin-bottom: 10px;">
+                        ⚠️ Checklist será enviado
+                    </p>
                     <button class="btn-primary" onclick="finalizarChecklist()">✅ Finalizar Checklist</button>
                 </div>
                 
@@ -743,12 +795,11 @@
                     <p><strong>Fiscal:</strong> <span id="fiscalLogado"></span></p>
                     <div class="dashboard-buttons">
                         <button onclick="exportarPDF()">📄 Exportar PDF</button>
-                        <!-- Botão Limpar Tudo visível apenas para Carlos -->
                         <button id="limparHistoricoBtn" onclick="tentarLimparHistorico()" style="display: none;">🗑️ Limpar Tudo</button>
                     </div>
                 </div>
 
-                <!-- Painel de Troca de Senha de Fiscal (Marilu, etc.) -->
+                <!-- Painel de Troca de Senha de Fiscal -->
                 <div id="fiscalChangePwdPanel" style="display: none;">
                     <h4 style="color: #3d4b7a; margin-bottom: 15px;">🔒 Trocar Minha Senha de Fiscal</h4>
                     <div class="form-group">
@@ -761,7 +812,6 @@
                     </div>
                     <button class="btn-primary" onclick="trocarSenhaFiscal()">Salvar Nova Senha</button>
                 </div>
-                <!-- Fim do Painel de Troca de Senha de Fiscal -->
 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -779,18 +829,18 @@
                     <div id="historyList"></div>
                 </div>
 
-                <!-- PAINEL ADMIN (só Carlos/Cadu/Junior) -->
+                <!-- PAINEL ADMIN -->
                 <div id="adminPanel" style="display: none;">
                     <div class="admin-panel">
                         <h4>⚙️ Painel de Administração (<span id="adminName"></span>)</h4>
 
                         <div class="admin-tab">
-                            <button id="tabFiscais" class="active" onclick="changeAdminTab('fiscais')">Fiscais</button>
+                            <button id="tabFiscais" onclick="changeAdminTab('fiscais')">Fiscais</button>
                             <button id="tabColaboradores" onclick="changeAdminTab('colaboradores')">Colaboradores</button>
                             <button id="tabChecklist" onclick="changeAdminTab('checklist')">Checklists</button>
                         </div>
 
-                        <!-- 4.1. GERENCIAR FISCAIS -->
+                        <!-- GERENCIAR FISCAIS -->
                         <div id="adminContentFiscais" class="admin-content active">
                             <h5 style="color: #007bff; margin-bottom: 10px;">Fiscais Cadastrados:</h5>
                             <div id="fiscalList"></div>
@@ -802,7 +852,7 @@
                             <button class="btn-success" onclick="adicionarFiscal()">➕ Adicionar Fiscal</button>
                         </div>
                         
-                        <!-- 4.2. GERENCIAR COLABORADORES (NOVO) -->
+                        <!-- GERENCIAR COLABORADORES -->
                         <div id="adminContentColaboradores" class="admin-content">
                             <h5 style="color: #007bff; margin-bottom: 10px;">Colaboradores Cadastrados (Clique para Gestão):</h5>
                             <div id="colaboradorList"></div>
@@ -814,7 +864,7 @@
                             <button class="btn-success" onclick="adicionarColaborador()">➕ Adicionar Colaborador</button>
                         </div>
 
-                        <!-- 4.3. GERENCIAR CHECKLISTS -->
+                        <!-- GERENCIAR CHECKLISTS -->
                         <div id="adminContentChecklist" class="admin-content">
                             <h5 style="margin-top: 15px; color: #007bff; margin-bottom: 10px;">Gerenciar Itens de Checklist:</h5>
                             <div class="form-group">
@@ -857,12 +907,10 @@
 
                 <h4 style="color: #3d4b7a; margin: 20px 0 10px;">Itens Verificados (Horário de Conclusão)</h4>
                 <div id="detailsListContainer" style="background: #f8f9fa; border-radius: 10px; padding: 10px;">
-                    <!-- Detalhes serão carregados aqui -->
                 </div>
                 
-                <!-- BOTÕES DE APROVAÇÃO (SÓ VISÍVEL PARA FISCAIS EM CHECKLISTS PENDENTES) -->
+                <!-- BOTÕES DE APROVAÇÃO -->
                 <div class="approval-actions" id="approvalActions">
-                    <!-- ADM/Fiscal pode editar os pontos aqui -->
                     <button class="btn-aprovar" onclick="aprovarChecklist()">✅ Aprovar e Conceder Pontos</button>
                     <button class="btn-reprovar" onclick="reprovarChecklist()">❌ Reprovar Pontos</button>
                 </div>
@@ -870,7 +918,7 @@
                 <button class="btn-voltar" onclick="voltarTela('screen4')">← Voltar para Dashboard</button>
             </div>
 
-            <!-- TELA 7: GESTÃO INDIVIDUAL DE COLABORADOR (NOVA TELA) -->
+            <!-- TELA 7: GESTÃO INDIVIDUAL DE COLABORADOR -->
             <div id="screen7" class="screen">
                 <h2 id="gestaoTitulo">Gestão de Colaborador</h2>
                 <div class="checklist-header">
@@ -900,40 +948,34 @@
         </div>
     </div>
 
-    <!-- NOVO: Rodapé de Marca D'água -->
+    <!-- Rodapé -->
     <div class="app-footer">
         <p>© 2025 AutoVizion. Todos os direitos reservados.</p>
         <p>Soluções inteligentes em automação e marketing digital.</p>
     </div>
 
     <script>
-        // --- DATA STRUCTURES & LOCAL STORAGE SETUP ---
+        const SUPABASE_URL = 'https://pxkerlapzgbykgqmhdoy.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4a2VybGFwemdieWtncW1oZG95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NDA3MjEsImV4cCI6MjA3NjExNjcyMX0.ABH5mopgAbhfZU8QGJVKkR_iFz2WJ0A4p4iV8Mh63Rw';
+
+        const TABLE_NAME = 'dados_gerais';
+        const CONFIG_ID = 'config_data';
+
+        let supabase = null;
+        let isSupabaseReady = false;
+        
+        const SETOR_COLABORADOR_MAP = {
+            caixa: ['Hugo Aguiar', 'Katia', 'Maria Eduarda'],
+            hortifruti: ['Carlos'],
+            corredor: ['Jonatan Piva', 'Carlos', 'Andre Lopes', 'Maria Eduarda', 'Hugo Aguiar'],
+            bebidas: ['Andre Lopes']
+        };
+
         const DEFAULT_CHECKLISTS = {
-            caixa: [
-                { item: 'Verificar troco', points: 5 }, { item: 'Verificar sacolas', points: 5 }, 
-                { item: 'Verificar bobinas', points: 3 }, { item: 'Colocar 2x bobinas reservas', points: 3 }, 
-                { item: 'Verificar carregamento das maquininhas', points: 10 }, 
-                { item: 'Organização dos caixas', points: 5 }, { item: 'Limpeza frente caixa', points: 8 }, 
-                { item: 'Retirar os lixos', points: 3 }
-            ],
-            hortifruti: [
-                { item: 'Verificar geladeiras', points: 10 }, { item: 'Verificar bancadas', points: 8 }, 
-                { item: 'Retirar material podre ou estragado', points: 15 }, 
-                { item: 'Trocar papel se necessário', points: 3 }, { item: 'Verificar sacos plásticos', points: 3 }, 
-                { item: 'Correção de preços', points: 10 }, { item: 'Abastecer setor', points: 12 }
-            ],
-            bebidas: [
-                { item: 'Abastecimento das geladeiras (Água, Refrigerante, Cerveja)', points: 15 }, 
-                { item: 'Verificar refrigeração (temperatura)', points: 10 },
-                { item: 'Conferir validade (principalmente lácteos e sucos)', points: 15 }, 
-                { item: 'Organização e limpeza das prateleiras', points: 8 }
-            ],
-            corredor: [
-                { item: 'Limpeza dos corredores (chão, prateleiras)', points: 10 }, 
-                { item: 'Conferir preços (se batem com o sistema)', points: 15 },
-                { item: 'Garantir frente de gôndola e organização de estoque', points: 12 }, 
-                { item: 'Verificar produtos em falta', points: 8 }
-            ]
+            caixa: [{ item: 'Verificar troco', points: 5 }, { item: 'Verificar sacolas', points: 5 }, { item: 'Verificar bobinas', points: 3 }, { item: 'Colocar 2x bobinas reservas', points: 3 }, { item: 'Verificar carregamento das maquininhas', points: 10 }, { item: 'Organização dos caixas', points: 5 }, { item: 'Limpeza frente caixa', points: 8 }, { item: 'Retirar os lixos', points: 3 }],
+            hortifruti: [{ item: 'Verificar geladeiras', points: 10 }, { item: 'Verificar bancadas', points: 8 }, { item: 'Retirar material podre ou estragado', points: 15 }, { item: 'Trocar papel se necessário', points: 3 }, { item: 'Verificar sacos plásticos', points: 3 }, { item: 'Correção de preços', points: 10 }, { item: 'Abastecer setor', points: 12 }],
+            bebidas: [{ item: 'Abastecimento das geladeiras (Água, Refrigerante, Cerveja)', points: 15 }, { item: 'Verificar refrigeração (temperatura)', points: 10 }, { item: 'Conferir validade (principalmente lácteos e sucos)', points: 15 }, { item: 'Organização e limpeza das prateleiras', points: 8 }],
+            corredor: [{ item: 'Limpeza dos corredores (chão, prateleiras)', points: 10 }, { item: 'Conferir preços (se batem com o sistema)', points: 15 }, { item: 'Garantir frente de gôndola e organização de estoque', points: 12 }, { item: 'Verificar produtos em falta', points: 8 }]
         };
 
         const TURNOS = {
@@ -942,145 +984,188 @@
             bebidas: [{ valor: '09:00', texto: '09:00 - Manhã' }, { valor: '14:00', texto: '14:00 - Tarde' }],
             corredor: [{ valor: '10:00', texto: '10:00 - Manhã' }, { valor: '15:00', texto: '15:00 - Tarde' }]
         };
-
-        let FISCAIS = {
-            'Carlos': '5875', 
-            'Cadu': '1228', 
-            'Junior': '0701',
-            'Marilu': '2992' 
-        };
-
-        const ADMINS = ['Carlos', 'Junior', 'Cadu'];
-        const NON_REMOVABLE_FISCAL = ['Carlos', 'Junior', 'Cadu']; // Cadu agora não é removível
         
-        let COLABORADORES = {
-            'Andre Lopes': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-            'Hugo Aguiar': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-            'Katia': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-            'Maria Eduarda': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-            'Jonatan Piva': { senha: '1234', requirePwdChange: true, ajustesPontos: [] }
-        };
+        const ADMINS = ['Carlos', 'Junior', 'Cadu'];
+        const NON_REMOVABLE_FISCAL = ['Carlos', 'Junior', 'Cadu']; 
 
-        let CHECKLISTS = DEFAULT_CHECKLISTS;
+        let FISCAIS = {};
+        let COLABORADORES = {};
+        let CHECKLISTS = {};
+        let checklistsHistorico = [];
+        
         let setorAtual = '';
         let colaboradorLogado = null; 
         let colaboradorAguardandoSenha = null; 
         let operadorAtual = {};
         let itensChecados = {};
         let fiscalLogado = null; 
-        let checklistEmRevisaoIndex = -1;
+        let checklistEmRevisaoDocId = null;
         let colaboradorEmGestao = null; 
-        
         let currentAdminTab = 'fiscais';
         let currentChecklistSetor = 'caixa';
 
-        // --- GLOBAL MESSAGE HANDLER (Substitui alert/confirm) ---
+        function initSupabase() {
+            if (!window.supabase) {
+                showMessage("❌ Erro: Biblioteca Supabase não carregada.", 'error');
+                return;
+            }
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                showMessage("❌ Erro: Credenciais Supabase ausentes.", 'error');
+                loadDataLocalFallback();
+                return;
+            }
+            
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                isSupabaseReady = true;
+                loadData();
+            } catch (e) {
+                console.error("Erro ao inicializar Supabase:", e);
+                showMessage("❌ Erro fatal ao conectar ao Supabase.", 'error');
+            }
+        }
+        
+        async function loadData() {
+            if (!isSupabaseReady) return;
+
+            showMessage("🔄 Sincronizando dados...", 'info');
+            
+            try {
+                const { data: configData, error: configError } = await supabase
+                    .from(TABLE_NAME)
+                    .select('json_data')
+                    .eq('id', CONFIG_ID)
+                    .single();
+
+                if (configError && configError.code !== 'PGRST116') {
+                    throw new Error(`Erro ao carregar configurações: ${configError.message}`);
+                }
+
+                if (configData) {
+                    FISCAIS = configData.json_data.fiscais || {};
+                    COLABORADORES = configData.json_data.colaboradores || {};
+                    CHECKLISTS = configData.json_data.checklists || {};
+                } else {
+                    FISCAIS = {
+                        'Carlos': '5875', 'Cadu': '1228', 'Junior': '0701', 'Marilu': '2992' 
+                    };
+                    COLABORADORES = {
+                        'Andre Lopes': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                        'Hugo Aguiar': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                        'Katia': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                        'Maria Eduarda': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                        'Jonatan Piva': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                        'Carlos': { senha: '1234', requirePwdChange: true, ajustesPontos: [] }
+                    };
+                    CHECKLISTS = DEFAULT_CHECKLISTS;
+                    
+                    await saveAllData({ type: 'initial_setup' });
+                }
+
+                const { data: historyData, error: historyError } = await supabase
+                    .from(TABLE_NAME)
+                    .select('id, json_data')
+                    .neq('id', CONFIG_ID);
+                
+                if (historyError) {
+                     throw new Error(`Erro ao carregar histórico: ${historyError.message}`);
+                }
+                
+                checklistsHistorico = historyData.map(item => ({ id: item.id, ...item.json_data }));
+                
+                showMessage("✅ Dados sincronizados com sucesso!", 'success');
+                updateFiscalSelect();
+                updateColaboradorSelect();
+                updateChecklistSetorSelect();
+                if(document.getElementById('screen4').classList.contains('active')) irParaDashboard(true);
+
+            } catch (e) {
+                console.error("Erro Supabase:", e);
+                showMessage(`❌ Erro de sincronização: ${e.message}`, 'error', 8000);
+            }
+        }
+
+        async function saveAllData({ type, dataId = CONFIG_ID, payload = null }) {
+            if (!isSupabaseReady) {
+                 showMessage('❌ Erro: Sincronização indisponível.', 'error');
+                 return;
+            }
+
+            try {
+                let dataToSave;
+                let error;
+                
+                if (type === 'config' || type === 'initial_setup') {
+                    dataToSave = {
+                        fiscais: FISCAIS,
+                        colaboradores: COLABORADORES,
+                        checklists: CHECKLISTS
+                    };
+
+                    const { error: upsertError } = await supabase
+                        .from(TABLE_NAME)
+                        .upsert({ id: CONFIG_ID, json_data: dataToSave }, { onConflict: 'id' });
+                    
+                    error = upsertError;
+
+                } else if (type === 'checklist') {
+                    dataToSave = payload;
+                    const { error: insertError } = await supabase
+                        .from(TABLE_NAME)
+                        .upsert({ id: dataId, json_data: dataToSave }, { onConflict: 'id' });
+                    
+                    error = insertError;
+                }
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                loadData(); 
+
+            } catch (e) {
+                console.error("Erro ao salvar dados:", e);
+                showMessage(`❌ Erro ao salvar: ${e.message}`, 'error');
+            }
+        }
+
+        function loadDataLocalFallback() {
+            try {
+                FISCAIS = JSON.parse(localStorage.getItem('fiscais') || JSON.stringify({ 'Carlos': '5875', 'Cadu': '1228', 'Junior': '0701', 'Marilu': '2992' }));
+                COLABORADORES = JSON.parse(localStorage.getItem('colaboradores') || JSON.stringify({
+                    'Andre Lopes': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                    'Hugo Aguiar': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                    'Katia': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                    'Maria Eduarda': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                    'Jonatan Piva': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
+                    'Carlos': { senha: '1234', requirePwdChange: true, ajustesPontos: [] }
+                }));
+                CHECKLISTS = JSON.parse(localStorage.getItem('baseChecklists') || JSON.stringify(DEFAULT_CHECKLISTS));
+                checklistsHistorico = JSON.parse(localStorage.getItem('checklists_local_fallback') || '[]');
+            } catch (e) {
+                console.error("Erro ao carregar localStorage:", e);
+            }
+            updateFiscalSelect();
+            updateColaboradorSelect();
+            updateChecklistSetorSelect();
+        }
+
         function showMessage(message, type = 'warning', timeout = 4000) {
             const box = document.getElementById('messageBox');
             let color, bg, border;
-
             switch (type) {
-                case 'success':
-                    color = '#155724'; bg = '#d4edda'; border = '#c3e6cb'; break;
-                case 'error':
-                    color = '#721c24'; bg = '#f8d7da'; border = '#f5c6cb'; break;
-                case 'info':
-                    color = '#0c5460'; bg = '#d1ecf1'; border = '#bee5eb'; break;
-                case 'warning':
-                default:
-                    color = '#856404'; bg = '#fff3cd'; border = '#ffeeba'; break;
+                case 'success': color = '#155724'; bg = '#d4edda'; border = '#c3e6cb'; break;
+                case 'error': color = '#721c24'; bg = '#f8d7da'; border = '#f5c6fb'; break;
+                case 'info': color = '#0c5460'; bg = '#d1ecf1'; border = '#bee5eb'; break;
+                case 'warning': default: color = '#856404'; bg = '#fff3cd'; border = '#ffeeba'; break;
             }
-
             box.style.color = color;
             box.style.backgroundColor = bg;
             box.style.borderColor = border;
             box.textContent = message;
             box.style.display = 'block';
-
             clearTimeout(box.timeout);
-            box.timeout = setTimeout(() => {
-                box.style.display = 'none';
-            }, timeout);
-        }
-
-        // --- STORAGE FUNCTIONS ---
-        function loadData() {
-            const fiscaisSalvos = localStorage.getItem('fiscais');
-            if (fiscaisSalvos) {
-                try {
-                    FISCAIS = JSON.parse(fiscaisSalvos);
-                } catch (e) { console.error("Erro ao carregar fiscais:", e); }
-            }
-            
-            const colaboradoresSalvos = localStorage.getItem('colaboradores');
-            if (colaboradoresSalvos) {
-                try {
-                    const savedColabs = JSON.parse(colaboradoresSalvos);
-                    for (const user in savedColabs) {
-                        COLABORADORES[user] = savedColabs[user];
-                    }
-                    for (const user in COLABORADORES) {
-                        if (typeof COLABORADORES[user] === 'string') {
-                            COLABORADORES[user] = { senha: COLABORADORES[user], requirePwdChange: false, ajustesPontos: [] };
-                        } else {
-                            if (!COLABORADORES[user].hasOwnProperty('requirePwdChange')) {
-                                COLABORADORES[user].requirePwdChange = false;
-                            }
-                            if (!COLABORADORES[user].hasOwnProperty('ajustesPontos')) { 
-                                COLABORADORES[user].ajustesPontos = [];
-                            }
-                        }
-                    }
-                } catch (e) { console.error("Erro ao carregar colaboradores:", e); }
-            }
-            saveColaboradores();
-
-            const checklistsSalvos = localStorage.getItem('baseChecklists');
-            if (checklistsSalvos) {
-                try {
-                    CHECKLISTS = JSON.parse(checklistsSalvos);
-                    let dataChanged = false;
-                    
-                    for (const setor in CHECKLISTS) {
-                        if (Array.isArray(CHECKLISTS[setor])) {
-                            CHECKLISTS[setor] = CHECKLISTS[setor].map(item => {
-                                if (typeof item === 'string') {
-                                    dataChanged = true;
-                                    return { item: item, points: 0 };
-                                }
-                                if (typeof item === 'object' && item !== null) {
-                                    const normalizedItem = { 
-                                        item: item.item || 'Item Indefinido (Corrigido)', 
-                                        points: item.points || 0 
-                                    };
-                                    if (!item.item || !item.points) {
-                                        dataChanged = true;
-                                    }
-                                    return normalizedItem;
-                                }
-                                dataChanged = true;
-                                return null; 
-                            }).filter(item => item !== null); 
-                        }
-                    }
-                    
-                    if (dataChanged) {
-                        saveBaseChecklists(); 
-                    }
-
-
-                } catch (e) { 
-                    console.error("Erro ao carregar checklists base:", e); 
-                    CHECKLISTS = DEFAULT_CHECKLISTS; 
-                    saveBaseChecklists(); 
-                }
-            } else {
-                saveBaseChecklists();
-            }
-
-            updateFiscalSelect();
-            updateColaboradorSelect(); 
-            updateChecklistSetorSelect();
+            box.timeout = setTimeout(() => { box.style.display = 'none'; }, timeout);
         }
 
         function updateFiscalSelect() {
@@ -1091,27 +1176,35 @@
             }
         }
         
-        function updateColaboradorSelect() {
+        function updateColaboradorSelect(setor = null) {
             const select = document.getElementById('colaboradorUser');
             select.innerHTML = '<option value="">Selecione o usuário...</option>';
-            for (let user in COLABORADORES) {
+            
+            let colaboradoresDisponiveis = Object.keys(COLABORADORES);
+
+            if (setor && SETOR_COLABORADOR_MAP[setor]) {
+                colaboradoresDisponiveis = SETOR_COLABORADOR_MAP[setor].filter(user => COLABORADORES.hasOwnProperty(user));
+            } else {
+                 colaboradoresDisponiveis = Object.keys(COLABORADORES);
+            }
+
+            colaboradoresDisponiveis.forEach(user => {
                 select.innerHTML += `<option value="${user}">${user}</option>`;
+            });
+        }
+
+        function updateChecklistSetorSelect() {
+            const select = document.getElementById('checklistSetorSelect');
+            select.innerHTML = ''; 
+            for (const setor in CHECKLISTS) {
+                const setorDisplay = { caixa: 'CAIXA', hortifruti: 'HORTIFRUTI', bebidas: 'BEBIDAS', corredor: 'CORREDOR' }[setor];
+                const option = document.createElement('option');
+                option.value = setor;
+                option.textContent = setorDisplay;
+                select.appendChild(option);
             }
         }
 
-        function saveBaseChecklists() {
-            localStorage.setItem('baseChecklists', JSON.stringify(CHECKLISTS));
-        }
-
-        function saveFiscais() {
-            localStorage.setItem('fiscais', JSON.stringify(FISCAIS));
-        }
-
-        function saveColaboradores() {
-             localStorage.setItem('colaboradores', JSON.stringify(COLABORADORES));
-        }
-        
-        // --- NAVIGATION ---
         function mostrarTela(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -1121,15 +1214,12 @@
             mostrarTela(id);
         }
         
-        // Voltar para a tela de ADM
         function voltarGestao() {
             colaboradorEmGestao = null;
-            carregarColaboradores(); 
             changeAdminTab('colaboradores');
             voltarTela('screen4'); 
         }
 
-        // --- LOGIN FISCAL ---
         function fazerLogin() {
             const nome = document.getElementById('fiscalNome').value;
             const senha = document.getElementById('fiscalSenha').value.trim();
@@ -1143,17 +1233,12 @@
                 fiscalLogado = nome;
                 document.getElementById('logoutBtn').style.display = 'block';
                 
-                // Configurações de Dashboard
                 if (ADMINS.includes(fiscalLogado)) {
                      document.getElementById('adminName').textContent = fiscalLogado;
-                     // Mostra o Painel ADM e esconde o painel de troca de senha individual
                      document.getElementById('adminPanel').style.display = 'block';
                      document.getElementById('fiscalChangePwdPanel').style.display = 'none';
-
-                     // Mostra o botão Limpar Tudo apenas para Carlos
                      document.getElementById('limparHistoricoBtn').style.display = (fiscalLogado === 'Carlos') ? 'block' : 'none';
                 } else {
-                    // Se for Fiscal normal (Marilu, etc.), esconde o ADM e mostra o painel de troca de senha
                     document.getElementById('adminPanel').style.display = 'none';
                     document.getElementById('fiscalChangePwdPanel').style.display = 'block';
                 }
@@ -1164,8 +1249,9 @@
             }
         }
         
-        // NOVO: Função para Fiscal trocar a própria senha
-        function trocarSenhaFiscal() {
+        async function trocarSenhaFiscal() {
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+
             const novaSenha1 = document.getElementById('fiscalNovaSenha1').value.trim();
             const novaSenha2 = document.getElementById('fiscalNovaSenha2').value.trim();
             
@@ -1175,26 +1261,24 @@
             }
             
             if (novaSenha1 !== novaSenha2) {
-                showMessage('As senhas não coincidem. Tente novamente.', 'error');
+                showMessage('As senhas não coincidem.', 'error');
                 return;
             }
             
-            // Atualiza a senha
             FISCAIS[fiscalLogado] = novaSenha1;
-            saveFiscais();
+            
+            await saveAllData({ type: 'config' });
+            showMessage(`✅ Senha alterada com sucesso!`, 'success');
 
-            // Limpa os campos
             document.getElementById('fiscalNovaSenha1').value = '';
             document.getElementById('fiscalNovaSenha2').value = '';
-            
-            showMessage(`✅ Sua senha de Fiscal foi alterada com sucesso!`, 'success');
         }
 
-        // --- NOVO: LOGIN COLABORADOR ---
         function fazerLoginColaborador() {
             const user = document.getElementById('colaboradorUser').value;
             const senha = document.getElementById('colaboradorSenha').value.trim();
             const turno = document.getElementById('turnoSelect').value;
+            const dataHoje = new Date().toLocaleDateString('pt-BR');
 
             if (!user || !senha || !turno) {
                 showMessage('Por favor, preencha todos os campos!', 'error');
@@ -1204,41 +1288,59 @@
             const colabData = COLABORADORES[user];
 
             if (colabData && colabData.senha === senha) {
+                
+                if (!SETOR_COLABORADOR_MAP[setorAtual] || !SETOR_COLABORADOR_MAP[setorAtual].includes(user)) {
+                    showMessage(`❌ ${user} não tem permissão para o setor ${setorAtual.toUpperCase()}.`, 'error', 7000);
+                    return;
+                }
+                
+                const checklistExistente = checklistsHistorico.find(c => 
+                    c.setor === setorAtual && 
+                    c.turno === turno && 
+                    c.data === dataHoje &&
+                    c.porcentagem === 100
+                );
+
+                if (checklistExistente) {
+                    showMessage(`⚠️ O checklist ${setorAtual.toUpperCase()} das ${turno} já foi concluído por ${checklistExistente.nome}.`, 'warning', 7000);
+                    return;
+                }
+
                 if (colabData.requirePwdChange) {
                     colaboradorAguardandoSenha = user;
                     mostrarTela('screen6');
-                    showMessage('⚠️ Primeiro acesso ou senha resetada. Defina uma nova senha.', 'warning', 6000);
+                    showMessage('⚠️ Defina uma nova senha.', 'warning', 6000);
                     return;
                 }
                 
                 colaboradorLogado = user;
                 iniciarChecklist(turno);
             } else {
-                showMessage('❌ Usuário ou senha do Colaborador incorretos!', 'error');
+                showMessage('❌ Usuário ou senha incorretos!', 'error');
             }
         }
         
-        // --- TELA 6: TROCA DE SENHA ---
-        function salvarNovaSenha() {
+        async function salvarNovaSenha() {
             const user = colaboradorAguardandoSenha;
             const novaSenha1 = document.getElementById('novaSenha1').value.trim();
             const novaSenha2 = document.getElementById('novaSenha2').value.trim();
             
             if (!novaSenha1 || novaSenha1.length < 4) {
-                showMessage('A senha deve ter no mínimo 4 caracteres.', 'error');
+                showMessage('A nova senha deve ter no mínimo 4 caracteres.', 'error');
                 return;
             }
             
             if (novaSenha1 !== novaSenha2) {
-                showMessage('As senhas não coincidem. Tente novamente.', 'error');
+                showMessage('As senhas não coincidem.', 'error');
                 return;
             }
             
             COLABORADORES[user].senha = novaSenha1;
             COLABORADORES[user].requirePwdChange = false; 
-            saveColaboradores();
             
-            showMessage('✅ Senha alterada com sucesso! Prossiga com o checklist.', 'success');
+            await saveAllData({ type: 'config' });
+            
+            showMessage('✅ Senha alterada! Prossiga.', 'success');
 
             colaboradorLogado = user;
             colaboradorAguardandoSenha = null;
@@ -1246,7 +1348,6 @@
             const turno = document.getElementById('turnoSelect').value;
             iniciarChecklist(turno);
         }
-
 
         function logout() {
             fiscalLogado = null;
@@ -1264,7 +1365,6 @@
             showMessage('Deslogado com sucesso!', 'info');
         }
 
-        // --- CHECKLIST FLOW (Telas 1, 2, 3) ---
         function escolherSetor(setor) {
             setorAtual = setor;
             
@@ -1275,15 +1375,13 @@
                 select.innerHTML += `<option value="${turno.valor}">${turno.texto}</option>`;
             });
             
-            const setorNome = {
-                caixa: 'Caixa',
-                hortifruti: 'Hortifruti',
-                bebidas: 'Bebidas',
-                corredor: 'Corredor'
-            }[setor] || 'Setor';
+            const setorNome = { caixa: 'Caixa', hortifruti: 'Hortifruti', bebidas: 'Bebidas', corredor: 'Corredor' }[setor] || 'Setor';
 
             document.getElementById('operadorTitulo').textContent = `Login Colaborador - ${setorNome}`;
             document.getElementById('colaboradorSenha').value = ''; 
+            
+            updateColaboradorSelect(setor);
+
             mostrarTela('screen2');
         }
 
@@ -1298,12 +1396,7 @@
                 timestamp: new Date().toISOString()
             };
             
-            const setorNomeDisplay = {
-                caixa: '💰 CHECKLIST CAIXA',
-                hortifruti: '🥦 CHECKLIST HORTIFRUTI',
-                bebidas: '🍹 CHECKLIST BEBIDAS',
-                corredor: '🛒 CHECKLIST CORREDOR'
-            }[setorAtual];
+            const setorNomeDisplay = { caixa: '💰 CHECKLIST CAIXA', hortifruti: '🥦 CHECKLIST HORTIFRUTI', bebidas: '🍹 CHECKLIST BEBIDAS', corredor: '🛒 CHECKLIST CORREDOR' }[setorAtual];
 
             document.getElementById('setorTitulo').textContent = setorNomeDisplay;
             document.getElementById('nomeDisplay').textContent = user;
@@ -1321,10 +1414,33 @@
             
             const listaItens = CHECKLISTS[setorAtual] || [];
             
+            const dataHoje = new Date().toLocaleDateString('pt-BR');
+            const checklistAnterior = checklistsHistorico.find(c => 
+                c.setor === setorAtual && 
+                c.turno === operadorAtual.turno && 
+                c.data === dataHoje
+            );
+            
+            let itensFeitosNoDia = {};
+            if (checklistAnterior && checklistAnterior.itens) {
+                const itensFeitos = JSON.parse(checklistAnterior.itens);
+                
+                for (const key in itensFeitos) {
+                     if (itensFeitos[key].hora) {
+                         itensFeitosNoDia[key] = true;
+                     }
+                }
+            }
+
             listaItens.forEach((item, index) => {
+                if (itensFeitosNoDia[index]) {
+                    return; 
+                }
+
                 const div = document.createElement('div');
                 div.className = 'checklist-item';
-                div.onclick = () => marcarItem(index);
+                div.dataset.originalIndex = index; 
+                div.onclick = () => marcarItem(div); 
                 div.innerHTML = `
                     <div class="checkbox-custom"></div>
                     <div class="item-content">
@@ -1338,27 +1454,28 @@
             atualizarProgresso();
         }
 
-        function marcarItem(index) {
+        function marcarItem(itemElement) {
+            const originalIndex = itemElement.dataset.originalIndex;
+            const index = originalIndex;
             const listaItens = CHECKLISTS[setorAtual] || [];
-            const items = document.querySelectorAll('#checklistContainer .checklist-item');
-            const item = items[index];
-            const timeEl = document.getElementById('time-' + index);
+            
+            const timeEl = itemElement.querySelector('.item-time');
             
             if (itensChecados[index]) {
                 delete itensChecados[index];
-                item.classList.remove('checked');
-                item.querySelector('.checkbox-custom').textContent = '';
-                timeEl.textContent = `(${listaItens[index].points} Pontos)`;
+                itemElement.classList.remove('checked');
+                itemElement.querySelector('.checkbox-custom').textContent = '';
+                timeEl.textContent = `(${listaItens[originalIndex].points} Pontos)`;
             } else {
                 const hora = new Date().toLocaleTimeString('pt-BR');
                 itensChecados[index] = {
-                    item: listaItens[index].item,
-                    points: listaItens[index].points,
+                    item: listaItens[originalIndex].item,
+                    points: listaItens[originalIndex].points,
                     hora: hora
                 };
-                item.classList.add('checked');
-                item.querySelector('.checkbox-custom').textContent = '✓';
-                timeEl.textContent = `✓ Marcado às ${hora} (${listaItens[index].points} Pontos)`;
+                itemElement.classList.add('checked');
+                itemElement.querySelector('.checkbox-custom').textContent = '✓';
+                timeEl.textContent = `✓ Marcado às ${hora} (${listaItens[originalIndex].points} Pontos)`;
             }
             
             atualizarProgresso();
@@ -1371,31 +1488,27 @@
             
             document.getElementById('progressBar').style.width = porcentagem + '%';
             document.getElementById('progressText').textContent = 
-                `${porcentagem}% Completo (${completos}/${total})`;
+                `${completos}/${total} itens feitos (${porcentagem}%)`;
             
-            if (porcentagem === 100) {
-                document.getElementById('finishSection').classList.add('active');
-            } else {
-                document.getElementById('finishSection').classList.remove('active');
-            }
+            document.querySelector('#finishSection p').innerHTML = `
+                ${completos === total ? '✅ Checklist 100% Completo.' : 
+                `⚠️ Checklist será enviado com ${completos}/${total} itens marcados.`}
+            `;
         }
 
-        // --- FINALIZAÇÃO E HISTÓRICO ---
         function calcularPontosPotenciais(setor) {
             const listaItens = CHECKLISTS[setor] || [];
             return listaItens.reduce((sum, item) => sum + item.points, 0);
         }
 
-        function finalizarChecklist() {
+        async function finalizarChecklist() {
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+            
             const total = CHECKLISTS[setorAtual] ? CHECKLISTS[setorAtual].length : 0;
             const completos = Object.keys(itensChecados).length;
             
-            if (completos !== total) {
-                showMessage('⚠️ Erro! O checklist não está 100% completo.', 'error');
-                return;
-            }
-            
             const pontosPotenciais = calcularPontosPotenciais(setorAtual);
+            const checklistId = `${operadorAtual.nome.replace(/\s/g, '_')}-${operadorAtual.setor}-${operadorAtual.turno}-${operadorAtual.data.replace(/\//g, '-')}`;
 
             const dados = {
                 ...operadorAtual,
@@ -1407,31 +1520,32 @@
                 pontosAprovados: 0,
                 status: 'PENDENTE',
                 fiscalAprovador: null,
+                id: checklistId
             };
             
-            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
-            historico.push(dados);
-            localStorage.setItem('checklists', JSON.stringify(historico));
+            try {
+                await saveAllData({ type: 'checklist', dataId: checklistId, payload: dados });
+                showMessage('✅ Checklist finalizado! Aguardando aprovação.', 'success');
+            } catch (e) {
+                showMessage(`Erro ao salvar: ${e.message}`, 'error');
+                return;
+            }
             
-            showMessage('✅ Checklist finalizado! Aguardando aprovação fiscal.', 'success');
-            
-            // Logoff automático do colaborador
             colaboradorLogado = null;
             document.getElementById('colaboradorUser').value = '';
             document.getElementById('colaboradorSenha').value = '';
             document.getElementById('turnoSelect').value = '';
             
+            await loadData();
             mostrarTela('screen1');
         }
 
-        // --- DASHBOARD (TELA 4) ---
-        function irParaDashboard() {
+        function irParaDashboard(isRealtimeUpdate = false) {
             const hoje = new Date().toLocaleDateString('pt-BR');
             document.getElementById('dashboardData').textContent = `Checklists de ${hoje}`;
             document.getElementById('fiscalLogado').textContent = fiscalLogado;
             
-            const historico = JSON.parse(localStorage.getItem('checklists') || '[]');
-            const checklistsHoje = historico.filter(c => c.data === hoje);
+            const checklistsHoje = checklistsHistorico.filter(c => c.data === hoje);
 
             document.getElementById('totalChecklists').textContent = checklistsHoje.length;
             
@@ -1443,7 +1557,9 @@
             
             renderHistoryList(checklistsHoje);
             
-            mostrarTela('screen4');
+            if (!isRealtimeUpdate) {
+                mostrarTela('screen4');
+            }
         }
 
         function renderHistoryList(checklistsHoje) {
@@ -1453,17 +1569,8 @@
             if (checklistsHoje.length === 0) {
                 lista.innerHTML = '<p style="text-align: center; color: #666; margin-top: 15px;">Nenhum checklist realizado hoje</p>';
             } else {
-                const historicoCompleto = JSON.parse(localStorage.getItem('checklists') || '[]');
-                
                 checklistsHoje.reverse().forEach((c) => {
-                    const setorNome = {
-                        caixa: '💰 CAIXA',
-                        hortifruti: '🥦 HORTIFRUTI',
-                        bebidas: '🍹 BEBIDAS',
-                        corredor: '🛒 CORREDOR'
-                    }[c.setor] || 'Setor Desconhecido';
-                    
-                    const index = historicoCompleto.findIndex(item => item.timestamp === c.timestamp && item.nome === c.nome);
+                    const setorNome = { caixa: '💰 CAIXA', hortifruti: '🥦 HORTIFRUTI', bebidas: '🍹 BEBIDAS', corredor: '🛒 CORREDOR' }[c.setor] || 'Setor Desconhecido';
                     
                     let statusTag = `<span class="status-tag">${c.status}</span>`;
                     let pontosAprovados = '';
@@ -1476,7 +1583,7 @@
                     }
 
                     lista.innerHTML += `
-                        <div class="history-item" onclick="visualizarDetalhes(${index})" style="cursor: pointer;">
+                        <div class="history-item" onclick="visualizarDetalhes('${c.id}')" style="cursor: pointer;">
                             <div class="history-header">
                                 <span class="history-setor">${setorNome}</span>
                                 <span class="history-turno">${c.turno}</span>
@@ -1489,7 +1596,7 @@
                                 <div class="mini-progress">
                                     <div class="mini-progress-fill" style="width: ${c.porcentagem}%"></div>
                                 </div>
-                                <span style="color: #3d4b7a; font-weight: bold;">${c.porcentagem}%</span>
+                                <span style="color: #3d4b7a; font-weight: bold;">${c.completos}/${c.total}</span>
                             </div>
                         </div>
                     `;
@@ -1497,23 +1604,16 @@
             }
         }
         
-        // --- TELA 5: VISUALIZAR DETALHES E APROVAÇÃO ---
-        function visualizarDetalhes(index) {
-            const historico = JSON.parse(localStorage.getItem('checklists') || '[]');
-            const checklist = historico[index];
-            checklistEmRevisaoIndex = index;
+        function visualizarDetalhes(docId) {
+            const checklist = checklistsHistorico.find(c => c.id === docId);
+            checklistEmRevisaoDocId = docId;
 
             if (!checklist) {
                 showMessage('Checklist não encontrado.', 'error');
                 return;
             }
 
-            const setorNomeDisplay = {
-                caixa: '💰 DETALHES CAIXA',
-                hortifruti: '🥦 DETALHES HORTIFRUTI',
-                bebidas: '🍹 DETALHES BEBIDAS',
-                corredor: '🛒 DETALHES CORREDOR'
-            }[checklist.setor];
+            const setorNomeDisplay = { caixa: '💰 DETALHES CAIXA', hortifruti: '🥦 DETALHES HORTIFRUTI', bebidas: '🍹 DETALHES BEBIDAS', corredor: '🛒 DETALHES CORREDOR' }[checklist.setor];
 
             document.getElementById('detailsSetorTitulo').textContent = setorNomeDisplay;
             document.getElementById('detailsNomeDisplay').textContent = checklist.nome;
@@ -1526,9 +1626,8 @@
             document.getElementById('detailsPontosPotenciais').textContent = checklist.pontosPotenciais;
 
             document.getElementById('detailsProgressBar').style.width = checklist.porcentagem + '%';
-            document.getElementById('detailsProgressText').textContent = checklist.porcentagem + '%';
+            document.getElementById('detailsProgressText').textContent = `${checklist.completos}/${checklist.total} (${checklist.porcentagem}%)`;
 
-            // Status Display
             const statusDisplay = document.getElementById('reviewStatusDisplay');
             statusDisplay.classList.remove('active');
             statusDisplay.style.background = '';
@@ -1551,170 +1650,189 @@
                 statusDisplay.classList.add('active');
                 statusDisplay.style.background = '#f8d7da';
                 statusDisplay.style.color = '#721c24';
-                // Exibe o motivo da reprovação
                 statusDisplay.innerHTML = `❌ REPROVADO por ${checklist.fiscalAprovador} em ${new Date(checklist.dataAprovacao).toLocaleDateString('pt-BR')}. Pontos perdidos.<br><small>Motivo: <strong>${checklist.motivoReprovacao || 'Não especificado'}</strong></small>`;
                 document.getElementById('approvalActions').style.display = 'none';
             } else {
-                // PENDENTE: Mostra botões
                 statusDisplay.classList.add('active');
                 statusDisplay.style.background = '#fff3cd';
                 statusDisplay.style.color = '#856404';
-                statusDisplay.innerHTML = `🟡 PENDENTE. Necessita de aprovação para conceder ${checklist.pontosPotenciais} pontos.`;
+                statusDisplay.innerHTML = `🟡 PENDENTE. Necessita aprovação para conceder ${checklist.pontosPotenciais} pontos.`;
                 
-                // Só mostra botões de aprovação/reprovação se o usuário for um FISCAL ou ADM
                 if (FISCAIS[fiscalLogado]) {
                     document.getElementById('approvalActions').style.display = 'flex';
                 } else {
                     document.getElementById('approvalActions').style.display = 'none';
-                    // Se não for fiscal/adm, mostra um aviso
                     if (fiscalLogado) { 
-                         statusDisplay.innerHTML += `<br><small style="color: red;">Faça login como Fiscal/ADM para aprovar.</small>`;
+                         statusDisplay.innerHTML += `<br><small style="color: red;">Faça login como Fiscal/ADM.</small>`;
                     }
                 }
             }
 
-
-            // Carregar lista de itens (visualização)
             const itensChecados = JSON.parse(checklist.itens);
             const container = document.getElementById('detailsListContainer');
             container.innerHTML = '';
             
             const listaCompleta = CHECKLISTS[checklist.setor] || [];
             
-            // Correção: Iterar sobre a lista completa do setor para garantir a ordem e o nome original
-            listaCompleta.forEach((itemOriginal, index) => {
-                const itemChecado = itensChecados[index];
+            const dataHoje = checklist.data;
+            const checklistsAnterioresNoDia = checklistsHistorico.filter(c => 
+                c.setor === checklist.setor && 
+                c.turno === checklist.turno && 
+                c.data === dataHoje &&
+                c.timestamp < checklist.timestamp
+            );
+
+            let itensFeitosAnteriormente = {};
+            
+            checklistsAnterioresNoDia.forEach(c => {
+                const itens = JSON.parse(c.itens);
+                for (const key in itens) {
+                    if (itens[key].hora) {
+                        itensFeitosAnteriormente[key] = { done: true, by: c.nome };
+                    }
+                }
+            });
+
+            listaCompleta.forEach((itemOriginal, itemIndex) => {
+                const itemChecado = itensChecados[itemIndex];
                 
-                if (itemChecado) {
-                    // Item checado - usa dados salvos no histórico
+                if (itemChecado && itemChecado.hora) {
                     container.innerHTML += `
                         <div class="detail-item">
-                            <span class="detail-item-title">${itemChecado.item}</span>
-                            <span class="detail-item-time">✓ ${itemChecado.hora} (${itemChecado.points} Pts)</span>
+                            <span class="detail-item-title" style="color: #155724;">✓ ${itemChecado.item}</span>
+                            <span class="detail-item-time">Feito às ${itemChecado.hora} (${itemChecado.points} Pts)</span>
+                        </div>
+                    `;
+                } else if (itensFeitosAnteriormente[itemIndex]?.done) {
+                     const byColab = itensFeitosAnteriormente[itemIndex].by;
+                     container.innerHTML += `
+                        <div class="detail-item">
+                            <span class="detail-item-title" style="color: #0c5460;">✓ ${itemOriginal.item}</span>
+                            <span class="item-time" style="color: #007bff; font-weight: normal;">RESOLVIDO ANTERIORMENTE (${byColab})</span>
                         </div>
                     `;
                 } else {
-                    // Item não checado (deveria ser raro, já que exige 100%)
                      container.innerHTML += `
                         <div class="detail-item" style="opacity: 0.5;">
                             <span class="detail-item-title">${itemOriginal.item}</span>
-                            <span class="detail-item-time" style="color: #dc3031;">(NÃO CHECADO - ${itemOriginal.points} Pts)</span>
+                            <span class="item-time" style="color: #dc3031;">(NÃO FEITO - ${itemOriginal.points} Pts)</span>
                         </div>
                     `;
                 }
             });
 
-
             mostrarTela('screen5');
         }
 
-        // --- FUNÇÕES DE APROVAÇÃO FISCAL ---
-        function salvarHistorico(historico) {
-            localStorage.setItem('checklists', JSON.stringify(historico));
-        }
+        async function aprovarChecklist() {
+            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM.', 'error');
+            if (!checklistEmRevisaoDocId) return showMessage('Nenhum checklist selecionado.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
 
-        function aprovarChecklist() {
-            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM para aprovar.', 'error');
-            if (checklistEmRevisaoIndex === -1) return showMessage('Nenhum checklist selecionado para aprovação.', 'error');
+            const checklist = checklistsHistorico.find(c => c.id === checklistEmRevisaoDocId);
+            if (!checklist) { showMessage('Checklist não encontrado.', 'error'); return; }
 
-            let historico = JSON.PARSE(localStorage.getItem('checklists') || '[]');
-            let checklist = historico[checklistEmRevisaoIndex];
-            
             let pontosAprovados = checklist.pontosPotenciais;
             let pontosAjustados = false;
             let motivoAjuste = '';
 
-            // Se for ADM (Carlos, Cadu, Junior), permite ajustar a pontuação
             if (ADMINS.includes(fiscalLogado)) {
-                const novoPontoStr = prompt(`O colaborador completou o checklist (Potencial: ${pontosAprovados} pts).\n\nComo ADM, você pode ajustar a pontuação. Digite a PONTUAÇÃO FINAL a ser concedida:`, pontosAprovados);
+                const novoPontoStr = prompt(`O colaborador completou ${checklist.completos}/${checklist.total} itens (Potencial: ${pontosAprovados} pts).\n\nComo ADM, você pode ajustar a pontuação. Digite a PONTUAÇÃO FINAL:`, pontosAprovados);
                 
-                if (novoPontoStr === null) {
-                    showMessage('Aprovação cancelada.', 'info');
-                    return;
-                }
+                if (novoPontoStr === null) { showMessage('Aprovação cancelada.', 'info'); return; }
 
                 const novoPonto = parseInt(novoPontoStr);
                 
-                if (isNaN(novoPonto) || novoPonto < 0) {
-                    showMessage('❌ Pontuação inválida! Deve ser um número inteiro positivo ou zero.', 'error');
-                    return;
-                }
+                if (isNaN(novoPonto) || novoPonto < 0) { showMessage('❌ Pontuação inválida!', 'error'); return; }
                 
                 pontosAprovados = novoPonto;
 
                 if (pontosAprovados !== checklist.pontosPotenciais) {
                     pontosAjustados = true;
                     motivoAjuste = prompt(`Ajuste de Pontos: ${pontosAprovados} (Original: ${checklist.pontosPotenciais}).\n\nDigite o MOTIVO do ajuste (Obrigatório):`);
-                    if (!motivoAjuste) {
-                         showMessage('Motivo de ajuste obrigatório. Aprovação cancelada.', 'error');
-                         return;
-                    }
+                    if (!motivoAjuste) { showMessage('Motivo obrigatório. Aprovação cancelada.', 'error'); return; }
                 }
             }
 
-            checklist.status = 'APROVADO';
-            checklist.fiscalAprovador = fiscalLogado;
-            checklist.pontosAprovados = pontosAprovados;
-            checklist.dataAprovacao = new Date().toISOString();
-            checklist.pontosAjustados = pontosAjustados; // Novo campo
-            checklist.motivoAjuste = motivoAjuste; // Novo campo
+            const updatedChecklist = {
+                ...checklist,
+                status: 'APROVADO',
+                fiscalAprovador: fiscalLogado,
+                pontosAprovados: pontosAprovados,
+                dataAprovacao: new Date().toISOString(),
+                pontosAjustados: pontosAjustados,
+                motivoAjuste: motivoAjuste,
+            };
 
-            salvarHistorico(historico);
-            
-            showMessage(`✅ Checklist APROVADO! ${checklist.pontosAprovados} pontos concedidos ao colaborador ${checklist.nome}.`, 'success');
-            
+            await saveAllData({ type: 'checklist', dataId: checklistEmRevisaoDocId, payload: updatedChecklist });
+            showMessage(`✅ Checklist APROVADO! ${pontosAprovados} pontos concedidos a ${checklist.nome}.`, 'success');
+            await loadData();
             irParaDashboard();
         }
 
-        function reprovarChecklist() {
-            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM para reprovar.', 'error');
-            if (checklistEmRevisaoIndex === -1) return showMessage('Nenhum checklist selecionado para reprovação.', 'error');
+        async function reprovarChecklist() {
+            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM.', 'error');
+            if (!checklistEmRevisaoDocId) return showMessage('Nenhum checklist selecionado.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
             
-            let historico = JSON.parse(localStorage.getItem('checklists') || '[]');
-            let checklist = historico[checklistEmRevisaoIndex];
+            const checklist = checklistsHistorico.find(c => c.id === checklistEmRevisaoDocId);
+            if (!checklist) { showMessage('Checklist não encontrado.', 'error'); return; }
 
-            // Pede uma justificativa simples
-            const motivo = prompt('Por favor, digite o motivo da REPROVAÇÃO (Obrigatório):');
+            const motivo = prompt('Digite o motivo da REPROVAÇÃO (Obrigatório):');
             
-            if (!motivo || motivo.trim() === '') {
-                 showMessage('Reprovação cancelada. O motivo é obrigatório.', 'error');
-                 return;
-            }
+            if (!motivo || motivo.trim() === '') { showMessage('Reprovação cancelada. Motivo obrigatório.', 'error'); return; }
 
-            checklist.status = 'REPROVADO';
-            checklist.fiscalAprovador = fiscalLogado;
-            checklist.pontosAprovados = 0;
-            checklist.dataAprovacao = new Date().toISOString();
-            checklist.motivoReprovacao = motivo; // Motivo salvo
+            const updatedChecklist = {
+                ...checklist,
+                status: 'REPROVADO',
+                fiscalAprovador: fiscalLogado,
+                pontosAprovados: 0,
+                dataAprovacao: new Date().toISOString(),
+                motivoReprovacao: motivo,
+            };
 
-            salvarHistorico(historico);
-            
-            showMessage(`❌ Checklist REPROVADO. Pontos negados. Motivo: ${motivo}`, 'error');
-            
+            await saveAllData({ type: 'checklist', dataId: checklistEmRevisaoDocId, payload: updatedChecklist });
+            showMessage(`❌ Checklist REPROVADO. Motivo: ${motivo}`, 'error');
+            await loadData();
             irParaDashboard();
         }
 
-
-        // --- FUNÇÕES DE ADMIN ---
         function exportarPDF() {
-            showMessage('📄 Funcionalidade de exportar para PDF. Use a função nativa de Imprimir (Ctrl+P ou menu do navegador) e "Salvar como PDF".', 'info', 6000);
+            showMessage('📄 Use Ctrl+P ou menu do navegador e "Salvar como PDF".', 'info', 6000);
             window.print();
         }
 
-        function tentarLimparHistorico() {
+        async function tentarLimparHistorico() {
             if (fiscalLogado !== 'Carlos') {
-                showMessage('❌ Apenas o administrador CARLOS pode limpar o histórico.', 'error');
+                showMessage('❌ Apenas CARLOS pode limpar o histórico.', 'error');
                 return;
             }
             
-            const confirmation = prompt('⚠️ Para confirmar a limpeza TOTAL do histórico, digite "LIMPAR TUDO" no campo abaixo:');
+            const confirmation = prompt('⚠️ Para confirmar, digite "LIMPAR TUDO":');
 
             if (confirmation === 'LIMPAR TUDO') {
-                localStorage.removeItem('checklists');
-                showMessage('✅ Histórico limpo com sucesso!', 'success');
-                irParaDashboard();
+                showMessage('Limpando histórico...', 'warning', 10000);
+                if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+                
+                try {
+                    const { error } = await supabase
+                        .from(TABLE_NAME)
+                        .delete()
+                        .neq('id', CONFIG_ID);
+
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+                    
+                    checklistsHistorico = [];
+                    await loadData();
+                    showMessage('✅ Histórico limpo!', 'success');
+                    irParaDashboard();
+                } catch (e) {
+                    showMessage(`Erro ao limpar: ${e.message}`, 'error');
+                }
             } else if (confirmation !== null) {
-                showMessage('A palavra de confirmação não está correta. A ação foi cancelada.', 'error');
+                showMessage('Confirmação incorreta. Ação cancelada.', 'error');
             }
         }
 
@@ -1733,15 +1851,13 @@
                 document.getElementById('tabColaboradores').classList.add('active');
                 document.getElementById('adminContentColaboradores').classList.add('active');
                 carregarColaboradores();
-            } 
-             else if (tab === 'checklist') {
+            } else if (tab === 'checklist') {
                 document.getElementById('tabChecklist').classList.add('active');
                 document.getElementById('adminContentChecklist').classList.add('active');
                 renderChecklistManager();
             }
         }
 
-        // --- ADMIN: FISCAIS ---
         function carregarFiscais() {
             const lista = document.getElementById('fiscalList');
             lista.innerHTML = '';
@@ -1767,66 +1883,51 @@
             }
         }
 
-        function adicionarFiscal() {
+        async function adicionarFiscal() {
             if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar fiscais.', 'error');
             
             const nome = document.getElementById('novoFiscalNome').value.trim();
             const senha = document.getElementById('novoFiscalSenha').value.trim();
             
-            if (!nome || !senha) {
-                showMessage('Por favor, preencha nome e senha!', 'error');
-                return;
-            }
-            
-            if (FISCAIS[nome]) {
-                showMessage(`❌ Já existe um fiscal com o nome "${nome}"!`, 'error');
-                return;
-            }
+            if (!nome || !senha) { showMessage('Preencha nome e senha!', 'error'); return; }
+            if (FISCAIS[nome]) { showMessage(`❌ Já existe um fiscal "${nome}"!`, 'error'); return; }
             
             FISCAIS[nome] = senha;
-            saveFiscais();
-            updateFiscalSelect();
+            await saveAllData({ type: 'config' });
             
             document.getElementById('novoFiscalNome').value = '';
             document.getElementById('novoFiscalSenha').value = '';
             
-            showMessage(`✅ Fiscal "${nome}" adicionado com sucesso!`, 'success');
+            showMessage(`✅ Fiscal "${nome}" adicionado!`, 'success');
             carregarFiscais();
         }
 
-        function tentarRemoverFiscal(nome) {
+        async function tentarRemoverFiscal(nome) {
             if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover fiscais.', 'error');
-            if (NON_REMOVABLE_FISCAL.includes(nome)) {
-                showMessage(`❌ O fiscal ${nome} é um ADM de segurança e não pode ser removido.`, 'error');
-                return;
-            }
             
-            const confirmation = prompt(`⚠️ Para remover o fiscal "${nome}", digite o nome novamente:`);
+            if (NON_REMOVABLE_FISCAL.includes(nome)) { showMessage(`❌ O fiscal ${nome} não pode ser removido.`, 'error'); return; }
+            
+            const confirmation = prompt(`⚠️ Para remover "${nome}", digite o nome novamente:`);
             
             if (confirmation === nome) {
                 delete FISCAIS[nome];
-                saveFiscais();
-                updateFiscalSelect();
+                await saveAllData({ type: 'config' });
                 
-                showMessage(`✅ Fiscal "${nome}" removido com sucesso!`, 'success');
+                showMessage(`✅ Fiscal "${nome}" removido!`, 'success');
                 carregarFiscais();
             } else if (confirmation !== null) {
-                showMessage('O nome digitado não corresponde. A remoção foi cancelada.', 'error');
+                showMessage('Nome incorreto. Remoção cancelada.', 'error');
             }
         }
 
-        // --- ADMIN: COLABORADORES (NOVAS FUNÇÕES) ---
         function calcularPontosPorColaborador() {
-            const historico = JSON.parse(localStorage.getItem('checklists') || '[]');
             const pontosPorColaborador = {};
 
-            // Inicializa todos os colaboradores com 0 pontos
             for (const user in COLABORADORES) {
                 pontosPorColaborador[user] = 0;
             }
 
-            // Soma os pontos aprovados
-            historico
+            checklistsHistorico
                 .filter(c => c.status === 'APROVADO')
                 .forEach(c => {
                     if (pontosPorColaborador.hasOwnProperty(c.nome)) {
@@ -1836,7 +1937,6 @@
                     }
                 });
             
-            // Adiciona/Subtrai ajustes manuais
             for (const user in COLABORADORES) {
                 if (COLABORADORES[user].ajustesPontos) {
                     COLABORADORES[user].ajustesPontos.forEach(ajuste => {
@@ -1857,7 +1957,6 @@
             for (let user in COLABORADORES) {
                 const totalPontos = pontos[user] || 0;
                 
-                // Item clicável que chama a nova tela de gestão
                 lista.innerHTML += `
                     <div class="colaborador-item" onclick="abrirGestaoColaborador('${user}')">
                         <div class="colaborador-details">
@@ -1868,7 +1967,6 @@
                 `;
             }
             
-            // Se houver colaboradores no histórico que não estão mais cadastrados
             for (const user in pontos) {
                 if (!COLABORADORES.hasOwnProperty(user)) {
                     lista.innerHTML += `
@@ -1883,12 +1981,8 @@
             }
         }
         
-        // NOVO: Abre a tela de Gestão Individual (Screen 7)
         function abrirGestaoColaborador(user) {
-            if (!ADMINS.includes(fiscalLogado)) {
-                showMessage('❌ Apenas ADMs podem gerenciar colaboradores.', 'error');
-                return;
-            }
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem gerenciar colaboradores.', 'error');
             
             colaboradorEmGestao = user;
             const colabData = COLABORADORES[user];
@@ -1908,7 +2002,7 @@
             const lista = document.getElementById('ajusteHistoricoList');
             lista.innerHTML = '';
 
-            const ajustes = COLABORADORES[user].ajustesPontos.slice().reverse(); // Copia e inverte
+            const ajustes = COLABORADORES[user]?.ajustesPontos?.slice().reverse() || [];
 
             if (ajustes.length === 0) {
                 lista.innerHTML = '<p style="color: #666; text-align: center;">Nenhum ajuste manual realizado.</p>';
@@ -1931,8 +2025,10 @@
             });
         }
         
-        // NOVO: Adicionar/Remover pontos manualmente
-        function ajustarPontos(acao) {
+        async function ajustarPontos(acao) {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem ajustar pontos.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+            
             const user = colaboradorEmGestao;
             const isAdd = acao === 'adicionar';
             const acaoDisplay = isAdd ? 'ADICIONAR' : 'RETIRAR';
@@ -1942,16 +2038,10 @@
             
             const pontos = parseInt(pontosStr);
 
-            if (isNaN(pontos) || pontos <= 0) {
-                showMessage('❌ Pontuação inválida! Digite um número positivo.', 'error');
-                return;
-            }
+            if (isNaN(pontos) || pontos <= 0) { showMessage('❌ Pontuação inválida!', 'error'); return; }
 
             const motivo = prompt(`Digite o MOTIVO para ${acaoDisplay} ${pontos} pontos de ${user} (Obrigatório):`);
-            if (!motivo || motivo.trim() === '') {
-                showMessage('Motivo obrigatório. Ação cancelada.', 'error');
-                return;
-            }
+            if (!motivo || motivo.trim() === '') { showMessage('Motivo obrigatório. Ação cancelada.', 'error'); return; }
 
             const ajustePontos = isAdd ? pontos : -pontos;
 
@@ -1964,92 +2054,68 @@
             };
 
             COLABORADORES[user].ajustesPontos.push(novoAjuste);
-            saveColaboradores();
+            await saveAllData({ type: 'config' });
             
             showMessage(`✅ ${pontos} Pontos ${isAdd ? 'adicionados' : 'removidos'} de ${user}.`, 'success');
             
-            // Recarrega a tela de gestão e a lista de colaboradores (para atualizar a pontuação)
             abrirGestaoColaborador(user);
         }
 
-        // NOVO: Ações de Gestão de Usuário
-        function resetarSenhaColaboradorAcao() {
+        async function resetarSenhaColaboradorAcao() {
+             if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem resetar senhas.', 'error');
+             if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+             
              const user = colaboradorEmGestao;
-             const confirmation = prompt(`⚠️ Para resetar a senha do colaborador "${user}" para o padrão temporário (1234), digite "RESET":`);
+             const confirmation = prompt(`⚠️ Para resetar a senha de "${user}" para 1234, digite "RESET":`);
             
             if (confirmation === 'RESET') {
-                if (COLABORADORES[user]) {
-                    COLABORADORES[user].senha = '1234';
-                    COLABORADORES[user].requirePwdChange = true;
-                    saveColaboradores();
+                COLABORADORES[user].senha = '1234';
+                COLABORADORES[user].requirePwdChange = true;
+                await saveAllData({ type: 'config' });
                     
-                    showMessage(`✅ Senha de "${user}" resetada para 1234. Troca obrigatória no próximo login.`, 'success', 6000);
-                    abrirGestaoColaborador(user); // Recarrega para mostrar a nova senha
-                }
+                showMessage(`✅ Senha de "${user}" resetada para 1234.`, 'success', 6000);
+                abrirGestaoColaborador(user); 
             } else if (confirmation !== null) {
                 showMessage('Reset cancelado.', 'info');
             }
         }
 
-        function tentarRemoverColaboradorAcao() {
+        async function tentarRemoverColaboradorAcao() {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover usuários.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+
             const user = colaboradorEmGestao;
-            const confirmation = prompt(`⚠️ Para remover PERMANENTEMENTE o colaborador "${user}", digite o nome de usuário:`);
+            const confirmation = prompt(`⚠️ Para remover "${user}", digite o nome de usuário:`);
             
             if (confirmation === user) {
                 delete COLABORADORES[user];
-                saveColaboradores();
-                updateColaboradorSelect();
-                showMessage(`✅ Colaborador "${user}" removido com sucesso!`, 'success');
-                voltarGestao(); // Volta para a lista principal
+                await saveAllData({ type: 'config' });
+                
+                showMessage(`✅ Colaborador "${user}" removido!`, 'success');
+                voltarGestao(); 
             } else if (confirmation !== null) {
-                showMessage('O nome de usuário digitado não corresponde. A remoção foi cancelada.', 'error');
+                showMessage('Nome incorreto. Remoção cancelada.', 'error');
             }
         }
         
-        function adicionarColaborador() {
+        async function adicionarColaborador() {
             if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar colaboradores.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
 
-            const user = document.getElementById('novoColaboradorUser').value.trim().toLowerCase();
+            const user = document.getElementById('novoColaboradorUser').value.trim();
             const senha = document.getElementById('novoColaboradorSenha').value.trim();
             
-            if (!user || !senha) {
-                showMessage('Por favor, preencha usuário e senha!', 'error');
-                return;
-            }
+            if (!user || !senha) { showMessage('Preencha usuário e senha!', 'error'); return; }
+            if (COLABORADORES[user]) { showMessage(`❌ Já existe um colaborador "${user}"!`, 'error'); return; }
             
-            if (COLABORADORES[user]) {
-                showMessage(`❌ Já existe um colaborador com o usuário "${user}"!`, 'error');
-                return;
-            }
-            
-            // Define a estrutura completa com histórico de ajuste vazio
             COLABORADORES[user] = { senha: senha, requirePwdChange: false, ajustesPontos: [] }; 
-            saveColaboradores();
-            updateColaboradorSelect();
+            await saveAllData({ type: 'config' });
             
             document.getElementById('novoColaboradorUser').value = '';
             document.getElementById('novoColaboradorSenha').value = '';
             
-            showMessage(`✅ Colaborador "${user}" adicionado com sucesso!`, 'success');
+            showMessage(`✅ Colaborador "${user}" adicionado!`, 'success');
             carregarColaboradores();
-        }
-
-        // --- ADMIN: CHECKLISTS ---
-        function updateChecklistSetorSelect() {
-            const select = document.getElementById('checklistSetorSelect');
-            select.innerHTML = ''; 
-            for (const setor in CHECKLISTS) {
-                const setorDisplay = {
-                    caixa: 'CAIXA',
-                    hortifruti: 'HORTIFRUTI',
-                    bebidas: 'BEBIDAS',
-                    corredor: 'CORREDOR'
-                }[setor];
-                const option = document.createElement('option');
-                option.value = setor;
-                option.textContent = setorDisplay;
-                select.appendChild(option);
-            }
         }
 
         function renderChecklistManager() {
@@ -2061,7 +2127,7 @@
             const itens = CHECKLISTS[currentChecklistSetor] || [];
             
             if (itens.length === 0) {
-                 lista.innerHTML = '<p style="text-align: center; color: #666; margin-top: 15px;">Nenhum item cadastrado para este setor.</p>';
+                 lista.innerHTML = '<p style="text-align: center; color: #666; margin-top: 15px;">Nenhum item cadastrado.</p>';
             }
             
             itens.forEach((item, index) => {
@@ -2077,89 +2143,82 @@
             });
         }
 
-        // NOVO: Função para editar o item e a pontuação
-        function editarItemChecklist(index) {
+        async function editarItemChecklist(index) {
             if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem editar checklists.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
 
             const setor = document.getElementById('checklistSetorSelect').value;
-            const itemAtual = CHECKLISTS[setor][index];
+            const itensBase = CHECKLISTS[setor];
+            const itemAtual = itensBase[index];
 
-            const novoNome = prompt(`Editar Item: ${itemAtual.item}\n\nDigite a NOVA DESCRIÇÃO (ou deixe em branco para manter a atual):`, itemAtual.item);
+            const novoNome = prompt(`Editar: ${itemAtual.item}\n\nNOVA DESCRIÇÃO (ou deixe em branco):`, itemAtual.item);
             
-            if (novoNome === null) { // Cancelado no primeiro prompt
-                showMessage('Edição cancelada.', 'info');
-                return;
-            }
+            if (novoNome === null) { showMessage('Edição cancelada.', 'info'); return; }
 
-            const novoPontoStr = prompt(`Item: ${novoNome || itemAtual.item}\n\nDigite a NOVA PONTUAÇÃO (valor numérico):`, itemAtual.points);
+            const novoPontoStr = prompt(`Item: ${novoNome || itemAtual.item}\n\nNOVA PONTUAÇÃO:`, itemAtual.points);
             
-            if (novoPontoStr === null) { // Cancelado no segundo prompt
-                showMessage('Edição cancelada.', 'info');
-                return;
-            }
+            if (novoPontoStr === null) { showMessage('Edição cancelada.', 'info'); return; }
 
             const novoPonto = parseInt(novoPontoStr);
             
-            if (isNaN(novoPonto) || novoPonto < 0) {
-                showMessage('❌ Pontuação inválida! Deve ser um número inteiro positivo.', 'error');
-                return;
-            }
+            if (isNaN(novoPonto) || novoPonto < 0) { showMessage('❌ Pontuação inválida!', 'error'); return; }
 
-            // Aplica as mudanças
-            CHECKLISTS[setor][index].item = novoNome || itemAtual.item;
-            CHECKLISTS[setor][index].points = novoPonto;
+            const novosItens = [...itensBase];
+            novosItens[index] = { item: novoNome || itemAtual.item, points: novoPonto };
 
-            saveBaseChecklists();
-            showMessage(`✅ Item editado: ${CHECKLISTS[setor][index].item} (${novoPonto} Pts)!`, 'success');
+            CHECKLISTS[setor] = novosItens;
+            await saveAllData({ type: 'config' });
+            
+            showMessage(`✅ Item editado: ${novosItens[index].item} (${novoPonto} Pts)!`, 'success');
             renderChecklistManager();
         }
         
-        function adicionarItemChecklist() {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar itens ao checklist.', 'error');
+        async function adicionarItemChecklist() {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar itens.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
             
             const nome = document.getElementById('novoItemText').value.trim();
             const pontos = parseInt(document.getElementById('novoItemPontos').value);
             const setor = document.getElementById('checklistSetorSelect').value;
             
-            if (!nome || isNaN(pontos) || pontos <= 0) {
-                showMessage('Por favor, digite a descrição e uma pontuação válida (maior que zero).', 'error');
-                return;
-            }
+            if (!nome || isNaN(pontos) || pontos <= 0) { showMessage('Preencha nome e pontos!', 'error'); return; }
             
-            if (!CHECKLISTS[setor]) {
-                CHECKLISTS[setor] = [];
-            }
-            
-            CHECKLISTS[setor].push({ item: nome, points: pontos });
-            saveBaseChecklists();
+            const itensBase = CHECKLISTS[setor] || [];
+            const novosItens = [...itensBase, { item: nome, points: pontos }];
+
+            CHECKLISTS[setor] = novosItens;
+            await saveAllData({ type: 'config' });
             
             document.getElementById('novoItemText').value = '';
             document.getElementById('novoItemPontos').value = '10';
             
-            showMessage(`✅ Item adicionado ao setor ${setor.toUpperCase()}!`, 'success');
+            showMessage(`✅ Item adicionado ao ${setor.toUpperCase()}!`, 'success');
             renderChecklistManager();
         }
         
-        function removerItemChecklist(index) {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover itens do checklist.', 'error');
+        async function removerItemChecklist(index) {
+            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover itens.', 'error');
+            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
             
             const setor = document.getElementById('checklistSetorSelect').value;
-            const nomeItem = CHECKLISTS[setor][index].item;
+            const itensBase = CHECKLISTS[setor];
+            const nomeItem = itensBase[index].item;
 
-            const confirmation = prompt(`⚠️ Para remover o item "${nomeItem}", digite "SIM":`);
+            const confirmation = prompt(`⚠️ Para remover "${nomeItem}", digite "SIM":`);
             
             if (confirmation === 'SIM') {
-                CHECKLISTS[setor].splice(index, 1);
-                saveBaseChecklists();
-                showMessage(`✅ Item removido do setor ${setor.toUpperCase()}!`, 'success');
+                const novosItens = itensBase.filter((_, i) => i !== index);
+                CHECKLISTS[setor] = novosItens;
+                await saveAllData({ type: 'config' });
+
+                showMessage(`✅ Item removido do ${setor.toUpperCase()}!`, 'success');
                 renderChecklistManager();
             } else if (confirmation !== null) {
                 showMessage('Remoção cancelada.', 'info');
             }
         }
         
-        // --- INITIALIZATION ---
-        window.addEventListener('load', loadData);
+        window.addEventListener('load', initSupabase);
     </script>
 </body>
 </html>
