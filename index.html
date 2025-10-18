@@ -1828,7 +1828,7 @@
                 
                 // Tenta criar o cliente imediatamente, usando o objeto global 'supabase'
                 if (typeof supabase === 'undefined' || !supabase.createClient) {
-                     throw new Error("Objeto 'supabase' não encontrado.");
+                    throw new Error("Objeto 'supabase' não encontrado.");
                 }
                 
                 window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
