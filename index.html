@@ -3,45 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist - Supermercado Rio Branco</title>
-    <!-- Inclui a biblioteca Supabase (CDN) -->
+    <title>Entregas - Rio Branco (Dashboard)</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Configurações PWA Otimizadas para máxima compatibilidade -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Check RB">
-    <meta name="theme-color" content="#3d4b7a">
-    <!-- FIM PWA -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
     <style>
-        /* Estilos base */
+        /* ESTILOS CSS COMPLETOS */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
         }
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
             min-height: 100vh;
             padding: 10px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            position: relative;
-            padding-bottom: 70px;
+            flex-direction: column;
         }
         .container {
             max-width: 600px;
-            width: 100%;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
-            transition: all 0.3s ease;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            width: 100%;
         }
         .header {
             background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
@@ -49,17 +40,13 @@
             padding: 30px 20px;
             text-align: center;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 5px;
-            display: block;
         }
         .header p {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.9;
         }
         .logout-btn {
@@ -70,16 +57,10 @@
             color: white;
             border: 2px solid white;
             padding: 8px 15px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
-            transition: all 0.3s;
-        }
-        .logout-btn:hover {
-            background: white;
-            color: #3d4b7a;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .content {
             padding: 20px;
@@ -94,64 +75,55 @@
             color: #3d4b7a;
             margin-bottom: 20px;
             text-align: center;
-            font-size: 22px;
         }
-        .setor-btn {
-            background: white;
-            border: 3px solid #3d4b7a;
+        h4 {
             color: #3d4b7a;
-            padding: 25px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: block;
-            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .form-group {
             margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .setor-btn:hover {
-            background: #3d4b7a;
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-        }
-        .setor-btn.hortifruti { border-color: #28a745; color: #28a745; }
-        .setor-btn.hortifruti:hover { background: #28a745; color: white; }
-        .setor-btn.bebidas { border-color: #007bff; color: #007bff; }
-        .setor-btn.bebidas:hover { background: #007bff; color: white; }
-        .setor-btn.corredor { border-color: #ffc107; color: #ffc107; }
-        .setor-btn.corredor:hover { background: #ffc107; color: #333; }
-        
-        /* Formulário e Botões */
-        .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
             color: #3d4b7a;
             font-weight: bold;
             margin-bottom: 8px;
-            font-size: 16px;
+            font-size: 14px;
         }
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            font-size: 14px;
         }
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #d63031;
+            border-color: #3d4b7a;
+        }
+        .form-group textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 400px) {
+            .form-row, .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
         .btn-primary {
             width: 100%;
             background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
             color: white;
             border: none;
-            padding: 18px;
-            font-size: 18px;
+            padding: 15px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
@@ -166,2059 +138,2084 @@
             background: #6c757d;
             color: white;
             border: none;
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
             width: 100%;
             margin-top: 10px;
-            transition: background 0.3s;
         }
         .btn-voltar:hover {
             background: #5a6268;
         }
-
-        /* Checklist Items */
-        .checklist-item {
+        .role-btn {
+            background: white;
+            border: 3px solid #3d4b7a;
+            color: #3d4b7a;
+            padding: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .role-btn:hover {
+            background: #3d4b7a;
+            color: white;
+        }
+        .entrega-card {
             background: white;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 15px;
-            cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
-        .checklist-item:active { transform: scale(0.98); }
-        .checklist-item:hover { border-color: #3d4b7a; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .checklist-item.checked {
-            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+        .entrega-card:hover {
             border-color: #3d4b7a;
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transform: translateX(5px);
         }
-        .checkbox-custom {
-            width: 35px; height: 35px;
-            border: 3px solid #3d4b7a;
-            border-radius: 8px;
-            flex-shrink: 0;
+        .entrega-header {
             display: flex;
-            align-items: center; justify-content: center;
-            background: white;
-            font-size: 24px;
-            transition: all 0.3s;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
-        .checklist-item.checked .checkbox-custom {
-            background: white;
-            border-color: white;
-            color: #d63031;
+        .entrega-nome {
+            font-weight: bold;
+            font-size: 18px;
+            color: #3d4b7a;
         }
-        .item-content { flex: 1; }
-        .item-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-        .item-time { font-size: 12px; opacity: 0.8; }
-
-        /* Botão Finalizar */
-        .finish-section {
-            margin-top: 30px;
-            display: block; 
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
         }
-        .finish-section.active {
-            display: block;
+        .status-pendente {
+            background: #ffc107;
+            color: #000;
         }
-
-        /* Dashboard */
-        .dashboard-header {
-            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
+        .status-emrota {
+            background: #17a2b8;
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
         }
-        .dashboard-buttons {
+        .status-entregue {
+            background: #28a745;
+            color: white;
+        }
+        .status-cancelada, .status-falha {
+            background: #dc3545;
+            color: white;
+        }
+        .entrega-info {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .entrega-info strong {
+            color: #333;
+        }
+        .entrega-actions {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
         }
-        .dashboard-buttons button {
+        .btn-small {
             flex: 1;
-            padding: 12px;
-            border: 2px solid white;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            min-width: 100px;
+            padding: 10px;
+            border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s;
+            font-size: 13px;
+            transition: background 0.3s;
         }
-        .dashboard-buttons button:hover {
-            background: white;
-            color: #3d4b7a;
+        .btn-small:hover {
+            opacity: 0.9;
+        }
+        .btn-pegar {
+            background: #3d4b7a;
+            color: white;
+        }
+        .btn-entregar {
+            background: #28a745;
+            color: white;
+        }
+        .btn-falha {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-ver {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-cancelar {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-maps {
+            background: #007bff;
+            color: white;
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 20px;
+        }
+        .stats-grid.full {
+            grid-template-columns: 1fr;
         }
         .stat-card {
             background: white;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
         }
-        .stat-number { font-size: 32px; font-weight: bold; color: #3d4b7a; }
-        .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
-
-        /* Painel Admin */
-        .admin-panel {
-            background: #e0f7fa;
-            border: 2px solid #007bff;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #3d4b7a;
         }
-        .admin-panel h4 { color: #007bff; margin-bottom: 10px; }
-        .fiscal-item, .checklist-manager-item, .colaborador-item {
+        .stat-number.green {
+             color: #28a745;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .chart-container {
+             background: #f8f9fa;
+             border: 1px solid #ddd;
+             border-radius: 10px;
+             padding: 15px;
+             margin-bottom: 20px;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .chart-container h3 {
+             color: #3d4b7a;
+             font-size: 18px;
+             margin-bottom: 10px;
+        }
+        #statusChart .bar {
+            fill: #d63031;
+            transition: fill 0.3s;
+        }
+        #statusChart .bar:hover {
+             fill: #3d4b7a;
+        }
+        .axis-label {
+             font-size: 10px;
+             fill: #666;
+        }
+        .geladeira-badge {
+            display: inline-block;
+            background: #17a2b8;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .pago-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .cobrar-badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .troco-badge {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .detalhes-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .detalhes-modal.active {
+            display: flex;
+        }
+        .detalhes-content {
             background: white;
-            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .btn-fechar {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        .adm-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-left: 5px solid #3d4b7a;
             padding: 10px;
             margin-bottom: 8px;
             border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        .colaborador-item { 
-            border-left: 5px solid #d63031;
-            padding: 10px 15px;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        .colaborador-item:hover {
+        .adm-item:hover {
+            background: #f0f0f0;
+        }
+        .gestao-card {
             background: #f8f9fa;
-        }
-        .colaborador-details {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            justify-content: space-between;
-        }
-        .colaborador-points {
-            font-weight: bold;
-            color: #d63031;
-            font-size: 18px;
-            margin-right: 20px;
-        }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.3s;
-        }
-        .btn-danger:hover { background: #c82333; }
-        .btn-success {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        .btn-success:hover { background: #1e7e34; }
-        .admin-tab {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        .admin-tab button {
-            background: none;
-            border: none;
-            padding: 10px 15px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #6c757d;
-            transition: color 0.3s, border-bottom 0.3s;
-        }
-        .admin-tab button.active {
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
-        }
-        .admin-content {
-            display: none;
-        }
-        .admin-content.active {
-            display: block;
-        }
-        
-        /* Mensagens de feedback */
-        #messageBox {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-            border: 1px solid #ffeeba;
-            display: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Estilo para Detalhes do Checklist */
-        .detail-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 15px;
-        }
-        .detail-item:last-child {
-            border-bottom: none;
-        }
-        .detail-item-title {
-            font-weight: bold;
-            color: #3d4b7a;
-            flex: 1;
-        }
-        .detail-item-time {
-            color: #28a745; 
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* Estilos de Status e Botões de Ação no Histórico */
-        .history-item {
-            position: relative;
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .history-setor {
-            font-weight: bold;
-            font-size: 16px;
-            color: #3d4b7a;
-        }
-        .history-turno {
-            font-size: 14px;
-            color: #666;
-        }
-        .history-info {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        .history-progress {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .mini-progress {
-            flex: 1;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .mini-progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
-            transition: width 0.3s;
-        }
-        .status-tag {
-            background: #ffc107;
-            color: #333;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-tag.aprovado {
-            background: #28a745;
-            color: white;
-        }
-        .status-tag.reprovado {
-            background: #dc3545;
-            color: white;
-        }
-        .review-btn {
-            background: #3d4b7a;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            margin-top: 10px;
-            display: block;
-            width: 100%;
-        }
-        .review-btn:hover {
-            background: #2c3a5c;
-        }
-
-        /* Botões de Aprovação/Reprovação na Tela de Detalhes */
-        .approval-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .btn-aprovar {
-            flex: 1;
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn-aprovar:hover { background: #1e7e34; }
-        .btn-reprovar {
-            flex: 1;
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn-reprovar:hover { background: #c82333; }
-        .review-status-display {
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-            display: none;
-        }
-        .review-status-display.active { display: block; }
-
-        /* Estilo para Botões de Edição/Remoção em Linha */
-        .admin-item-actions {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        .btn-edit-inline {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        .btn-edit-inline:hover {
-            background: #0056b3;
-        }
-
-        .btn-reset {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        
-        /* Botões de Ação na Gestão de Colaborador (Screen 7) */
-        .colab-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
-        .colab-actions button {
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
+        .gestao-card h3 {
+            color: #d63031;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .gestao-card p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .gestao-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
         }
         .btn-add-points {
             background: #28a745;
             color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
         }
         .btn-remove-points {
             background: #ffc107;
             color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
         }
-        .btn-full-danger {
+        .btn-reset-senha {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-remover-user {
             background: #dc3545;
             color: white;
         }
-
-        /* Estilo para o Rodapé */
-        .app-footer {
+        #loginAtendimento {
+            background: #f0f4f7;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        #loginAtendimento button {
+            margin-top: 20px;
+        }
+        #modalAnexo {
+            background: rgba(0,0,0,0.9);
+            z-index: 1001;
+        }
+        #modalAnexo .detalhes-content {
+            background: #f8f9fa;
+            text-align: center;
+        }
+        #modalAnexo input[type="file"] {
+            border: 2px dashed #3d4b7a;
+            padding: 20px 12px;
+            cursor: pointer;
+        }
+        #modalAnexo textarea {
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+        #modalAnexo button {
+            margin-top: 15px;
+        }
+        .custom-modal {
             position: fixed;
-            bottom: 0;
+            top: 0;
             left: 0;
             width: 100%;
-            background: #333;
-            color: #aaa;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .custom-modal.active {
+            display: flex;
+        }
+        .custom-modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 350px;
+            width: 90%;
             text-align: center;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.4);
+        }
+        .custom-modal-content.wide {
+            max-width: 500px;
+            width: 90%;
+            text-align: left;
+        }
+        .custom-modal-content h4 {
+            color: #3d4b7a;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .custom-modal-content p {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .modal-btn {
             padding: 10px 20px;
-            font-size: 10px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-            z-index: 1000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
         }
-        .app-footer p {
-            margin: 0;
-            line-height: 1.4;
-        }
-        .app-footer strong {
+        .modal-btn.primary {
+            background: #3d4b7a;
             color: white;
         }
-
-        /* Painel de Troca de Senha de Fiscal */
-        #fiscalChangePwdPanel {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        /* Painel de Instruções PWA */
-        .pwa-instructions {
-            background: #e6f3ff;
-            border: 1px solid #007bff;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 25px;
-            color: #007bff;
-        }
-        .pwa-instructions h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #3d4b7a;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .pwa-instructions p {
-            font-size: 13px;
-            margin-bottom: 5px;
-        }
-        .pwa-instructions strong {
-            color: #d63031;
-        }
-
-        .checklist-header {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .checklist-header h3 {
-            color: #3d4b7a;
-            margin-bottom: 10px;
-        }
-        .checklist-header p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 10px;
+        .modal-btn.secondary {
             background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 15px 0 5px 0;
+            color: #333;
         }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #3d4b7a 0%, #d63031 100%);
-            transition: width 0.3s;
+        .modal-btn.danger {
+            background: #dc3545;
+            color: white;
         }
-        .progress-text {
-            text-align: center;
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .performance-table th, .performance-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .performance-table th {
+            background-color: #f0f4f7;
             color: #3d4b7a;
             font-weight: bold;
-            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+        }
+        .performance-table tr:hover {
+            background-color: #fafafa;
+        }
+        .performance-metric {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+            margin-top: auto;
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="logout()">🚪 Sair</button>
-            
-            <h1>🏪 Supermercado Rio Branco</h1>
-            <p>Sistema de Checklist Operacional</p>
-        </div>
-
-        <div class="content">
-            <div id="messageBox"></div>
-
-            <!-- LOGIN FISCAL (TELA 0) -->
-            <div id="screenLogin" class="screen">
-                <h2>🔐 Login Fiscal</h2>
-                <div class="form-group">
-                    <label>Nome do Fiscal</label>
-                    <select id="fiscalNome"></select>
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" id="fiscalSenha" placeholder="Digite a senha">
-                </div>
-                <button class="btn-primary" onclick="fazerLogin()">Entrar →</button>
-                <button class="btn-voltar" onclick="voltarTela('screen1')">← Voltar</button>
-            </div>
-            
-            <!-- TELA 6: TROCA DE SENHA INICIAL (COLABORADOR) -->
-            <div id="screen6" class="screen">
-                <h2>Definir Nova Senha</h2>
-                <p style="text-align: center; color: #d63031; font-weight: bold; margin-bottom: 20px;">
-                    Este é seu primeiro login ou sua senha foi resetada. Defina uma nova senha.
-                </p>
-                <div class="form-group">
-                    <label>Nova Senha *</label>
-                    <input type="password" id="novaSenha1" placeholder="Mínimo 4 caracteres">
-                </div>
-                <div class="form-group">
-                    <label>Confirmar Nova Senha *</label>
-                    <input type="password" id="novaSenha2" placeholder="Repita a senha">
-                </div>
-                <button class="btn-primary" onclick="salvarNovaSenha()">Salvar e Continuar →</button>
-                <button class="btn-voltar" onclick="logout()">← Cancelar e Sair</button>
-            </div>
-
-            <!-- TELA 1: ESCOLHA DO SETOR -->
-            <div id="screen1" class="screen active">
-                <h2>Selecione o Setor</h2>
-                <button class="setor-btn" onclick="escolherSetor('caixa')">💰 CAIXA</button>
-                <button class="setor-btn hortifruti" onclick="escolherSetor('hortifruti')">🥦 HORTIFRUTI</button>
-                <button class="setor-btn bebidas" onclick="escolherSetor('bebidas')">🍹 BEBIDAS</button>
-                <button class="setor-btn corredor" onclick="escolherSetor('corredor')">🛒 CORREDOR</button>
-                <button class="btn-primary" onclick="mostrarTela('screenLogin')">📊 Acesso Fiscal/ADM</button>
-
-                <!-- Painel de Instruções PWA -->
-                <div class="pwa-instructions">
-                    <h3>
-                        <span>📱 Instalar o App (PWA)</span>
-                    </h3>
-                    <p>Para usar como aplicativo em tela cheia no celular, siga:</p>
-                    <p>1. Abra o menu do navegador (Geralmente <strong>'⋮'</strong> ou <strong>'↑'</strong>).</p>
-                    <p>2. Selecione <strong>"Adicionar à Tela de Início"</strong> (ou "Instalar App").</p>
-                    <p>O ícone **Check RB** aparecerá na sua tela principal!</p>
-                </div>
-            </div>
-
-            <!-- TELA 2: LOGIN DO COLABORADOR -->
-            <div id="screen2" class="screen">
-                <h2 id="operadorTitulo">Login Colaborador</h2>
-                <div class="form-group">
-                    <label>Usuário Colaborador *</label>
-                    <select id="colaboradorUser"></select>
-                </div>
-                <div class="form-group">
-                    <label>Senha *</label>
-                    <input type="password" id="colaboradorSenha" placeholder="Digite sua senha">
-                </div>
-                <div class="form-group">
-                    <label>Turno *</label>
-                    <select id="turnoSelect">
-                        <option value="">Selecione o turno</option>
-                    </select>
-                </div>
-                <button class="btn-primary" onclick="fazerLoginColaborador()">Iniciar Checklist →</button>
-                <button class="btn-voltar" onclick="voltarTela('screen1')">← Voltar</button>
-            </div>
-
-            <!-- TELA 3: CHECKLIST -->
-            <div id="screen3" class="screen">
-                <div class="checklist-header">
-                    <h3 id="setorTitulo"></h3>
-                    <p><strong>Colaborador:</strong> <span id="nomeDisplay"></span></p>
-                    <p><strong>Turno:</strong> <span id="turnoDisplay"></span></p>
-                    <p><strong>Data:</strong> <span id="dataDisplay"></span></p>
-                </div>
-
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressBar"></div>
-                </div>
-                <div class="progress-text" id="progressText">0% Completo (0/0)</div>
-
-                <div id="checklistContainer"></div>
-                
-                <div class="finish-section" id="finishSection">
-                    <p style="text-align: center; color: #d63031; font-weight: bold; margin-bottom: 10px;">
-                        ⚠️ Checklist será enviado
-                    </p>
-                    <button class="btn-primary" onclick="finalizarChecklist()">✅ Finalizar Checklist</button>
-                </div>
-                
-                <button class="btn-voltar" onclick="voltarTela('screen1')">← Cancelar</button>
-            </div>
-
-            <!-- TELA 4: DASHBOARD -->
-            <div id="screen4" class="screen">
-                <div class="dashboard-header">
-                    <h2>📊 Dashboard Fiscal</h2>
-                    <p id="dashboardData"></p>
-                    <p><strong>Fiscal:</strong> <span id="fiscalLogado"></span></p>
-                    <div class="dashboard-buttons">
-                        <button onclick="exportarPDF()">📄 Exportar PDF</button>
-                        <button id="limparHistoricoBtn" onclick="tentarLimparHistorico()" style="display: none;">🗑️ Limpar Tudo</button>
-                    </div>
-                </div>
-
-                <!-- Painel de Troca de Senha de Fiscal -->
-                <div id="fiscalChangePwdPanel" style="display: none;">
-                    <h4 style="color: #3d4b7a; margin-bottom: 15px;">🔒 Trocar Minha Senha de Fiscal</h4>
-                    <div class="form-group">
-                        <label>Nova Senha *</label>
-                        <input type="password" id="fiscalNovaSenha1" placeholder="Mínimo 4 caracteres">
-                    </div>
-                    <div class="form-group">
-                        <label>Confirmar Nova Senha *</label>
-                        <input type="password" id="fiscalNovaSenha2" placeholder="Repita a senha">
-                    </div>
-                    <button class="btn-primary" onclick="trocarSenhaFiscal()">Salvar Nova Senha</button>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalChecklists">0</div>
-                        <div class="stat-label">Checklists Hoje</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="mediaCompleto">0%</div>
-                        <div class="stat-label">Média de Conclusão</div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 style="color: #3d4b7a; margin: 20px 0;">Histórico de Hoje (Clique para Detalhes)</h3>
-                    <div id="historyList"></div>
-                </div>
-
-                <!-- PAINEL ADMIN -->
-                <div id="adminPanel" style="display: none;">
-                    <div class="admin-panel">
-                        <h4>⚙️ Painel de Administração (<span id="adminName"></span>)</h4>
-
-                        <div class="admin-tab">
-                            <button id="tabFiscais" onclick="changeAdminTab('fiscais')">Fiscais</button>
-                            <button id="tabColaboradores" onclick="changeAdminTab('colaboradores')">Colaboradores</button>
-                            <button id="tabChecklist" onclick="changeAdminTab('checklist')">Checklists</button>
-                        </div>
-
-                        <!-- GERENCIAR FISCAIS -->
-                        <div id="adminContentFiscais" class="admin-content active">
-                            <h5 style="color: #007bff; margin-bottom: 10px;">Fiscais Cadastrados:</h5>
-                            <div id="fiscalList"></div>
-                            <h5 style="margin-top: 15px; color: #007bff;">Adicionar Novo Fiscal:</h5>
-                            <div class="form-group" style="margin-top: 10px;">
-                                <input type="text" id="novoFiscalNome" placeholder="Nome do fiscal" style="width: 100%; margin-bottom: 5px;">
-                                <input type="password" id="novoFiscalSenha" placeholder="Senha" style="width: 100%;">
-                            </div>
-                            <button class="btn-success" onclick="adicionarFiscal()">➕ Adicionar Fiscal</button>
-                        </div>
-                        
-                        <!-- GERENCIAR COLABORADORES -->
-                        <div id="adminContentColaboradores" class="admin-content">
-                            <h5 style="color: #007bff; margin-bottom: 10px;">Colaboradores Cadastrados (Clique para Gestão):</h5>
-                            <div id="colaboradorList"></div>
-                            <h5 style="margin-top: 15px; color: #007bff;">Adicionar Novo Colaborador:</h5>
-                            <div class="form-group" style="margin-top: 10px;">
-                                <input type="text" id="novoColaboradorUser" placeholder="Usuário (ex: JoaoCaixa)" style="width: 100%; margin-bottom: 5px;">
-                                <input type="password" id="novoColaboradorSenha" placeholder="Senha" style="width: 100%;">
-                            </div>
-                            <button class="btn-success" onclick="adicionarColaborador()">➕ Adicionar Colaborador</button>
-                        </div>
-
-                        <!-- GERENCIAR CHECKLISTS -->
-                        <div id="adminContentChecklist" class="admin-content">
-                            <h5 style="margin-top: 15px; color: #007bff; margin-bottom: 10px;">Gerenciar Itens de Checklist:</h5>
-                            <div class="form-group">
-                                <label>Selecionar Setor</label>
-                                <select id="checklistSetorSelect" onchange="renderChecklistManager()"></select>
-                            </div>
-                            <div id="checklistManagerList"></div>
-                            <h5 style="margin-top: 15px; color: #007bff; margin-bottom: 10px;">Adicionar Novo Item:</h5>
-                            <div class="form-group">
-                                <input type="text" id="novoItemText" placeholder="Descrição do novo item">
-                                <input type="number" id="novoItemPontos" placeholder="Pontos (ex: 10)" value="10" style="width: 100%; margin-top: 10px;">
-                            </div>
-                            <button class="btn-success" onclick="adicionarItemChecklist()">➕ Adicionar Item</button>
-                        </div>
-
-                    </div>
-                </div>
-
-                <button class="btn-voltar" onclick="logout()">← Sair</button>
-            </div>
-
-            <!-- TELA 5: DETALHES DO CHECKLIST -->
-            <div id="screen5" class="screen">
-                <div class="checklist-header">
-                    <h3 id="detailsSetorTitulo"></h3>
-                    <p><strong>Colaborador:</strong> <span id="detailsNomeDisplay"></span></p>
-                    <p><strong>Turno:</strong> <span id="detailsTurnoDisplay"></span></p>
-                    <p><strong>Data/Hora:</strong> <span id="detailsDataDisplay"></span></p>
-                    <p><strong>Pontos Potenciais:</strong> <span id="detailsPontosPotenciais" style="font-weight: bold; color: #d63031;"></span></p>
-                    
-                    <div class="review-status-display" id="reviewStatusDisplay"></div>
-
-                    <div class="history-progress" style="margin-top: 10px;">
-                        <div class="mini-progress">
-                            <div class="mini-progress-fill" id="detailsProgressBar"></div>
-                        </div>
-                        <span style="color: #3d4b7a; font-weight: bold;" id="detailsProgressText">100%</span>
-                    </div>
-                </div>
-
-                <h4 style="color: #3d4b7a; margin: 20px 0 10px;">Itens Verificados (Horário de Conclusão)</h4>
-                <div id="detailsListContainer" style="background: #f8f9fa; border-radius: 10px; padding: 10px;">
-                </div>
-                
-                <!-- BOTÕES DE APROVAÇÃO -->
-                <div class="approval-actions" id="approvalActions">
-                    <button class="btn-aprovar" onclick="aprovarChecklist()">✅ Aprovar e Conceder Pontos</button>
-                    <button class="btn-reprovar" onclick="reprovarChecklist()">❌ Reprovar Pontos</button>
-                </div>
-
-                <button class="btn-voltar" onclick="voltarTela('screen4')">← Voltar para Dashboard</button>
-            </div>
-
-            <!-- TELA 7: GESTÃO INDIVIDUAL DE COLABORADOR -->
-            <div id="screen7" class="screen">
-                <h2 id="gestaoTitulo">Gestão de Colaborador</h2>
-                <div class="checklist-header">
-                    <p>Colaborador: <strong><span id="colabGestaoNome"></span></strong></p>
-                    <p>Senha: <strong><span id="colabGestaoSenha"></span></strong></p>
-                    <h3 style="margin-top: 10px;">Pontuação Atual: <span id="colabGestaoPontos" style="color: #d63031;">0 Pts</span></h3>
-                </div>
-
-                <div class="colab-actions">
-                    <button class="btn-add-points" onclick="ajustarPontos('adicionar')">➕ Adicionar Pontos</button>
-                    <button class="btn-remove-points" onclick="ajustarPontos('remover')">➖ Retirar Pontos</button>
-                </div>
-
-                <div class="colab-actions">
-                    <button class="btn-reset" onclick="resetarSenhaColaboradorAcao()">🔒 Resetar Senha</button>
-                    <button class="btn-full-danger" onclick="tentarRemoverColaboradorAcao()">🗑️ Remover Usuário</button>
-                </div>
-
-                <h4 style="color: #3d4b7a; margin: 20px 0 10px;">Histórico de Ajustes</h4>
-                <div id="ajusteHistoricoList" style="background: #f8f9fa; border-radius: 10px; padding: 10px;">
-                    <p style="color: #666; text-align: center;">Nenhum ajuste manual realizado.</p>
-                </div>
-                
-                <button class="btn-voltar" onclick="voltarGestao()">← Voltar</button>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Rodapé -->
-    <div class="app-footer">
-        <p>© 2025 AutoVizion. Todos os direitos reservados.</p>
-        <p>Soluções inteligentes em automação e marketing digital.</p>
-    </div>
 
     <script>
-        const SUPABASE_URL = 'https://pxkerlapzgbykgqmhdoy.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4a2VybGFwemdieWtncW1oZG95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NDA3MjEsImV4cCI6MjA3NjExNjcyMX0.ABH5mopgAbhfZU8QGJVKkR_iFz2WJ0A4p4iV8Mh63Rw';
-
-        const TABLE_NAME = 'dados_gerais';
-        const CONFIG_ID = 'config_data';
-
-        let supabase = null;
-        let isSupabaseReady = false;
+        // DADOS E CONSTANTES GLOBAIS
         
-        const SETOR_COLABORADOR_MAP = {
-            caixa: ['Hugo Aguiar', 'Katia', 'Maria Eduarda'],
-            hortifruti: ['Carlos'],
-            corredor: ['Jonatan Piva', 'Carlos', 'Andre Lopes', 'Maria Eduarda', 'Hugo Aguiar'],
-            bebidas: ['Andre Lopes']
-        };
-
-        const DEFAULT_CHECKLISTS = {
-            caixa: [{ item: 'Verificar troco', points: 5 }, { item: 'Verificar sacolas', points: 5 }, { item: 'Verificar bobinas', points: 3 }, { item: 'Colocar 2x bobinas reservas', points: 3 }, { item: 'Verificar carregamento das maquininhas', points: 10 }, { item: 'Organização dos caixas', points: 5 }, { item: 'Limpeza frente caixa', points: 8 }, { item: 'Retirar os lixos', points: 3 }],
-            hortifruti: [{ item: 'Verificar geladeiras', points: 10 }, { item: 'Verificar bancadas', points: 8 }, { item: 'Retirar material podre ou estragado', points: 15 }, { item: 'Trocar papel se necessário', points: 3 }, { item: 'Verificar sacos plásticos', points: 3 }, { item: 'Correção de preços', points: 10 }, { item: 'Abastecer setor', points: 12 }],
-            bebidas: [{ item: 'Abastecimento das geladeiras (Água, Refrigerante, Cerveja)', points: 15 }, { item: 'Verificar refrigeração (temperatura)', points: 10 }, { item: 'Conferir validade (principalmente lácteos e sucos)', points: 15 }, { item: 'Organização e limpeza das prateleiras', points: 8 }],
-            corredor: [{ item: 'Limpeza dos corredores (chão, prateleiras)', points: 10 }, { item: 'Conferir preços (se batem com o sistema)', points: 15 }, { item: 'Garantir frente de gôndola e organização de estoque', points: 12 }, { item: 'Verificar produtos em falta', points: 8 }]
-        };
-
-        const TURNOS = {
-            caixa: [{ valor: '07:30', texto: '07:30 - Manhã' }, { valor: '10:30', texto: '10:30 - Meio-dia' }, { valor: '16:30', texto: '16:30 - Tarde' }],
-            hortifruti: [{ valor: '09:00', texto: '09:00 - Manhã' }, { valor: '13:30', texto: '13:30 - Tarde' }, { valor: '17:00', texto: '17:00 - Noite' }],
-            bebidas: [{ valor: '09:00', texto: '09:00 - Manhã' }, { valor: '14:00', texto: '14:00 - Tarde' }],
-            corredor: [{ valor: '10:00', texto: '10:00 - Manhã' }, { valor: '15:00', texto: '15:00 - Tarde' }]
-        };
+        // CHAVES CONFIGURADAS
+        const SUPABASE_URL = 'https://rwgkfpgzwplmhnpezvnw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3Z2tmcGd6d3BsbWhucGV6dm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3OTE5MDUsImV4cCI6MjA3NjM2NzkwNX0.CtuSkk_AJADg8CXqSuUsHncqVXdVTIazs37L-xKjIkQ';
+        const SUPABASE_TABLE = 'entregas'; 
+        const SUPABASE_STORAGE_BUCKET = 'entregas-comprovantes'; 
+        const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; 
+        const SENHA_RESET = 'RB@ENTREGA'; 
+        const ORIGEM_MAPS = 'Supermercado Rio Branco, Garça, SP, Brasil'; 
         
-        const ADMINS = ['Carlos', 'Junior', 'Cadu'];
-        const NON_REMOVABLE_FISCAL = ['Carlos', 'Junior', 'Cadu']; 
-
-        let FISCAIS = {};
-        let COLABORADORES = {};
-        let CHECKLISTS = {};
-        let checklistsHistorico = [];
+        window.supabase = null;
+        let realtimeChannel = null;
+        let todasEntregas = [];
+        let initializationAttempts = 0;
+        const MAX_ATTEMPTS = 10;
         
-        let setorAtual = '';
-        let colaboradorLogado = null; 
-        let colaboradorAguardandoSenha = null; 
-        let operadorAtual = {};
-        let itensChecados = {};
-        let fiscalLogado = null; 
-        let checklistEmRevisaoDocId = null;
-        let colaboradorEmGestao = null; 
-        let currentAdminTab = 'fiscais';
-        let currentChecklistSetor = 'caixa';
-
-        function initSupabase() {
-            if (!window.supabase) {
-                showMessage("❌ Erro: Biblioteca Supabase não carregada.", 'error');
-                return;
-            }
-            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-                showMessage("❌ Erro: Credenciais Supabase ausentes.", 'error');
-                loadDataLocalFallback();
-                return;
-            }
-            
-            try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                isSupabaseReady = true;
-                loadData();
-            } catch (e) {
-                console.error("Erro ao inicializar Supabase:", e);
-                showMessage("❌ Erro fatal ao conectar ao Supabase.", 'error');
-            }
-        }
+        let usuarioLogado = null;
+        let tipoUsuario = null; 
+        let tipoLoginAtual = null;
+        let entregadorEmGestao = null; 
+        let entregaParaFinalizarId = null; 
+        let acaoCancelamentoDocId = null;
+        let acaoCancelamentoTipo = null; 
         
-        async function loadData() {
-            if (!isSupabaseReady) return;
+        // Dados de Login Locais
+        let GESTORES = { 'Cadu': { senha: '1228' }, 'Mari': { senha: '2992' }, 'Junior': { senha: '0701' }, 'Carlos': { senha: '5875' } };
+        let ENTREGADORES = { 'Carlos': { senha: '587596', telefone: '66996005936', pontos: 100, historicoPontos: [] }, 'Cadu': { senha: '1228', telefone: '66999999999', pontos: 50, historicoPontos: [] }, 'Jonatan': { senha: '1234', telefone: '66988888888', pontos: 0, historicoPontos: [] } };
+        let ATENDENTES = { 'Katia': { senha: '1234' }, 'Maria Eduarda': { senha: '1234' }, 'Andre Lopes': { senha: '1234' }, 'Hugo Aguiar': { senha: '1234' }, 'Cadu': { senha: '1234' }, 'Junior': { senha: '1234' }, 'Marilu': { senha: '1234' } };
 
-            showMessage("🔄 Sincronizando dados...", 'info');
-            
-            try {
-                const { data: configData, error: configError } = await supabase
-                    .from(TABLE_NAME)
-                    .select('json_data')
-                    .eq('id', CONFIG_ID)
-                    .single();
-
-                if (configError && configError.code !== 'PGRST116') {
-                    throw new Error(`Erro ao carregar configurações: ${configError.message}`);
-                }
-
-                if (configData) {
-                    FISCAIS = configData.json_data.fiscais || {};
-                    COLABORADORES = configData.json_data.colaboradores || {};
-                    CHECKLISTS = configData.json_data.checklists || {};
-                } else {
-                    FISCAIS = {
-                        'Carlos': '5875', 'Cadu': '1228', 'Junior': '0701', 'Marilu': '2992' 
-                    };
-                    COLABORADORES = {
-                        'Andre Lopes': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                        'Hugo Aguiar': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                        'Katia': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                        'Maria Eduarda': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                        'Jonatan Piva': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                        'Carlos': { senha: '1234', requirePwdChange: true, ajustesPontos: [] }
-                    };
-                    CHECKLISTS = DEFAULT_CHECKLISTS;
-                    
-                    await saveAllData({ type: 'initial_setup' });
-                }
-
-                const { data: historyData, error: historyError } = await supabase
-                    .from(TABLE_NAME)
-                    .select('id, json_data')
-                    .neq('id', CONFIG_ID);
-                
-                if (historyError) {
-                     throw new Error(`Erro ao carregar histórico: ${historyError.message}`);
-                }
-                
-                checklistsHistorico = historyData.map(item => ({ id: item.id, ...item.json_data }));
-                
-                showMessage("✅ Dados sincronizados com sucesso!", 'success');
-                updateFiscalSelect();
-                updateColaboradorSelect();
-                updateChecklistSetorSelect();
-                if(document.getElementById('screen4').classList.contains('active')) irParaDashboard(true);
-
-            } catch (e) {
-                console.error("Erro Supabase:", e);
-                showMessage(`❌ Erro de sincronização: ${e.message}`, 'error', 8000);
-            }
-        }
-
-        async function saveAllData({ type, dataId = CONFIG_ID, payload = null }) {
-            if (!isSupabaseReady) {
-                 showMessage('❌ Erro: Sincronização indisponível.', 'error');
-                 return;
-            }
-
-            try {
-                let dataToSave;
-                let error;
-                
-                if (type === 'config' || type === 'initial_setup') {
-                    dataToSave = {
-                        fiscais: FISCAIS,
-                        colaboradores: COLABORADORES,
-                        checklists: CHECKLISTS
-                    };
-
-                    const { error: upsertError } = await supabase
-                        .from(TABLE_NAME)
-                        .upsert({ id: CONFIG_ID, json_data: dataToSave }, { onConflict: 'id' });
-                    
-                    error = upsertError;
-
-                } else if (type === 'checklist') {
-                    dataToSave = payload;
-                    const { error: insertError } = await supabase
-                        .from(TABLE_NAME)
-                        .upsert({ id: dataId, json_data: dataToSave }, { onConflict: 'id' });
-                    
-                    error = insertError;
-                }
-
-                if (error) {
-                    throw new Error(error.message);
-                }
-
-                loadData(); 
-
-            } catch (e) {
-                console.error("Erro ao salvar dados:", e);
-                showMessage(`❌ Erro ao salvar: ${e.message}`, 'error');
-            }
-        }
-
-        function loadDataLocalFallback() {
-            try {
-                FISCAIS = JSON.parse(localStorage.getItem('fiscais') || JSON.stringify({ 'Carlos': '5875', 'Cadu': '1228', 'Junior': '0701', 'Marilu': '2992' }));
-                COLABORADORES = JSON.parse(localStorage.getItem('colaboradores') || JSON.stringify({
-                    'Andre Lopes': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                    'Hugo Aguiar': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                    'Katia': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                    'Maria Eduarda': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                    'Jonatan Piva': { senha: '1234', requirePwdChange: true, ajustesPontos: [] },
-                    'Carlos': { senha: '1234', requirePwdChange: true, ajustesPontos: [] }
-                }));
-                CHECKLISTS = JSON.parse(localStorage.getItem('baseChecklists') || JSON.stringify(DEFAULT_CHECKLISTS));
-                checklistsHistorico = JSON.parse(localStorage.getItem('checklists_local_fallback') || '[]');
-            } catch (e) {
-                console.error("Erro ao carregar localStorage:", e);
-            }
-            updateFiscalSelect();
-            updateColaboradorSelect();
-            updateChecklistSetorSelect();
-        }
-
-        function showMessage(message, type = 'warning', timeout = 4000) {
-            const box = document.getElementById('messageBox');
-            let color, bg, border;
-            switch (type) {
-                case 'success': color = '#155724'; bg = '#d4edda'; border = '#c3e6cb'; break;
-                case 'error': color = '#721c24'; bg = '#f8d7da'; border = '#f5c6fb'; break;
-                case 'info': color = '#0c5460'; bg = '#d1ecf1'; border = '#bee5eb'; break;
-                case 'warning': default: color = '#856404'; bg = '#fff3cd'; border = '#ffeeba'; break;
-            }
-            box.style.color = color;
-            box.style.backgroundColor = bg;
-            box.style.borderColor = border;
-            box.textContent = message;
-            box.style.display = 'block';
-            clearTimeout(box.timeout);
-            box.timeout = setTimeout(() => { box.style.display = 'none'; }, timeout);
-        }
-
-        function updateFiscalSelect() {
-            const select = document.getElementById('fiscalNome');
-            select.innerHTML = '<option value="">Selecione...</option>';
-            for (let nome in FISCAIS) {
-                select.innerHTML += `<option value="${nome}">${nome}</option>`;
-            }
-        }
         
-        function updateColaboradorSelect(setor = null) {
-            const select = document.getElementById('colaboradorUser');
-            select.innerHTML = '<option value="">Selecione o usuário...</option>';
-            
-            let colaboradoresDisponiveis = Object.keys(COLABORADORES);
+        // --- DEFINIÇÕES DE FUNÇÕES (DEVE ESTAR ANTES DA CHAMADA) ---
 
-            if (setor && SETOR_COLABORADOR_MAP[setor]) {
-                colaboradoresDisponiveis = SETOR_COLABORADOR_MAP[setor].filter(user => COLABORADORES.hasOwnProperty(user));
-            } else {
-                 colaboradoresDisponiveis = Object.keys(COLABORADORES);
-            }
+        // Funções de Modal
+        const customModal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButtons = document.getElementById('modalButtons');
 
-            colaboradoresDisponiveis.forEach(user => {
-                select.innerHTML += `<option value="${user}">${user}</option>`;
-            });
+        function showMessageBox(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalButtons.innerHTML = `<button class="modal-btn primary" onclick="customModal.classList.remove('active')">OK</button>`;
+            const modal = document.getElementById('customModal');
+            if (modal) modal.classList.add('active');
         }
 
-        function updateChecklistSetorSelect() {
-            const select = document.getElementById('checklistSetorSelect');
-            select.innerHTML = ''; 
-            for (const setor in CHECKLISTS) {
-                const setorDisplay = { caixa: 'CAIXA', hortifruti: 'HORTIFRUTI', bebidas: 'BEBIDAS', corredor: 'CORREDOR' }[setor];
-                const option = document.createElement('option');
-                option.value = setor;
-                option.textContent = setorDisplay;
-                select.appendChild(option);
-            }
-        }
+        function showConfirmBox(title, message, onConfirm, onCancel = null) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalButtons.innerHTML = `
+                <button class="modal-btn secondary" id="confirmCancel">Cancelar</button>
+                <button class="modal-btn primary" id="confirmOk">Sim</button>
+            `;
+            const modal = document.getElementById('customModal');
+            if (modal) modal.classList.add('active');
 
-        function mostrarTela(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function voltarTela(id) {
-            mostrarTela(id);
-        }
-        
-        function voltarGestao() {
-            colaboradorEmGestao = null;
-            changeAdminTab('colaboradores');
-            voltarTela('screen4'); 
-        }
-
-        function fazerLogin() {
-            const nome = document.getElementById('fiscalNome').value;
-            const senha = document.getElementById('fiscalSenha').value.trim();
-
-            if (!nome || !senha) {
-                showMessage('Por favor, preencha todos os campos!', 'error');
-                return;
-            }
-
-            if (FISCAIS[nome] && FISCAIS[nome] === senha) {
-                fiscalLogado = nome;
-                document.getElementById('logoutBtn').style.display = 'block';
-                
-                if (ADMINS.includes(fiscalLogado)) {
-                     document.getElementById('adminName').textContent = fiscalLogado;
-                     document.getElementById('adminPanel').style.display = 'block';
-                     document.getElementById('fiscalChangePwdPanel').style.display = 'none';
-                     document.getElementById('limparHistoricoBtn').style.display = (fiscalLogado === 'Carlos') ? 'block' : 'none';
-                } else {
-                    document.getElementById('adminPanel').style.display = 'none';
-                    document.getElementById('fiscalChangePwdPanel').style.display = 'block';
-                }
-
-                irParaDashboard();
-            } else {
-                showMessage('❌ Usuário ou senha incorretos!', 'error');
-            }
-        }
-        
-        async function trocarSenhaFiscal() {
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-
-            const novaSenha1 = document.getElementById('fiscalNovaSenha1').value.trim();
-            const novaSenha2 = document.getElementById('fiscalNovaSenha2').value.trim();
-            
-            if (!novaSenha1 || novaSenha1.length < 4) {
-                showMessage('A nova senha deve ter no mínimo 4 caracteres.', 'error');
-                return;
-            }
-            
-            if (novaSenha1 !== novaSenha2) {
-                showMessage('As senhas não coincidem.', 'error');
-                return;
-            }
-            
-            FISCAIS[fiscalLogado] = novaSenha1;
-            
-            await saveAllData({ type: 'config' });
-            showMessage(`✅ Senha alterada com sucesso!`, 'success');
-
-            document.getElementById('fiscalNovaSenha1').value = '';
-            document.getElementById('fiscalNovaSenha2').value = '';
-        }
-
-        function fazerLoginColaborador() {
-            const user = document.getElementById('colaboradorUser').value;
-            const senha = document.getElementById('colaboradorSenha').value.trim();
-            const turno = document.getElementById('turnoSelect').value;
-            const dataHoje = new Date().toLocaleDateString('pt-BR');
-
-            if (!user || !senha || !turno) {
-                showMessage('Por favor, preencha todos os campos!', 'error');
-                return;
-            }
-            
-            const colabData = COLABORADORES[user];
-
-            if (colabData && colabData.senha === senha) {
-                
-                if (!SETOR_COLABORADOR_MAP[setorAtual] || !SETOR_COLABORADOR_MAP[setorAtual].includes(user)) {
-                    showMessage(`❌ ${user} não tem permissão para o setor ${setorAtual.toUpperCase()}.`, 'error', 7000);
-                    return;
-                }
-                
-                const checklistExistente = checklistsHistorico.find(c => 
-                    c.setor === setorAtual && 
-                    c.turno === turno && 
-                    c.data === dataHoje &&
-                    c.porcentagem === 100
-                );
-
-                if (checklistExistente) {
-                    showMessage(`⚠️ O checklist ${setorAtual.toUpperCase()} das ${turno} já foi concluído por ${checklistExistente.nome}.`, 'warning', 7000);
-                    return;
-                }
-
-                if (colabData.requirePwdChange) {
-                    colaboradorAguardandoSenha = user;
-                    mostrarTela('screen6');
-                    showMessage('⚠️ Defina uma nova senha.', 'warning', 6000);
-                    return;
-                }
-                
-                colaboradorLogado = user;
-                iniciarChecklist(turno);
-            } else {
-                showMessage('❌ Usuário ou senha incorretos!', 'error');
-            }
-        }
-        
-        async function salvarNovaSenha() {
-            const user = colaboradorAguardandoSenha;
-            const novaSenha1 = document.getElementById('novaSenha1').value.trim();
-            const novaSenha2 = document.getElementById('novaSenha2').value.trim();
-            
-            if (!novaSenha1 || novaSenha1.length < 4) {
-                showMessage('A nova senha deve ter no mínimo 4 caracteres.', 'error');
-                return;
-            }
-            
-            if (novaSenha1 !== novaSenha2) {
-                showMessage('As senhas não coincidem.', 'error');
-                return;
-            }
-            
-            COLABORADORES[user].senha = novaSenha1;
-            COLABORADORES[user].requirePwdChange = false; 
-            
-            await saveAllData({ type: 'config' });
-            
-            showMessage('✅ Senha alterada! Prossiga.', 'success');
-
-            colaboradorLogado = user;
-            colaboradorAguardandoSenha = null;
-            
-            const turno = document.getElementById('turnoSelect').value;
-            iniciarChecklist(turno);
-        }
-
-        function logout() {
-            fiscalLogado = null;
-            colaboradorLogado = null;
-            colaboradorAguardandoSenha = null;
-            document.getElementById('logoutBtn').style.display = 'none';
-            document.getElementById('fiscalNome').value = '';
-            document.getElementById('fiscalSenha').value = '';
-            document.getElementById('colaboradorUser').value = '';
-            document.getElementById('colaboradorSenha').value = '';
-            document.getElementById('turnoSelect').value = '';
-            document.getElementById('limparHistoricoBtn').style.display = 'none'; 
-            document.getElementById('fiscalChangePwdPanel').style.display = 'none'; 
-            voltarTela('screen1');
-            showMessage('Deslogado com sucesso!', 'info');
-        }
-
-        function escolherSetor(setor) {
-            setorAtual = setor;
-            
-            const select = document.getElementById('turnoSelect');
-            select.innerHTML = '<option value="">Selecione o turno</option>';
-            
-            TURNOS[setor].forEach(turno => {
-                select.innerHTML += `<option value="${turno.valor}">${turno.texto}</option>`;
-            });
-            
-            const setorNome = { caixa: 'Caixa', hortifruti: 'Hortifruti', bebidas: 'Bebidas', corredor: 'Corredor' }[setor] || 'Setor';
-
-            document.getElementById('operadorTitulo').textContent = `Login Colaborador - ${setorNome}`;
-            document.getElementById('colaboradorSenha').value = ''; 
-            
-            updateColaboradorSelect(setor);
-
-            mostrarTela('screen2');
-        }
-
-        function iniciarChecklist(turno) {
-            const user = colaboradorLogado;
-            
-            operadorAtual = {
-                nome: user, 
-                turno: turno,
-                setor: setorAtual,
-                data: new Date().toLocaleDateString('pt-BR'),
-                timestamp: new Date().toISOString()
+            document.getElementById('confirmOk').onclick = () => {
+                const modal = document.getElementById('customModal');
+                if (modal) modal.classList.remove('active');
+                if (onConfirm) onConfirm();
             };
-            
-            const setorNomeDisplay = { caixa: '💰 CHECKLIST CAIXA', hortifruti: '🥦 CHECKLIST HORTIFRUTI', bebidas: '🍹 CHECKLIST BEBIDAS', corredor: '🛒 CHECKLIST CORREDOR' }[setorAtual];
-
-            document.getElementById('setorTitulo').textContent = setorNomeDisplay;
-            document.getElementById('nomeDisplay').textContent = user;
-            document.getElementById('turnoDisplay').textContent = TURNOS[setorAtual].find(t => t.valor === turno).texto;
-            document.getElementById('dataDisplay').textContent = operadorAtual.data;
-            
-            criarChecklist();
-            mostrarTela('screen3');
+            document.getElementById('confirmCancel').onclick = () => {
+                const modal = document.getElementById('customModal');
+                if (modal) modal.classList.remove('active');
+                if (onCancel) onCancel();
+            };
         }
 
-        function criarChecklist() {
-            const container = document.getElementById('checklistContainer');
-            container.innerHTML = '';
-            itensChecados = {};
+        // Funções de Utilidade
+        function formatarTelefone(telefone) {
+            if (!telefone) return '';
+            const nums = String(telefone).replace(/\D/g, '');
+            if (nums.length === 11) {
+                return `(${nums.substring(0, 2)}) ${nums.substring(2, 7)}-${nums.substring(7, 11)}`;
+            } else if (nums.length === 10) {
+                return `(${nums.substring(0, 2)}) ${nums.substring(2, 6)}-${nums.substring(6, 10)}`;
+            }
+            return telefone;
+        }
+
+        function formatarMoeda(valor) {
+            if (!valor) return 'R$ 0,00';
+            const valorString = String(valor);
+            const num = parseFloat(valorString.replace('R$', '').replace(/\s/g, '').replace(',', '.'));
+            if (isNaN(num)) return 'R$ 0,00';
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
+        }
+        
+        function limparMoeda(valor) {
+             if (!valor) return 0;
+             const valorString = String(valor);
+             return parseFloat(valorString.replace(/[R$ ]/g, '').replace(',', '.'));
+        }
+        
+        function formatSupabaseDate(dateString) {
+             if (!dateString) return 'N/A';
+             return new Date(dateString).toLocaleString('pt-BR');
+        }
+
+        function salvarEntregadores() {
+             localStorage.setItem('ENTREGADORES', JSON.stringify(ENTREGADORES));
+             localStorage.setItem('ATENDENTES', JSON.stringify(ATENDENTES)); 
+        }
+
+        function obterEntregasFiltradas() {
+            let entregasFiltradas = todasEntregas.slice(); 
             
-            const listaItens = CHECKLISTS[setorAtual] || [];
+            const dataInicialStr = document.getElementById('dataInicial') ? document.getElementById('dataInicial').value : null;
+            const dataFinalStr = document.getElementById('dataFinal') ? document.getElementById('dataFinal').value : null;
+
+            if (dataInicialStr || dataFinalStr) {
+                const dataInicio = dataInicialStr ? new Date(dataInicialStr + 'T00:00:00') : null;
+                const dataFim = dataFinalStr ? new Date(dataFinalStr + 'T23:59:59') : null;
+
+                entregasFiltradas = entregasFiltradas.filter(e => {
+                    const dataEntrega = new Date(e.created_at);
+                    const isAposInicio = dataInicio ? dataEntrega >= dataInicio : true;
+                    const isAntesFim = dataFim ? dataEntrega <= dataFim : true;
+                    return isAposInicio && isAntesFim;
+                });
+            }
             
-            const dataHoje = new Date().toLocaleDateString('pt-BR');
-            const checklistAnterior = checklistsHistorico.find(c => 
-                c.setor === setorAtual && 
-                c.turno === operadorAtual.turno && 
-                c.data === dataHoje
-            );
+            if (tipoUsuario === 'entregador') {
+                const hoje = new Date().toLocaleDateString('pt-BR');
+                entregasFiltradas = entregasFiltradas.filter(e => e.data === hoje); 
+            }
             
-            let itensFeitosNoDia = {};
-            if (checklistAnterior && checklistAnterior.itens) {
-                const itensFeitos = JSON.parse(checklistAnterior.itens);
-                
-                for (const key in itensFeitos) {
-                     if (itensFeitos[key].hora) {
-                         itensFeitosNoDia[key] = true;
-                     }
-                }
+            return entregasFiltradas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); 
+        }
+
+        function abrirNoMaps(endereco, bairro) {
+            const destino = `${endereco}, ${bairro}, Garça, SP, Brasil`; 
+            const mapsUrl = `https://www.google.com/maps/dir/${encodeURIComponent(ORIGEM_MAPS)}/${encodeURIComponent(destino)}/data=!4m2!4m1!3e0`;
+            
+            const tempInput = document.createElement('textarea');
+            tempInput.value = mapsUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy'); 
+            document.body.removeChild(tempInput);
+
+            showMessageBox('🗺️ Link Copiado!', 'O link de navegação do Maps foi copiado para a área de transferência. Cole em seu navegador ou abra o app de Maps.');
+        }
+        
+        function togglePagamentoFields() {
+            let forma = document.getElementById('formaPagamento').value;
+            let status = document.getElementById('statusPagamento').value;
+            let trocoGroup = document.getElementById('trocoGroup');
+            let fotoComprovante = document.getElementById('fotoComprovante');
+            let formaPagamentoGroup = document.getElementById('formaPagamentoGroup');
+            let formaPagamentoSelect = document.getElementById('formaPagamento');
+
+            if (status === 'NÃO' || status === 'SIM') { 
+                 formaPagamentoGroup.style.display = 'block';
+            } else { 
+                formaPagamentoGroup.style.display = 'none';
+                formaPagamentoSelect.value = ''; 
             }
 
-            listaItens.forEach((item, index) => {
-                if (itensFeitosNoDia[index]) {
-                    return; 
-                }
-
-                const div = document.createElement('div');
-                div.className = 'checklist-item';
-                div.dataset.originalIndex = index; 
-                div.onclick = () => marcarItem(div); 
-                div.innerHTML = `
-                    <div class="checkbox-custom"></div>
-                    <div class="item-content">
-                        <div class="item-title">${item.item}</div>
-                        <div class="item-time" id="time-${index}">(${item.points} Pontos)</div>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-            
-            atualizarProgresso();
-        }
-
-        function marcarItem(itemElement) {
-            const originalIndex = itemElement.dataset.originalIndex;
-            const index = originalIndex;
-            const listaItens = CHECKLISTS[setorAtual] || [];
-            
-            const timeEl = itemElement.querySelector('.item-time');
-            
-            if (itensChecados[index]) {
-                delete itensChecados[index];
-                itemElement.classList.remove('checked');
-                itemElement.querySelector('.checkbox-custom').textContent = '';
-                timeEl.textContent = `(${listaItens[originalIndex].points} Pontos)`;
+            if (forma === 'Dinheiro' && status === 'NÃO') {
+                trocoGroup.style.display = 'block';
             } else {
-                const hora = new Date().toLocaleTimeString('pt-BR');
-                itensChecados[index] = {
-                    item: listaItens[originalIndex].item,
-                    points: listaItens[originalIndex].points,
-                    hora: hora
-                };
-                itemElement.classList.add('checked');
-                itemElement.querySelector('.checkbox-custom').textContent = '✓';
-                timeEl.textContent = `✓ Marcado às ${hora} (${listaItens[originalIndex].points} Pontos)`;
+                trocoGroup.style.display = 'none';
+                document.getElementById('valorTroco').value = '';
             }
-            
-            atualizarProgresso();
+
+            if ((forma === 'Pix' || forma === 'Cartão') && status === 'SIM') {
+                 fotoComprovante.style.display = 'block';
+            } else {
+                 fotoComprovante.style.display = 'none';
+                 document.getElementById('fotoInput').value = '';
+                 document.getElementById('previewFoto').innerHTML = '';
+            }
         }
 
-        function atualizarProgresso() {
-            const total = CHECKLISTS[setorAtual] ? CHECKLISTS[setorAtual].length : 0;
-            const completos = Object.keys(itensChecados).length;
-            const porcentagem = total > 0 ? Math.round((completos / total) * 100) : 0;
+        function toggleOutroCaixa() {
+            const caixa = document.getElementById('caixaSelect').value;
+            const outroMotivoGroup = document.getElementById('outroCaixaMotivo');
             
-            document.getElementById('progressBar').style.width = porcentagem + '%';
-            document.getElementById('progressText').textContent = 
-                `${completos}/${total} itens feitos (${porcentagem}%)`;
+            if (caixa === 'Outro') {
+                outroMotivoGroup.style.display = 'block';
+            } else {
+                outroMotivoGroup.style.display = 'none';
+                document.getElementById('caixaMotivoInput').value = '';
+            }
+        }
+        
+        function renderizarCardEntrega(entrega, mostrarEntregador = false, isFiscal = false) {
+            let statusClass = `status-${entrega.status.replace(/\s/g, '').toLowerCase()}`;
+            let statusText = entrega.status.toUpperCase();
             
-            document.querySelector('#finishSection p').innerHTML = `
-                ${completos === total ? '✅ Checklist 100% Completo.' : 
-                `⚠️ Checklist será enviado com ${completos}/${total} itens marcados.`}
+            let badges = '';
+            if (entrega.geladeira === 'Sim') badges += `<span class="geladeira-badge">❄️ GELADEIRA</span>`;
+            if (entrega.jaPago === 'SIM') badges += `<span class="pago-badge">✅ PAGO (${entrega.pagamento})</span>`;
+            if (entrega.jaPago === 'NÃO') badges += `<span class="cobrar-badge">💰 COBRAR ${entrega.valor}</span>`;
+            if (entrega.troco && entrega.troco !== 'Não') badges += `<span class="troco-badge">💵 TROCO: ${entrega.troco}</span>`;
+
+            let actions = '';
+            
+            const id = entrega.id; 
+
+            if (entrega.status === 'pendente' && tipoUsuario === 'entregador') {
+                actions = `<button class="btn-small btn-pegar" onclick="pegarEntrega('${id}')">Pegar Entrega</button>`;
+            } else if (entrega.status === 'em rota' && entrega.entregador === usuarioLogado && tipoUsuario === 'entregador') {
+                actions = `
+                    <button class="btn-small btn-maps" onclick="abrirNoMaps('${entrega.endereco}', '${entrega.bairro}')">🗺️ Abrir no Maps</button>
+                    <button class="btn-small btn-verde" onclick="abrirModalAnexo('${id}')">📸 Anexar Comprovante</button>
+                    <button class="btn-small btn-entregar" onclick="finalizarEntrega('${id}')">Entregue</button>
+                    <button class="btn-small btn-falha" onclick="falhaEntregaAcao('${id}')">Falha</button>
+                `;
+            }
+            
+            actions += `<button class="btn-small btn-ver" onclick="mostrarDetalhes('${id}')">Ver Detalhes</button>`;
+
+            if (isFiscal && entrega.status !== 'entregue' && entrega.status !== 'cancelada' && entrega.status !== 'falha') {
+                 actions += `<button class="btn-small btn-cancelar" onclick="cancelarEntrega('${id}')">Cancelar</button>`;
+            }
+
+            const entregadorInfo = mostrarEntregador && entrega.entregador ? 
+                `<div class="entrega-info"><strong>Entregador:</strong> ${entrega.entregador}</div>` : '';
+            
+            const adminInfo = isFiscal ? 
+                `<div class="entrega-info"><strong>Criada por:</strong> ${entrega.operadorCaixa} | <strong>Bairro:</strong> ${entrega.bairro}</div>` : 
+                `<div class="entrega-info"><strong>Bairro:</strong> ${entrega.bairro}</div>`;
+                
+            return `
+                <div class="entrega-card">
+                    <div class="entrega-header">
+                        <span class="entrega-nome">${entrega.clienteNome}</span>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    ${adminInfo}
+                    <div class="entrega-info"><strong>Valor:</strong> ${entrega.valor} (${entrega.pagamento}) | Caixa: ${entrega.caixa}</div>
+                    ${entregadorInfo}
+                    <div class="entrega-info" style="margin-top: 8px;">${badges}</div>
+                    <div class="entrega-actions">${actions}</div>
+                </div>
             `;
         }
 
-        function calcularPontosPotenciais(setor) {
-            const listaItens = CHECKLISTS[setor] || [];
-            return listaItens.reduce((sum, item) => sum + item.points, 0);
+        function carregarEntregasEntregador() {
+            const entregas = obterEntregasFiltradas();
+
+            const pendentes = entregas.filter(e => e.status === 'pendente');
+            const emRota = entregas.filter(e => e.entregador === usuarioLogado && e.status === 'em rota');
+            const historico = entregas.filter(e => e.status === 'entregue' || e.status === 'falha' || e.status === 'cancelada');
+
+            const emRotaCount = document.getElementById('entregasEmRotaCount');
+            if (emRotaCount) emRotaCount.textContent = emRota.length;
+            
+            const listaPendentes = document.getElementById('listaEntregasPendentes');
+            if (listaPendentes) listaPendentes.innerHTML = pendentes.map(e => renderizarCardEntrega(e, false, false)).join('') || '<div class="empty-state">Nenhuma entrega pendente na fila.</div>';
+
+            const listaEmRota = document.getElementById('listaEntregasEmRota');
+            if (listaEmRota) listaEmRota.innerHTML = emRota.map(e => renderizarCardEntrega(e, false, false)).join('') || '<div class="empty-state">Nenhuma entrega em sua rota.</div>';
+
+            const listaHistorico = document.getElementById('listaEntregasEntregues');
+            if (listaHistorico) listaHistorico.innerHTML = historico.map(e => renderizarCardEntrega(e, true, false)).join('') || '<div class="empty-state">Nenhum histórico de entrega hoje.</div>';
+        }
+        
+        function carregarDashboardFiscal() {
+            const entregas = obterEntregasFiltradas();
+
+            let totalPendentes = 0;
+            let totalEmRota = 0;
+            let totalEntregues = 0;
+            let totalArrecadadoNum = 0;
+            let dadosGrafico = {};
+
+            let listaHTML = '';
+
+            entregas.forEach(e => {
+                listaHTML += renderizarCardEntrega(e, true, true); 
+                
+                switch (e.status) {
+                    case 'pendente': totalPendentes++; break;
+                    case 'em rota': totalEmRota++; break;
+                    case 'entregue': 
+                        totalEntregues++;
+                        totalArrecadadoNum += e.valorNumerico; 
+                        break;
+                }
+                
+                dadosGrafico[e.status] = (dadosGrafico[e.status] || 0) + 1;
+            });
+
+            const totalPendentesEl = document.getElementById('totalPendentes');
+            if (totalPendentesEl) totalPendentesEl.textContent = totalPendentes;
+            const totalEmRotaEl = document.getElementById('totalEmRota');
+            if (totalEmRotaEl) totalEmRotaEl.textContent = totalEmRota;
+            const totalEntreguesEl = document.getElementById('totalEntregues');
+            if (totalEntreguesEl) totalEntreguesEl.textContent = totalEntregues;
+            const totalArrecadadoEl = document.getElementById('totalArrecadado');
+            if (totalArrecadadoEl) totalArrecadadoEl.textContent = formatarMoeda(totalArrecadadoNum);
+            
+            const listaTodasEntregas = document.getElementById('listaTodasEntregas');
+            if (listaTodasEntregas) listaTodasEntregas.innerHTML = listaHTML || `<div class="empty-state">Nenhuma entrega encontrada no período.</div>`;
+            
+            renderizarGraficoStatus(dadosGrafico);
         }
 
-        async function finalizarChecklist() {
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-            
-            const total = CHECKLISTS[setorAtual] ? CHECKLISTS[setorAtual].length : 0;
-            const completos = Object.keys(itensChecados).length;
-            
-            const pontosPotenciais = calcularPontosPotenciais(setorAtual);
-            const checklistId = `${operadorAtual.nome.replace(/\s/g, '_')}-${operadorAtual.setor}-${operadorAtual.turno}-${operadorAtual.data.replace(/\//g, '-')}`;
+        function renderizarGraficoStatus(dataObject) {
+            const data = Object.keys(dataObject).map(key => ({
+                status: key,
+                count: dataObject[key]
+            }));
 
-            const dados = {
-                ...operadorAtual,
-                itens: JSON.stringify(itensChecados), 
-                total: total,
-                completos: completos,
-                porcentagem: Math.round((completos / total) * 100),
-                pontosPotenciais: pontosPotenciais,
-                pontosAprovados: 0,
-                status: 'PENDENTE',
-                fiscalAprovador: null,
-                id: checklistId
-            };
-            
-            try {
-                await saveAllData({ type: 'checklist', dataId: checklistId, payload: dados });
-                showMessage('✅ Checklist finalizado! Aguardando aprovação.', 'success');
-            } catch (e) {
-                showMessage(`Erro ao salvar: ${e.message}`, 'error');
-                return;
-            }
-            
-            colaboradorLogado = null;
-            document.getElementById('colaboradorUser').value = '';
-            document.getElementById('colaboradorSenha').value = '';
-            document.getElementById('turnoSelect').value = '';
-            
-            await loadData();
-            mostrarTela('screen1');
-        }
+            const container = d3.select("#statusChart");
+            if (!container.empty()) {
+                container.html("");
 
-        function irParaDashboard(isRealtimeUpdate = false) {
-            const hoje = new Date().toLocaleDateString('pt-BR');
-            document.getElementById('dashboardData').textContent = `Checklists de ${hoje}`;
-            document.getElementById('fiscalLogado').textContent = fiscalLogado;
-            
-            const checklistsHoje = checklistsHistorico.filter(c => c.data === hoje);
+                if (data.length === 0) {
+                    container.html('<div class="empty-state">Sem dados para exibir o gráfico.</div>');
+                    return;
+                }
 
-            document.getElementById('totalChecklists').textContent = checklistsHoje.length;
-            
-            let media = 0;
-            if (checklistsHoje.length > 0) {
-                media = checklistsHoje.reduce((acc, c) => acc + c.porcentagem, 0) / checklistsHoje.length;
-            }
-            document.getElementById('mediaCompleto').textContent = Math.round(media) + '%';
-            
-            renderHistoryList(checklistsHoje);
-            
-            if (!isRealtimeUpdate) {
-                mostrarTela('screen4');
+                const width = 400;
+                const height = 200;
+                const margin = { top: 10, right: 10, bottom: 30, left: 40 };
+
+                const svg = container.append("svg")
+                    .attr("width", "100%")
+                    .attr("height", height)
+                    .attr("viewBox", `0 0 ${width} ${height}`)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                const x = d3.scaleBand()
+                    .domain(data.map(d => d.status))
+                    .range([0, width - margin.left - margin.right])
+                    .padding(0.2);
+
+                const y = d3.scaleLinear()
+                    .domain([0, d3.max(data, d => d.count) || 1])
+                    .range([height - margin.top - margin.bottom, 0]);
+
+                svg.append("g")
+                    .attr("transform", `translate(0, ${height - margin.top - margin.bottom})`)
+                    .call(d3.axisBottom(x))
+                    .selectAll("text")
+                    .attr("class", "axis-label");
+
+                svg.append("g")
+                    .call(d3.axisLeft(y).ticks(d3.max(data, d => d.count) || 1).tickFormat(d3.format("d"))) 
+                    .selectAll("text")
+                    .attr("class", "axis-label");
+
+                svg.selectAll(".bar")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", d => `bar status-${d.status.replace(/\s/g, '').toLowerCase()}`)
+                    .attr("x", d => x(d.status))
+                    .attr("y", d => y(d.count))
+                    .attr("width", x.bandwidth())
+                    .attr("height", d => (height - margin.top - margin.bottom) - y(d.count));
             }
         }
 
-        function renderHistoryList(checklistsHoje) {
-            const lista = document.getElementById('historyList');
-            lista.innerHTML = '';
+        function carregarPerformanceEntregadores() {
+            const entregas = obterEntregasFiltradas();
+
+            const performanceData = {};
+
+            entregas.forEach(e => {
+                const nome = e.entregador || 'Não Atribuído';
+                
+                if (!performanceData[nome]) {
+                    performanceData[nome] = { atribuido: 0, entregue: 0, falha: 0, cancelada: 0 };
+                }
+
+                if (e.status !== 'pendente') {
+                    performanceData[nome].atribuido++;
+                }
+
+                if (e.status === 'entregue') {
+                    performanceData[nome].entregue++;
+                } else if (e.status === 'falha') {
+                    performanceData[nome].falha++;
+                } else if (e.status === 'cancelada') {
+                    performanceData[nome].cancelada++;
+                }
+            });
+
+            const tbody = document.getElementById('performanceBody');
+            if (tbody) {
+                tbody.innerHTML = '';
             
-            if (checklistsHoje.length === 0) {
-                lista.innerHTML = '<p style="text-align: center; color: #666; margin-top: 15px;">Nenhum checklist realizado hoje</p>';
-            } else {
-                checklistsHoje.reverse().forEach((c) => {
-                    const setorNome = { caixa: '💰 CAIXA', hortifruti: '🥦 HORTIFRUTI', bebidas: '🍹 BEBIDAS', corredor: '🛒 CORREDOR' }[c.setor] || 'Setor Desconhecido';
+                let listaEntregadores = Object.keys(performanceData).sort((a, b) => {
+                    if (a === 'Não Atribuído') return 1;
+                    if (b === 'Não Atribuído') return -1;
+                    const successA = (performanceData[a].entregue / (performanceData[a].atribuido || 1)) * 100;
+                    const successB = (performanceData[b].entregue / (performanceData[b].atribuido || 1)) * 100;
+                    return successB - successA;
+                });
+
+                if (listaEntregadores.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhuma entrega finalizada ou em rota no período.</td></tr>';
+                    return;
+                }
+                
+                listaEntregadores.forEach(nome => {
+                    const data = performanceData[nome];
+                    const total = data.atribuido;
+                    const sucesso = data.entregue;
+                    const taxaSucesso = total > 0 ? ((sucesso / total) * 100).toFixed(1) : '0.0';
                     
-                    let statusTag = `<span class="status-tag">${c.status}</span>`;
-                    let pontosAprovados = '';
+                    let statusClass = taxaSucesso >= 90 ? 'green' : (taxaSucesso >= 75 ? '' : 'danger');
 
-                    if (c.status === 'APROVADO') {
-                        statusTag = `<span class="status-tag aprovado">APROVADO</span>`;
-                        pontosAprovados = `<div class="history-info" style="color: #28a745;"><strong>Pontos:</strong> +${c.pontosAprovados}</div>`;
-                    } else if (c.status === 'REPROVADO') {
-                        statusTag = `<span class="status-tag reprovado">REPROVADO</span>`;
-                    }
-
-                    lista.innerHTML += `
-                        <div class="history-item" onclick="visualizarDetalhes('${c.id}')" style="cursor: pointer;">
-                            <div class="history-header">
-                                <span class="history-setor">${setorNome}</span>
-                                <span class="history-turno">${c.turno}</span>
-                                ${statusTag}
-                            </div>
-                            <div class="history-info"><strong>Colaborador:</strong> ${c.nome}</div>
-                            ${pontosAprovados}
-                            <div class="history-info"><strong>Horário:</strong> ${new Date(c.timestamp).toLocaleTimeString('pt-BR')}</div>
-                            <div class="history-progress">
-                                <div class="mini-progress">
-                                    <div class="mini-progress-fill" style="width: ${c.porcentagem}%"></div>
-                                </div>
-                                <span style="color: #3d4b7a; font-weight: bold;">${c.completos}/${c.total}</span>
-                            </div>
-                        </div>
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${nome}</strong></td>
+                            <td>${total}</td>
+                            <td>${sucesso}</td>
+                            <td class="performance-metric" style="color: ${statusClass === 'green' ? '#28a745' : (statusClass === 'danger' ? '#dc3545' : '#3d4b7a')};">${taxaSucesso}%</td>
+                        </tr>
                     `;
                 });
             }
         }
         
-        function visualizarDetalhes(docId) {
-            const checklist = checklistsHistorico.find(c => c.id === docId);
-            checklistEmRevisaoDocId = docId;
-
-            if (!checklist) {
-                showMessage('Checklist não encontrado.', 'error');
+        function carregarGestaoAdm() {
+            if (tipoUsuario !== 'fiscal') {
+                mostrarLogin('fiscal');
                 return;
-            }
-
-            const setorNomeDisplay = { caixa: '💰 DETALHES CAIXA', hortifruti: '🥦 DETALHES HORTIFRUTI', bebidas: '🍹 DETALHES BEBIDAS', corredor: '🛒 DETALHES CORREDOR' }[checklist.setor];
-
-            document.getElementById('detailsSetorTitulo').textContent = setorNomeDisplay;
-            document.getElementById('detailsNomeDisplay').textContent = checklist.nome;
+            } 
             
-            const turnoTexto = TURNOS[checklist.setor].find(t => t.valor === checklist.turno)?.texto || checklist.turno;
-            document.getElementById('detailsTurnoDisplay').textContent = turnoTexto;
-            
-            document.getElementById('detailsDataDisplay').textContent = new Date(checklist.timestamp).toLocaleString('pt-BR');
-            
-            document.getElementById('detailsPontosPotenciais').textContent = checklist.pontosPotenciais;
-
-            document.getElementById('detailsProgressBar').style.width = checklist.porcentagem + '%';
-            document.getElementById('detailsProgressText').textContent = `${checklist.completos}/${checklist.total} (${checklist.porcentagem}%)`;
-
-            const statusDisplay = document.getElementById('reviewStatusDisplay');
-            statusDisplay.classList.remove('active');
-            statusDisplay.style.background = '';
-            statusDisplay.style.color = '';
-            statusDisplay.innerHTML = '';
-            
-            if (checklist.status === 'APROVADO') {
-                statusDisplay.classList.add('active');
-                statusDisplay.style.background = '#d4edda';
-                statusDisplay.style.color = '#155724';
+            const select = document.getElementById('entregadorGestaoSelect');
+            if (select) {
+                select.innerHTML = '<option value="">Selecione o Entregador...</option>';
                 
-                let pontosInfo = `Pontos concedidos: ${checklist.pontosAprovados}.`;
-                if (checklist.pontosAjustados) {
-                    pontosInfo += `<br><small>Ajustado por ${checklist.fiscalAprovador}: ${checklist.motivoAjuste}</small>`;
-                }
-
-                statusDisplay.innerHTML = `✅ APROVADO por ${checklist.fiscalAprovador} em ${new Date(checklist.dataAprovacao).toLocaleDateString('pt-BR')}. ${pontosInfo}`;
-                document.getElementById('approvalActions').style.display = 'none';
-            } else if (checklist.status === 'REPROVADO') {
-                statusDisplay.classList.add('active');
-                statusDisplay.style.background = '#f8d7da';
-                statusDisplay.style.color = '#721c24';
-                statusDisplay.innerHTML = `❌ REPROVADO por ${checklist.fiscalAprovador} em ${new Date(checklist.dataAprovacao).toLocaleDateString('pt-BR')}. Pontos perdidos.<br><small>Motivo: <strong>${checklist.motivoReprovacao || 'Não especificado'}</strong></small>`;
-                document.getElementById('approvalActions').style.display = 'none';
-            } else {
-                statusDisplay.classList.add('active');
-                statusDisplay.style.background = '#fff3cd';
-                statusDisplay.style.color = '#856404';
-                statusDisplay.innerHTML = `🟡 PENDENTE. Necessita aprovação para conceder ${checklist.pontosPotenciais} pontos.`;
-                
-                if (FISCAIS[fiscalLogado]) {
-                    document.getElementById('approvalActions').style.display = 'flex';
-                } else {
-                    document.getElementById('approvalActions').style.display = 'none';
-                    if (fiscalLogado) { 
-                         statusDisplay.innerHTML += `<br><small style="color: red;">Faça login como Fiscal/ADM.</small>`;
-                    }
-                }
-            }
-
-            const itensChecados = JSON.parse(checklist.itens);
-            const container = document.getElementById('detailsListContainer');
-            container.innerHTML = '';
-            
-            const listaCompleta = CHECKLISTS[checklist.setor] || [];
-            
-            const dataHoje = checklist.data;
-            const checklistsAnterioresNoDia = checklistsHistorico.filter(c => 
-                c.setor === checklist.setor && 
-                c.turno === checklist.turno && 
-                c.data === dataHoje &&
-                c.timestamp < checklist.timestamp
-            );
-
-            let itensFeitosAnteriormente = {};
-            
-            checklistsAnterioresNoDia.forEach(c => {
-                const itens = JSON.parse(c.itens);
-                for (const key in itens) {
-                    if (itens[key].hora) {
-                        itensFeitosAnteriormente[key] = { done: true, by: c.nome };
-                    }
-                }
-            });
-
-            listaCompleta.forEach((itemOriginal, itemIndex) => {
-                const itemChecado = itensChecados[itemIndex];
-                
-                if (itemChecado && itemChecado.hora) {
-                    container.innerHTML += `
-                        <div class="detail-item">
-                            <span class="detail-item-title" style="color: #155724;">✓ ${itemChecado.item}</span>
-                            <span class="detail-item-time">Feito às ${itemChecado.hora} (${itemChecado.points} Pts)</span>
-                        </div>
-                    `;
-                } else if (itensFeitosAnteriormente[itemIndex]?.done) {
-                     const byColab = itensFeitosAnteriormente[itemIndex].by;
-                     container.innerHTML += `
-                        <div class="detail-item">
-                            <span class="detail-item-title" style="color: #0c5460;">✓ ${itemOriginal.item}</span>
-                            <span class="item-time" style="color: #007bff; font-weight: normal;">RESOLVIDO ANTERIORMENTE (${byColab})</span>
-                        </div>
-                    `;
-                } else {
-                     container.innerHTML += `
-                        <div class="detail-item" style="opacity: 0.5;">
-                            <span class="detail-item-title">${itemOriginal.item}</span>
-                            <span class="item-time" style="color: #dc3031;">(NÃO FEITO - ${itemOriginal.points} Pts)</span>
-                        </div>
-                    `;
-                }
-            });
-
-            mostrarTela('screen5');
-        }
-
-        async function aprovarChecklist() {
-            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM.', 'error');
-            if (!checklistEmRevisaoDocId) return showMessage('Nenhum checklist selecionado.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-
-            const checklist = checklistsHistorico.find(c => c.id === checklistEmRevisaoDocId);
-            if (!checklist) { showMessage('Checklist não encontrado.', 'error'); return; }
-
-            let pontosAprovados = checklist.pontosPotenciais;
-            let pontosAjustados = false;
-            let motivoAjuste = '';
-
-            if (ADMINS.includes(fiscalLogado)) {
-                const novoPontoStr = prompt(`O colaborador completou ${checklist.completos}/${checklist.total} itens (Potencial: ${pontosAprovados} pts).\n\nComo ADM, você pode ajustar a pontuação. Digite a PONTUAÇÃO FINAL:`, pontosAprovados);
-                
-                if (novoPontoStr === null) { showMessage('Aprovação cancelada.', 'info'); return; }
-
-                const novoPonto = parseInt(novoPontoStr);
-                
-                if (isNaN(novoPonto) || novoPonto < 0) { showMessage('❌ Pontuação inválida!', 'error'); return; }
-                
-                pontosAprovados = novoPonto;
-
-                if (pontosAprovados !== checklist.pontosPotenciais) {
-                    pontosAjustados = true;
-                    motivoAjuste = prompt(`Ajuste de Pontos: ${pontosAprovados} (Original: ${checklist.pontosPotenciais}).\n\nDigite o MOTIVO do ajuste (Obrigatório):`);
-                    if (!motivoAjuste) { showMessage('Motivo obrigatório. Aprovação cancelada.', 'error'); return; }
-                }
-            }
-
-            const updatedChecklist = {
-                ...checklist,
-                status: 'APROVADO',
-                fiscalAprovador: fiscalLogado,
-                pontosAprovados: pontosAprovados,
-                dataAprovacao: new Date().toISOString(),
-                pontosAjustados: pontosAjustados,
-                motivoAjuste: motivoAjuste,
-            };
-
-            await saveAllData({ type: 'checklist', dataId: checklistEmRevisaoDocId, payload: updatedChecklist });
-            showMessage(`✅ Checklist APROVADO! ${pontosAprovados} pontos concedidos a ${checklist.nome}.`, 'success');
-            await loadData();
-            irParaDashboard();
-        }
-
-        async function reprovarChecklist() {
-            if (!FISCAIS[fiscalLogado]) return showMessage('Você precisa estar logado como Fiscal/ADM.', 'error');
-            if (!checklistEmRevisaoDocId) return showMessage('Nenhum checklist selecionado.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-            
-            const checklist = checklistsHistorico.find(c => c.id === checklistEmRevisaoDocId);
-            if (!checklist) { showMessage('Checklist não encontrado.', 'error'); return; }
-
-            const motivo = prompt('Digite o motivo da REPROVAÇÃO (Obrigatório):');
-            
-            if (!motivo || motivo.trim() === '') { showMessage('Reprovação cancelada. Motivo obrigatório.', 'error'); return; }
-
-            const updatedChecklist = {
-                ...checklist,
-                status: 'REPROVADO',
-                fiscalAprovador: fiscalLogado,
-                pontosAprovados: 0,
-                dataAprovacao: new Date().toISOString(),
-                motivoReprovacao: motivo,
-            };
-
-            await saveAllData({ type: 'checklist', dataId: checklistEmRevisaoDocId, payload: updatedChecklist });
-            showMessage(`❌ Checklist REPROVADO. Motivo: ${motivo}`, 'error');
-            await loadData();
-            irParaDashboard();
-        }
-
-        function exportarPDF() {
-            showMessage('📄 Use Ctrl+P ou menu do navegador e "Salvar como PDF".', 'info', 6000);
-            window.print();
-        }
-
-        async function tentarLimparHistorico() {
-            if (fiscalLogado !== 'Carlos') {
-                showMessage('❌ Apenas CARLOS pode limpar o histórico.', 'error');
-                return;
-            }
-            
-            const confirmation = prompt('⚠️ Para confirmar, digite "LIMPAR TUDO":');
-
-            if (confirmation === 'LIMPAR TUDO') {
-                showMessage('Limpando histórico...', 'warning', 10000);
-                if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-                
-                try {
-                    const { error } = await supabase
-                        .from(TABLE_NAME)
-                        .delete()
-                        .neq('id', CONFIG_ID);
-
-                    if (error) {
-                        throw new Error(error.message);
-                    }
-                    
-                    checklistsHistorico = [];
-                    await loadData();
-                    showMessage('✅ Histórico limpo!', 'success');
-                    irParaDashboard();
-                } catch (e) {
-                    showMessage(`Erro ao limpar: ${e.message}`, 'error');
-                }
-            } else if (confirmation !== null) {
-                showMessage('Confirmação incorreta. Ação cancelada.', 'error');
-            }
-        }
-
-        function changeAdminTab(tab) {
-            if (!ADMINS.includes(fiscalLogado)) return;
-
-            currentAdminTab = tab;
-            document.querySelectorAll('.admin-tab button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
-
-            if (tab === 'fiscais') {
-                document.getElementById('tabFiscais').classList.add('active');
-                document.getElementById('adminContentFiscais').classList.add('active');
-                carregarFiscais();
-            } else if (tab === 'colaboradores') { 
-                document.getElementById('tabColaboradores').classList.add('active');
-                document.getElementById('adminContentColaboradores').classList.add('active');
-                carregarColaboradores();
-            } else if (tab === 'checklist') {
-                document.getElementById('tabChecklist').classList.add('active');
-                document.getElementById('adminContentChecklist').classList.add('active');
-                renderChecklistManager();
-            }
-        }
-
-        function carregarFiscais() {
-            const lista = document.getElementById('fiscalList');
-            lista.innerHTML = '';
-            
-            for (let nome in FISCAIS) {
-                const isAdmin = ADMINS.includes(nome);
-                const isNonRemovable = NON_REMOVABLE_FISCAL.includes(nome);
-
-                const status = isAdmin ? ' (ADM)' : ' (Fiscal)';
-                const bloqueado = isNonRemovable ? ' (Não Removível)' : '';
-                
-                let btnRemover = '';
-                if (!isNonRemovable && ADMINS.includes(fiscalLogado)) {
-                    btnRemover = `<button class="btn-danger" onclick="tentarRemoverFiscal('${nome}')">🗑️ Remover</button>`;
-                }
-                
-                lista.innerHTML += `
-                    <div class="fiscal-item">
-                        <span><strong>${nome}</strong> ${status} - Senha: ${FISCAIS[nome]}${bloqueado}</span>
-                        ${btnRemover}
-                    </div>
-                `;
-            }
-        }
-
-        async function adicionarFiscal() {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar fiscais.', 'error');
-            
-            const nome = document.getElementById('novoFiscalNome').value.trim();
-            const senha = document.getElementById('novoFiscalSenha').value.trim();
-            
-            if (!nome || !senha) { showMessage('Preencha nome e senha!', 'error'); return; }
-            if (FISCAIS[nome]) { showMessage(`❌ Já existe um fiscal "${nome}"!`, 'error'); return; }
-            
-            FISCAIS[nome] = senha;
-            await saveAllData({ type: 'config' });
-            
-            document.getElementById('novoFiscalNome').value = '';
-            document.getElementById('novoFiscalSenha').value = '';
-            
-            showMessage(`✅ Fiscal "${nome}" adicionado!`, 'success');
-            carregarFiscais();
-        }
-
-        async function tentarRemoverFiscal(nome) {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover fiscais.', 'error');
-            
-            if (NON_REMOVABLE_FISCAL.includes(nome)) { showMessage(`❌ O fiscal ${nome} não pode ser removido.`, 'error'); return; }
-            
-            const confirmation = prompt(`⚠️ Para remover "${nome}", digite o nome novamente:`);
-            
-            if (confirmation === nome) {
-                delete FISCAIS[nome];
-                await saveAllData({ type: 'config' });
-                
-                showMessage(`✅ Fiscal "${nome}" removido!`, 'success');
-                carregarFiscais();
-            } else if (confirmation !== null) {
-                showMessage('Nome incorreto. Remoção cancelada.', 'error');
-            }
-        }
-
-        function calcularPontosPorColaborador() {
-            const pontosPorColaborador = {};
-
-            for (const user in COLABORADORES) {
-                pontosPorColaborador[user] = 0;
-            }
-
-            checklistsHistorico
-                .filter(c => c.status === 'APROVADO')
-                .forEach(c => {
-                    if (pontosPorColaborador.hasOwnProperty(c.nome)) {
-                        pontosPorColaborador[c.nome] += c.pontosAprovados;
-                    } else {
-                        pontosPorColaborador[c.nome] = c.pontosAprovados;
-                    }
+                const entregadoresOrdenados = Object.keys(ENTREGADORES).sort();
+                entregadoresOrdenados.forEach(nome => {
+                    select.innerHTML += `<option value="${nome}">${nome} (${ENTREGADORES[nome].pontos || 0} Pts)</option>`;
                 });
-            
-            for (const user in COLABORADORES) {
-                if (COLABORADORES[user].ajustesPontos) {
-                    COLABORADORES[user].ajustesPontos.forEach(ajuste => {
-                        pontosPorColaborador[user] = (pontosPorColaborador[user] || 0) + ajuste.pontos;
-                    });
-                }
             }
             
-            return pontosPorColaborador;
+            const gestaoCard = document.getElementById('gestaoCard');
+            if (gestaoCard) gestaoCard.style.display = 'none';
+            carregarListaEntregadoresAdm();
+            mostrarTela('screenAdmin');
         }
 
-        function carregarColaboradores() {
-            const lista = document.getElementById('colaboradorList');
-            lista.innerHTML = '';
+        function carregarDetalhesGestao() {
+            const nome = document.getElementById('entregadorGestaoSelect').value;
+            entregadorEmGestao = nome;
             
-            const pontos = calcularPontosPorColaborador();
-
-            for (let user in COLABORADORES) {
-                const totalPontos = pontos[user] || 0;
-                
-                lista.innerHTML += `
-                    <div class="colaborador-item" onclick="abrirGestaoColaborador('${user}')">
-                        <div class="colaborador-details">
-                            <span><strong>${user}</strong></span>
-                            <span class="colaborador-points">${totalPontos} Pts →</span>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            for (const user in pontos) {
-                if (!COLABORADORES.hasOwnProperty(user)) {
-                    lista.innerHTML += `
-                        <div class="colaborador-item" style="opacity: 0.6; border-left: 5px solid #6c757d; cursor: default;">
-                            <div class="colaborador-details">
-                                <span><strong>${user}</strong> (Removido)</span>
-                                <span class="colaborador-points">${pontos[user]} Pts</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-        }
-        
-        function abrirGestaoColaborador(user) {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem gerenciar colaboradores.', 'error');
-            
-            colaboradorEmGestao = user;
-            const colabData = COLABORADORES[user];
-            const pontos = calcularPontosPorColaborador();
-            const totalPontos = pontos[user] || 0;
-            
-            document.getElementById('colabGestaoNome').textContent = user;
-            document.getElementById('colabGestaoSenha').textContent = colabData.senha;
-            document.getElementById('colabGestaoPontos').textContent = `${totalPontos} Pts`;
-            
-            renderAjusteHistorico();
-            mostrarTela('screen7');
-        }
-
-        function renderAjusteHistorico() {
-            const user = colaboradorEmGestao;
-            const lista = document.getElementById('ajusteHistoricoList');
-            lista.innerHTML = '';
-
-            const ajustes = COLABORADORES[user]?.ajustesPontos?.slice().reverse() || [];
-
-            if (ajustes.length === 0) {
-                lista.innerHTML = '<p style="color: #666; text-align: center;">Nenhum ajuste manual realizado.</p>';
+            const gestaoCard = document.getElementById('gestaoCard');
+            if (!nome || !gestaoCard) {
+                if (gestaoCard) gestaoCard.style.display = 'none';
                 return;
             }
 
-            ajustes.forEach(ajuste => {
-                const tipo = ajuste.pontos > 0 ? '➕ Adição' : '➖ Retirada';
-                const cor = ajuste.pontos > 0 ? '#28a745' : '#dc3545';
-                
-                lista.innerHTML += `
-                    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
-                        <div style="font-weight: bold; color: ${cor};">${tipo}: ${ajuste.pontos} Pts</div>
-                        <div style="font-size: 12px; color: #6c757d;">
-                            ADM: ${ajuste.adm} | Data: ${new Date(ajuste.timestamp).toLocaleDateString('pt-BR')}
-                        </div>
-                        <div style="font-size: 14px; margin-top: 3px;">Motivo: <em>${ajuste.motivo}</em></div>
-                    </div>
-                `;
-            });
+            const data = ENTREGADORES[nome];
+            const colabGestaoNome = document.getElementById('colabGestaoNome');
+            if (colabGestaoNome) colabGestaoNome.textContent = nome;
+            const colabGestaoSenha = document.getElementById('colabGestaoSenha');
+            if (colabGestaoSenha) colabGestaoSenha.textContent = data.senha;
+            const colabGestaoPontos = document.getElementById('colabGestaoPontos');
+            if (colabGestaoPontos) colabGestaoPontos.textContent = `${data.pontos || 0} Pts`;
+            gestaoCard.style.display = 'block';
         }
-        
-        async function ajustarPontos(acao) {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem ajustar pontos.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
+
+        function ajustarPontosEntregador(acao) {
+            if (!GUESTORES[fiscalLogado]) return showMessageBox('❌ Você precisa estar logado como Fiscal/ADM.', 'error');
             
-            const user = colaboradorEmGestao;
+            const user = entregadorEmGestao;
             const isAdd = acao === 'adicionar';
             const acaoDisplay = isAdd ? 'ADICIONAR' : 'RETIRAR';
 
-            const pontosStr = prompt(`Digite a quantidade de pontos que deseja ${acaoDisplay}:`);
+            const pontosStr = prompt(`Digite a quantidade de pontos que deseja ${acaoDisplay} para ${user}:`);
             if (pontosStr === null) return;
             
             const pontos = parseInt(pontosStr);
 
-            if (isNaN(pontos) || pontos <= 0) { showMessage('❌ Pontuação inválida!', 'error'); return; }
+            if (isNaN(pontos) || pontos <= 0) { showMessageBox('❌ Pontuação inválida!', 'error'); return; }
 
             const motivo = prompt(`Digite o MOTIVO para ${acaoDisplay} ${pontos} pontos de ${user} (Obrigatório):`);
-            if (!motivo || motivo.trim() === '') { showMessage('Motivo obrigatório. Ação cancelada.', 'error'); return; }
+            if (!motivo || motivo.trim() === '') { showMessageBox('Motivo obrigatório. Ação cancelada.', 'error'); return; }
 
             const ajustePontos = isAdd ? pontos : -pontos;
+            
+            ENTREGADORES[user].pontos = (ENTREGADORES[user].pontos || 0) + ajustePontos;
 
-            const novoAjuste = {
+            const novoHistorico = {
                 pontos: ajustePontos,
                 motivo: motivo,
-                adm: fiscalLogado,
-                timestamp: new Date().toISOString(),
-                tipo: acao
+                adm: usuarioLogado,
+                timestamp: new Date().toISOString()
             };
-
-            COLABORADORES[user].ajustesPontos.push(novoAjuste);
-            await saveAllData({ type: 'config' });
+            ENTREGADORES[user].historicoPontos.push(novoHistorico);
             
-            showMessage(`✅ ${pontos} Pontos ${isAdd ? 'adicionados' : 'removidos'} de ${user}.`, 'success');
-            
-            abrirGestaoColaborador(user);
+            salvarEntregadores();
+            carregarDetalhesGestao();
+            showMessageBox('✅ Sucesso', `${pontos} Pontos ${isAdd ? 'adicionados' : 'removidos'} de ${user}.`);
         }
 
-        async function resetarSenhaColaboradorAcao() {
-             if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem resetar senhas.', 'error');
-             if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-             
-             const user = colaboradorEmGestao;
-             const confirmation = prompt(`⚠️ Para resetar a senha de "${user}" para 1234, digite "RESET":`);
-            
-            if (confirmation === 'RESET') {
-                COLABORADORES[user].senha = '1234';
-                COLABORADORES[user].requirePwdChange = true;
-                await saveAllData({ type: 'config' });
-                    
-                showMessage(`✅ Senha de "${user}" resetada para 1234.`, 'success', 6000);
-                abrirGestaoColaborador(user); 
-            } else if (confirmation !== null) {
-                showMessage('Reset cancelado.', 'info');
-            }
-        }
-
-        async function tentarRemoverColaboradorAcao() {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover usuários.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-
-            const user = colaboradorEmGestao;
-            const confirmation = prompt(`⚠️ Para remover "${user}", digite o nome de usuário:`);
-            
-            if (confirmation === user) {
-                delete COLABORADORES[user];
-                await saveAllData({ type: 'config' });
-                
-                showMessage(`✅ Colaborador "${user}" removido!`, 'success');
-                voltarGestao(); 
-            } else if (confirmation !== null) {
-                showMessage('Nome incorreto. Remoção cancelada.', 'error');
-            }
+        function resetarSenhaEntregador() {
+             if (!GUESTORES[fiscalLogado]) return showMessageBox('❌ Você precisa estar logado como Fiscal/ADM.', 'error');
+             showConfirmBox(`⚠️ Confirmação de Reset`, `Para resetar a senha de "${entregadorEmGestao}" para a padrão ${SENHA_RESET}, clique em Sim.`, () => {
+                 ENTREGADORES[entregadorEmGestao].senha = SENHA_RESET;
+                 salvarEntregadores();
+                 showMessageBox('✅ Sucesso', `Senha de "${entregadorEmGestao}" resetada para ${SENHA_RESET}.`);
+                 carregarDetalhesGestao();
+            });
         }
         
-        async function adicionarColaborador() {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar colaboradores.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-
-            const user = document.getElementById('novoColaboradorUser').value.trim();
-            const senha = document.getElementById('novoColaboradorSenha').value.trim();
-            
-            if (!user || !senha) { showMessage('Preencha usuário e senha!', 'error'); return; }
-            if (COLABORADORES[user]) { showMessage(`❌ Já existe um colaborador "${user}"!`, 'error'); return; }
-            
-            COLABORADORES[user] = { senha: senha, requirePwdChange: false, ajustesPontos: [] }; 
-            await saveAllData({ type: 'config' });
-            
-            document.getElementById('novoColaboradorUser').value = '';
-            document.getElementById('novoColaboradorSenha').value = '';
-            
-            showMessage(`✅ Colaborador "${user}" adicionado!`, 'success');
-            carregarColaboradores();
-        }
-
-        function renderChecklistManager() {
-            const select = document.getElementById('checklistSetorSelect');
-            currentChecklistSetor = select.value;
-            const lista = document.getElementById('checklistManagerList');
-            lista.innerHTML = '';
-            
-            const itens = CHECKLISTS[currentChecklistSetor] || [];
-            
-            if (itens.length === 0) {
-                 lista.innerHTML = '<p style="text-align: center; color: #666; margin-top: 15px;">Nenhum item cadastrado.</p>';
-            }
-            
-            itens.forEach((item, index) => {
-                lista.innerHTML += `
-                    <div class="checklist-manager-item">
-                        <span>${index + 1}. ${item.item} (${item.points} Pts)</span>
-                        <div class="admin-item-actions">
-                            <button class="btn-edit-inline" onclick="editarItemChecklist(${index})">📝 Editar</button>
-                            <button class="btn-danger" onclick="removerItemChecklist(${index})">🗑️</button>
-                        </div>
-                    </div>
-                `;
+        function removerEntregadorAcao() {
+            if (!GUESTORES[fiscalLogado]) return showMessageBox('❌ Você precisa estar logado como Fiscal/ADM.', 'error');
+            showConfirmBox('⚠️ Confirmação', `Tem certeza que deseja remover permanentemente o entregador ${entregadorEmGestao}?`, () => {
+                delete ENTREGADORES[entregadorEmGestao];
+                salvarEntregadores();
+                showMessageBox('✅ Sucesso', `Entregador ${entregadorEmGestao} removido.`);
+                entregadorEmGestao = null;
+                carregarGestaoAdm(); 
             });
         }
 
-        async function editarItemChecklist(index) {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem editar checklists.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-
-            const setor = document.getElementById('checklistSetorSelect').value;
-            const itensBase = CHECKLISTS[setor];
-            const itemAtual = itensBase[index];
-
-            const novoNome = prompt(`Editar: ${itemAtual.item}\n\nNOVA DESCRIÇÃO (ou deixe em branco):`, itemAtual.item);
+        function carregarListaEntregadoresAdm() {
+            const lista = document.getElementById('listaEntregadoresAdm');
+            if (!lista) return;
+            lista.innerHTML = '';
             
-            if (novoNome === null) { showMessage('Edição cancelada.', 'info'); return; }
-
-            const novoPontoStr = prompt(`Item: ${novoNome || itemAtual.item}\n\nNOVA PONTUAÇÃO:`, itemAtual.points);
-            
-            if (novoPontoStr === null) { showMessage('Edição cancelada.', 'info'); return; }
-
-            const novoPonto = parseInt(novoPontoStr);
-            
-            if (isNaN(novoPonto) || novoPonto < 0) { showMessage('❌ Pontuação inválida!', 'error'); return; }
-
-            const novosItens = [...itensBase];
-            novosItens[index] = { item: novoNome || itemAtual.item, points: novoPonto };
-
-            CHECKLISTS[setor] = novosItens;
-            await saveAllData({ type: 'config' });
-            
-            showMessage(`✅ Item editado: ${novosItens[index].item} (${novoPonto} Pts)!`, 'success');
-            renderChecklistManager();
-        }
-        
-        async function adicionarItemChecklist() {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem adicionar itens.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-            
-            const nome = document.getElementById('novoItemText').value.trim();
-            const pontos = parseInt(document.getElementById('novoItemPontos').value);
-            const setor = document.getElementById('checklistSetorSelect').value;
-            
-            if (!nome || isNaN(pontos) || pontos <= 0) { showMessage('Preencha nome e pontos!', 'error'); return; }
-            
-            const itensBase = CHECKLISTS[setor] || [];
-            const novosItens = [...itensBase, { item: nome, points: pontos }];
-
-            CHECKLISTS[setor] = novosItens;
-            await saveAllData({ type: 'config' });
-            
-            document.getElementById('novoItemText').value = '';
-            document.getElementById('novoItemPontos').value = '10';
-            
-            showMessage(`✅ Item adicionado ao ${setor.toUpperCase()}!`, 'success');
-            renderChecklistManager();
-        }
-        
-        async function removerItemChecklist(index) {
-            if (!ADMINS.includes(fiscalLogado)) return showMessage('❌ Apenas ADMs podem remover itens.', 'error');
-            if (!isSupabaseReady) return showMessage('❌ Erro: Sincronização indisponível.', 'error');
-            
-            const setor = document.getElementById('checklistSetorSelect').value;
-            const itensBase = CHECKLISTS[setor];
-            const nomeItem = itensBase[index].item;
-
-            const confirmation = prompt(`⚠️ Para remover "${nomeItem}", digite "SIM":`);
-            
-            if (confirmation === 'SIM') {
-                const novosItens = itensBase.filter((_, i) => i !== index);
-                CHECKLISTS[setor] = novosItens;
-                await saveAllData({ type: 'config' });
-
-                showMessage(`✅ Item removido do ${setor.toUpperCase()}!`, 'success');
-                renderChecklistManager();
-            } else if (confirmation !== null) {
-                showMessage('Remoção cancelada.', 'info');
+            for (const nome in ENTREGADORES) {
+                const data = ENTREGADORES[nome];
+                lista.innerHTML += `
+                    <div class="adm-item" onclick="document.getElementById('entregadorGestaoSelect').value='${nome}'; carregarDetalhesGestao();">
+                        <span><strong>${nome}</strong> - Pts: ${data.pontos || 0}</span>
+                        <div class="entrega-actions" style="gap: 5px; margin: 0;">
+                            <span class="status-badge status-emrota" style="flex: none; padding: 5px 10px;">Gerenciar →</span>
+                        </div>
+                    </div>
+                `;
+            }
+            if (Object.keys(ENTREGADORES).length === 0) {
+                 lista.innerHTML = '<div class="empty-state" style="padding: 10px;">Nenhum entregador cadastrado.</div>';
             }
         }
         
-        window.addEventListener('load', initSupabase);
+        function adicionarEntregador() {
+            if (!GUESTORES[fiscalLogado]) return showMessageBox('❌ Você precisa estar logado como Fiscal/ADM.', 'error');
+            
+            const nomeInput = document.getElementById('novoEntregadorNome');
+            const senhaInput = document.getElementById('novoEntregadorSenha');
+            const telefoneInput = document.getElementById('novoEntregadorTelefone');
+            
+            const nome = nomeInput ? nomeInput.value.trim() : '';
+            const senha = senhaInput ? senhaInput.value.trim() : '';
+            const telefone = telefoneInput ? telefoneInput.value.trim().replace(/\D/g, '') : '';
+
+            if (!nome || !senha || senha.length < 4) {
+                showMessageBox('⚠️ Erro', 'Nome e senha (mínimo 4 caracteres) são obrigatórios.');
+                return;
+            }
+
+            if (ENTREGADORES[nome]) {
+                showMessageBox('⚠️ Erro', `Entregador ${nome} já existe.`);
+                return;
+            }
+
+            ENTREGADORES[nome] = { senha: senha, telefone: telefone, pontos: 0, historicoPontos: [] };
+            salvarEntregadores();
+
+            showMessageBox('✅ Sucesso', `Entregador ${nome} adicionado com sucesso!`);
+            if (nomeInput) nomeInput.value = '';
+            if (senhaInput) senhaInput.value = '';
+            if (telefoneInput) telefoneInput.value = '';
+            carregarGestaoAdm(); 
+        }
+
+        function mostrarDetalhes(docId) {
+             const entrega = todasEntregas.find(e => e.id == docId);
+             if (!entrega) return showMessageBox('❌ Erro', 'Entrega não encontrada!');
+
+             let content = `
+                 <h2 style="color: #d63031;">Detalhes da Entrega #${entrega.id}</h2>
+                 <p><strong>Status:</strong> <span class="status-badge status-${entrega.status.replace(/\s/g, '').toLowerCase()}">${entrega.status.toUpperCase()}</span></p>
+                 <hr style="margin: 15px 0;">
+                 <h4>Cliente e Destino</h4>
+                 <p><strong>Cliente:</strong> ${entrega.clienteNome}</p>
+                 <p><strong>Endereço:</strong> ${entrega.endereco}</p>
+                 <p><strong>Bairro:</strong> ${entrega.bairro}</p>
+                 <p><strong>Telefone:</strong> ${formatarTelefone(entrega.telefone)}</p>
+                 <p><strong>Geladeira:</strong> ${entrega.geladeira}</p>
+                 <hr style="margin: 15px 0;">
+                 <h4>Financeiro e Logística</h4>
+                 <p><strong>Valor Total:</strong> ${entrega.valor}</p>
+                 <p><strong>Pagamento:</strong> ${entrega.pagamento} (${entrega.jaPago === 'SIM' ? 'JÁ PAGO' : 'COBRAR'})</p>
+                 <p><strong>Troco Necessário:</strong> ${entrega.troco}</p>
+                 <p><strong>Recibo/NFe:</strong> ${entrega.recibo}</p>
+                 <p><strong>Caixa/Origem:</strong> ${entrega.caixa} (Operador: ${entrega.operadorCaixa})</p>
+                 <hr style="margin: 15px 0;">
+                 <h4>Timeline</h4>
+                 <p><strong>Criada em:</strong> ${formatSupabaseDate(entrega.created_at)}</p>
+                 <p><strong>Entregador:</strong> ${entrega.entregador || 'Aguardando Atribuição'}</p>
+                 <p><strong>Saiu em:</strong> ${formatSupabaseDate(entrega.saiuEm)}</p>
+                 <p><strong>Finalizada em:</strong> ${formatSupabaseDate(entrega.finalizadoEm)}</p>
+                 <p><strong>Observações (Entregador):</strong> ${entrega.observacao || 'N/A'}</p>
+             `;
+             
+             if (entrega.motivoFalha) {
+                  content += `<p style="color: #dc3545;"><strong>Motivo Falha/Cancelamento:</strong> ${entrega.motivoFalha || entrega.motivoCancelamento}</p>`;
+             }
+
+             if (entrega.comprovante && entrega.comprovante.startsWith('http')) {
+                 content += `
+                     <h4>📸 Comprovante do Caixa (Antecipado)</h4>
+                     <img src="${entrega.comprovante}" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">
+                 `;
+             }
+             
+             if (entrega.comprovanteEntregador && entrega.comprovanteEntregador.startsWith('http')) {
+                 content += `
+                     <h4>📸 Comprovante do Entregador</h4>
+                     <img src="${entrega.comprovanteEntregador}" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">
+                 `;
+             }
+
+             const modalConteudo = document.getElementById('modalConteudo');
+             if (modalConteudo) modalConteudo.innerHTML = content;
+             const modalDetalhes = document.getElementById('modalDetalhes');
+             if (modalDetalhes) modalDetalhes.classList.add('active');
+         }
+
+         function fecharModal() {
+             const modalDetalhes = document.getElementById('modalDetalhes');
+             if (modalDetalhes) modalDetalhes.classList.remove('active');
+         }
+
+        // Funções CRUD
+        async function uploadComprovante(file, nomeCliente, tipoAnexo) {
+            if (!window.supabase) {
+                showMessageBox('Erro', 'Conexão com o Supabase perdida.');
+                return null; 
+            }
+            
+            if (file.size > MAX_IMAGE_SIZE_BYTES) { 
+                 showMessageBox('⚠️ Erro de Imagem', `O arquivo excede o limite de ${MAX_IMAGE_SIZE_BYTES / 1024 / 1024}MB para o upload inicial.`);
+                 return null;
+            }
+
+            const timestamp = new Date().getTime();
+            const nomeNormalizado = nomeCliente.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
+            const nomeArquivo = `${tipoAnexo}_${nomeNormalizado}_${timestamp}.jpeg`;
+
+            try {
+                showMessageBox('⏳ Upload...', 'Iniciando o envio da foto para o Storage. Aguarde...');
+                
+                const { error } = await window.supabase.storage
+                    .from(SUPABASE_STORAGE_BUCKET)
+                    .upload(nomeArquivo, file, {
+                        cacheControl: '3600',
+                        contentType: file.type,
+                        upsert: true
+                    });
+
+                if (error) throw error;
+
+                const { data: publicData } = window.supabase.storage
+                    .from(SUPABASE_STORAGE_BUCKET)
+                    .getPublicUrl(nomeArquivo);
+                    
+                customModal.classList.remove('active');
+                return publicData.publicUrl;
+
+            } catch (error) {
+                customModal.classList.remove('active');
+                console.error('Erro no upload para o Storage:', error);
+                showMessageBox('❌ Erro de Upload', `Falha ao enviar a foto. Verifique o limite de tamanho no Storage: ${error.message}.`);
+                return null;
+            }
+        }
+        
+        async function criarEntrega() {
+            if (!window.supabase) return showMessageBox('Erro', 'Supabase não inicializado.');
+            
+            const operadorCaixa = document.getElementById('operadorLogado') ? document.getElementById('operadorLogado').textContent : usuarioLogado;
+            const caixaSelect = document.getElementById('caixaSelect').value; 
+            const caixaMotivo = document.getElementById('caixaMotivoInput').value.trim();
+            const caixa = caixaSelect === 'Outro' ? `Outro: ${caixaMotivo}` : caixaSelect;
+            const nome = document.getElementById('clienteNome').value.trim();
+            const endereco = document.getElementById('clienteEndereco').value.trim();
+            const bairro = document.getElementById('clienteBairro').value.trim();
+            const telefone = document.getElementById('clienteTelefone').value.trim().replace(/\D/g, '');
+            const geladeira = document.getElementById('temGeladeira').value;
+            const forma = document.getElementById('formaPagamento').value;
+            const status = document.getElementById('statusPagamento').value;
+            const valor = document.getElementById('valorTotal').value.trim();
+            const recibo = document.getElementById('numeroRecibo').value.trim();
+            const troco = document.getElementById('valorTroco').value.trim();
+
+            if (!caixa || !nome || !endereco || !bairro || telefone.length < 10 || !geladeira || !status || !valor) {
+                showMessageBox('⚠️ Erro', 'Por favor, preencha todos os campos obrigatórios corretamente!');
+                return;
+            }
+            if (caixaSelect === 'Outro' && !caixaMotivo) {
+                 showMessageBox('⚠️ Erro', 'Por favor, explique o motivo do "Outro" caixa.');
+                 return;
+            }
+            if ((status === 'NÃO' || status === 'SIM') && !forma) {
+                 showMessageBox('⚠️ Erro', 'Selecione a Forma de Pagamento.');
+                 return;
+            }
+            if (forma === 'Dinheiro' && status === 'NÃO' && (!troco || limparMoeda(troco) <= 0 || limparMoeda(troco) <= limparMoeda(valor))) {
+                 showMessageBox('⚠️ Erro', 'Para Dinheiro (Cobrar na entrega), especifique o valor de troco (maior que o total).');
+                 return;
+            }
+
+            let comprovanteUrl = null;
+            const fileInputCaixa = document.getElementById('fotoInput');
+            const fotoFile = fileInputCaixa.files[0];
+            
+            if ((forma === 'Pix' || forma === 'Cartão') && status === 'SIM') {
+                if (!fotoFile) {
+                     showMessageBox('⚠️ Erro', 'Obrigatório anexar o comprovante para pagamentos PIX/Cartão antecipados.');
+                     return;
+                }
+                comprovanteUrl = await uploadComprovante(fotoFile, nome, 'caixa'); 
+                if (!comprovanteUrl) return; 
+            }
+
+            const entrega = {
+                clienteNome: nome,
+                endereco: endereco,
+                bairro: bairro,
+                telefone: telefone,
+                geladeira: geladeira,
+                pagamento: forma,
+                jaPago: status,
+                valor: formatarMoeda(valor), 
+                valorNumerico: limparMoeda(valor), 
+                troco: (forma === 'Dinheiro' && status === 'NÃO' && troco) ? formatarMoeda(troco) : 'Não',
+                recibo: recibo || 'Não Informado',
+                caixa: caixa, 
+                operadorCaixa: operadorCaixa, 
+                comprovante: comprovanteUrl, 
+                status: 'pendente',
+                criadoPor: operadorCaixa, 
+                data: new Date().toLocaleDateString('pt-BR'), 
+                entregador: null,
+                saiuEm: null,
+                finalizadoEm: null,
+                observacao: null,
+                motivoFalha: null,
+                comprovanteEntregador: null
+            };
+
+            try {
+                const { data, error } = await window.supabase
+                    .from(SUPABASE_TABLE)
+                    .insert([entrega])
+                    .select();
+                
+                if (error) throw error;
+
+                const statusPagamento = entrega.jaPago === 'SIM' ? '✅ JÁ PAGO' : '💰 COBRAR';
+                showMessageBox('✅ Sucesso', `Entrega criada com sucesso! Cliente: ${entrega.clienteNome}`);
+
+                document.getElementById('formEntrega').reset();
+                if (document.getElementById('outroCaixaMotivo')) document.getElementById('outroCaixaMotivo').style.display = 'none';
+                if (document.getElementById('fotoComprovante')) document.getElementById('fotoComprovante').style.display = 'none';
+                if (document.getElementById('previewFoto')) document.getElementById('previewFoto').innerHTML = '';
+                if (document.getElementById('trocoGroup')) document.getElementById('trocoGroup').style.display = 'none';
+                if (document.getElementById('formaPagamentoGroup')) document.getElementById('formaPagamentoGroup').style.display = 'none';
+                
+                atualizarTelas(); 
+
+            } catch (error) {
+                console.error("Erro ao salvar entrega no Supabase:", error);
+                showMessageBox('❌ Erro', `Erro ao salvar entrega no Banco de Dados: ${error.message}`);
+            }
+        }
+
+        async function atualizarEntrega(docId, updates) {
+            if (!window.supabase) return false;
+            try {
+                const { error } = await window.supabase
+                    .from(SUPABASE_TABLE)
+                    .update(updates)
+                    .eq('id', docId);
+                
+                if (error) throw error;
+                return true; 
+            } catch (error) {
+                console.error("Erro ao atualizar entrega:", error);
+                showMessageBox('❌ Erro', `Erro ao atualizar entrega: ${error.message}`);
+                return false;
+            }
+        }
+        
+        async function setupSupabaseListener() {
+            if (!window.supabase) return;
+            
+            try {
+                if (realtimeChannel) {
+                    await realtimeChannel.unsubscribe();
+                }
+                
+                let queryBuilder = window.supabase
+                    .from(SUPABASE_TABLE)
+                    .select('*');
+
+                const dataInicial = document.getElementById('dataInicial') ? document.getElementById('dataInicial').value : null;
+                const dataFinal = document.getElementById('dataFinal') ? document.getElementById('dataFinal').value : null;
+                
+                if (dataInicial || dataFinal) {
+                    const dataInicioISO = dataInicial ? new Date(dataInicial + 'T00:00:00Z').toISOString() : null;
+                    const dataFimISO = dataFinal ? new Date(dataFinal + 'T23:59:59Z').toISOString() : null;
+                    
+                    if (dataInicioISO) { queryBuilder = queryBuilder.gte('created_at', dataInicioISO); }
+                    if (dataFimISO) { queryBuilder = queryBuilder.lte('created_at', dataFimISO); }
+                }
+                
+                queryBuilder = queryBuilder.order('created_at', { ascending: false });
+
+                const { data, error } = await queryBuilder;
+                
+                if (error) throw error;
+                
+                todasEntregas = data;
+                console.log(`[Supabase] Dados de entregas carregados. Total: ${todasEntregas.length}`);
+                atualizarTelas(); 
+
+                realtimeChannel = window.supabase.channel('public:entregas')
+                    .on('postgres_changes', 
+                        { event: '*', schema: 'public', table: SUPABASE_TABLE },
+                        async (payload) => { setupSupabaseListener(); } 
+                    )
+                    .subscribe();
+
+            } catch (error) {
+                 console.error("Erro ao configurar listener do Supabase:", error);
+            }
+        }
+
+        function pegarEntrega(docId) {
+            const entregasHoje = obterEntregasFiltradas();
+            const emRotaDoUsuario = entregasHoje.filter(e => e.entregador === usuarioLogado && e.status === 'em rota');
+            
+            if (emRotaDoUsuario.length >= 5) {
+                showMessageBox('🚫 Limite Atingido', 'Você já possui 5 entregas em rota. Finalize algumas antes de pegar mais.');
+                return;
+            }
+
+            showConfirmBox('Confirmação', `Deseja realmente pegar esta entrega? Ela será atribuída a ${usuarioLogado}.`, async () => {
+                if (await atualizarEntrega(docId, { 
+                    status: 'em rota', 
+                    entregador: usuarioLogado, 
+                    saiuEm: new Date().toISOString() 
+                })) {
+                    showMessageBox('✅ Sucesso', 'Entrega atribuída! Boa rota!');
+                }
+            });
+        }
+        
+        function falhaEntregaAcao(docId) {
+            acaoCancelamentoDocId = docId;
+            acaoCancelamentoTipo = 'falha';
+            
+            const btnConfirmar = document.getElementById('btnConfirmarCancelamento');
+            if (btnConfirmar) {
+                btnConfirmar.onclick = confirmarModalCancelamento;
+                btnConfirmar.textContent = 'Registrar Falha';
+                btnConfirmar.classList.remove('danger');
+                btnConfirmar.classList.add('btn-falha'); 
+            }
+            
+            const modalCancelTitle = document.getElementById('modalCancelTitle');
+            if (modalCancelTitle) modalCancelTitle.textContent = '⚠️ Registrar Falha na Entrega';
+            const motivoCancelamentoInput = document.getElementById('motivoCancelamentoInput');
+            if (motivoCancelamentoInput) motivoCancelamentoInput.value = '';
+            const obsCancelamentoTextarea = document.getElementById('obsCancelamentoTextarea');
+            if (obsCancelamentoTextarea) obsCancelamentoTextarea.value = '';
+            const modalCancelamento = document.getElementById('modalCancelamento');
+            if (modalCancelamento) modalCancelamento.classList.add('active');
+        }
+
+        function finalizarEntrega(docId) {
+             const entrega = todasEntregas.find(e => e.id == docId);
+             if (!entrega) return showMessageBox('❌ Erro', 'Entrega não encontrada!');
+
+             if (entrega.jaPago === 'NÃO') {
+                 showConfirmBox('🚨 Cobrança Pendente', `Confirma que o valor ${entrega.valor} foi cobrado do cliente?`, () => {
+                     continuarFinalizarEntrega(docId, entrega);
+                 });
+                 return; 
+             }
+             
+             continuarFinalizarEntrega(docId, entrega);
+        }
+        
+        async function continuarFinalizarEntrega(docId, entrega) {
+             if (entrega.pagamento === 'Pix' || entrega.pagamento === 'Cartão') {
+                 window.entregaParaFinalizarId = docId; 
+                 const anexoInputEntregador = document.getElementById('anexoInputEntregador');
+                 if (anexoInputEntregador) anexoInputEntregador.value = '';
+                 const obsAnexoEntregador = document.getElementById('obsAnexoEntregador');
+                 if (obsAnexoEntregador) obsAnexoEntregador.value = '';
+                 const modalAnexo = document.getElementById('modalAnexo');
+                 if (modalAnexo) modalAnexo.classList.add('active');
+                 
+                 return; 
+             }
+
+             const obs = window.prompt('Observação da entrega (ex: Entregue ao vizinho, Deixado na caixa de correio). (Opcional):');
+             
+             const updates = {
+                 status: 'entregue', 
+                 finalizadoEm: new Date().toISOString(),
+                 observacao: obs,
+                 comprovanteEntregador: 'Não aplicável'
+             };
+
+             if (await atualizarEntrega(docId, updates)) {
+                 showMessageBox('✅ Sucesso', 'Entrega finalizada com sucesso!');
+             }
+        }
+        
+        function abrirModalAnexo(docId) {
+            const entrega = todasEntregas.find(e => e.id == docId);
+            if (!entrega) return showMessageBox('❌ Erro', 'Entrega não encontrada!');
+            if (entrega.pagamento !== 'Pix' && entrega.pagamento !== 'Cartão') {
+                showMessageBox('📸 Alerta', 'O comprovante é obrigatório apenas para entregas com pagamento em Pix ou Cartão.');
+                return;
+            }
+            window.entregaParaFinalizarId = docId;
+            const anexoInputEntregador = document.getElementById('anexoInputEntregador');
+            if (anexoInputEntregador) anexoInputEntregador.value = '';
+            const obsAnexoEntregador = document.getElementById('obsAnexoEntregador');
+            if (obsAnexoEntregador) obsAnexoEntregador.value = '';
+            const modalAnexo = document.getElementById('modalAnexo');
+            if (modalAnexo) modalAnexo.classList.add('active');
+        }
+
+        function confirmarAnexo() {
+            const docId = window.entregaParaFinalizarId;
+            const entrega = todasEntregas.find(e => e.id == docId);
+            
+            const fileInput = document.getElementById('anexoInputEntregador');
+            const fotoFile = fileInput && fileInput.files ? fileInput.files[0] : null;
+            const obs = document.getElementById('obsAnexoEntregador') ? document.getElementById('obsAnexoEntregador').value.trim() : '';
+            
+            if (entrega.pagamento === 'Pix' || entrega.pagamento === 'Cartão') {
+                if (!fotoFile) {
+                    showMessageBox('⚠️ Erro', 'Anexo do comprovante é obrigatório.');
+                    return;
+                }
+                
+                finalizarEntregaComAnexo(docId, fotoFile, obs); 
+                fecharModalAnexo();
+
+            } else {
+                 finalizarEntregaComAnexo(docId, null, obs); 
+                 fecharModalAnexo();
+            }
+        }
+
+        async function finalizarEntregaComAnexo(docId, fotoFile, obs) {
+              let comprovanteUrl = 'Não aplicável';
+              const entrega = todasEntregas.find(e => e.id == docId);
+
+              if (fotoFile) { 
+                  comprovanteUrl = await uploadComprovante(fotoFile, entrega.clienteNome, 'entregador');
+                  if (!comprovanteUrl) return; 
+              }
+
+              const updates = {
+                  status: 'entregue', 
+                  finalizadoEm: new Date().toISOString(), 
+                  observacao: obs,
+                  comprovanteEntregador: comprovanteUrl 
+              };
+              
+              if (await atualizarEntrega(docId, updates)) {
+                  showMessageBox('✅ Sucesso', 'Entrega finalizada com sucesso!');
+              }
+         }
+        
+        function fecharModalAnexo() {
+            const modalAnexo = document.getElementById('modalAnexo');
+            if (modalAnexo) modalAnexo.classList.remove('active');
+            const anexoInputEntregador = document.getElementById('anexoInputEntregador');
+            if (anexoInputEntregador) anexoInputEntregador.value = '';
+            const obsAnexoEntregador = document.getElementById('obsAnexoEntregador');
+            if (obsAnexoEntregador) obsAnexoEntregador.value = '';
+            window.entregaParaFinalizarId = null;
+        }
+        
+        function cancelarEntrega(docId) {
+            acaoCancelamentoDocId = docId;
+            acaoCancelamentoTipo = 'cancelada';
+            
+            const btnConfirmar = document.getElementById('btnConfirmarCancelamento');
+            if (btnConfirmar) {
+                btnConfirmar.onclick = confirmarModalCancelamento;
+                btnConfirmar.textContent = 'Confirmar Cancelamento';
+                btnConfirmar.classList.remove('btn-falha');
+                btnConfirmar.classList.add('danger');
+            }
+            
+            const modalCancelTitle = document.getElementById('modalCancelTitle');
+            if (modalCancelTitle) modalCancelTitle.textContent = '❌ Cancelar Entrega';
+            const motivoCancelamentoInput = document.getElementById('motivoCancelamentoInput');
+            if (motivoCancelamentoInput) motivoCancelamentoInput.value = '';
+            const obsCancelamentoTextarea = document.getElementById('obsCancelamentoTextarea');
+            if (obsCancelamentoTextarea) obsCancelamentoTextarea.value = '';
+            const modalCancelamento = document.getElementById('modalCancelamento');
+            if (modalCancelamento) modalCancelamento.classList.add('active');
+        }
+
+        async function confirmarModalCancelamento() {
+            const motivo = document.getElementById('motivoCancelamentoInput') ? document.getElementById('motivoCancelamentoInput').value.trim() : '';
+            const obs = document.getElementById('obsCancelamentoTextarea') ? document.getElementById('obsCancelamentoTextarea').value.trim() : '';
+            const docId = acaoCancelamentoDocId;
+            const tipo = acaoCancelamentoTipo;
+
+            if (!motivo) {
+                showMessageBox('⚠️ Erro', 'O Motivo do Cancelamento/Falha é obrigatório.');
+                return;
+            }
+
+            const updates = {
+                status: tipo, 
+                finalizadoEm: new Date().toISOString(),
+                observacao: obs || null,
+            };
+            
+            let sucessoMsg = '';
+            
+            if (tipo === 'cancelada') {
+                 updates.motivoCancelamento = motivo;
+                 updates.canceladoPor = usuarioLogado;
+                 sucessoMsg = `Entrega CANCELADA com sucesso! Motivo: ${motivo}`;
+            } else if (tipo === 'falha') {
+                 updates.motivoFalha = motivo;
+                 sucessoMsg = `Falha registrada com sucesso! Motivo: ${motivo}`;
+            }
+            
+            if (await atualizarEntrega(docId, updates)) {
+                showMessageBox('✅ Sucesso', sucessoMsg);
+                fecharModalCancelamento();
+            }
+        }
+        
+        function fecharModalCancelamento() {
+            const modalCancelamento = document.getElementById('modalCancelamento');
+            if (modalCancelamento) modalCancelamento.classList.remove('active');
+            acaoCancelamentoDocId = null;
+            acaoCancelamentoTipo = null;
+        }
+
+        // Funções de Navegação e Autenticação
+        function mostrarTela(screenId) {
+             document.querySelectorAll('.screen').forEach(screen => {
+                 screen.classList.remove('active');
+             });
+             const screen = document.getElementById(screenId);
+             if (screen) screen.classList.add('active');
+             
+             const logoutBtn = document.getElementById('logoutBtn');
+             if (logoutBtn) {
+                 if (screenId === 'screenInicio') {
+                     logoutBtn.style.display = 'none';
+                 } else {
+                     logoutBtn.style.display = 'block';
+                 }
+             }
+         }
+
+         function voltarInicio() {
+             usuarioLogado = null;
+             tipoUsuario = null;
+             mostrarTela('screenInicio');
+         }
+
+         function logout() {
+             showConfirmBox('🚪 Sair', `Tem certeza que deseja sair do painel ${tipoUsuario}?`, voltarInicio);
+         }
+
+         function mostrarLogin(tipo) {
+             tipoLoginAtual = tipo;
+             const loginTitulo = document.getElementById('loginTitulo');
+             if (loginTitulo) loginTitulo.textContent = `Login ${tipo.toUpperCase()}`;
+             const loginAtendimento = document.getElementById('loginAtendimento');
+             if (loginAtendimento) loginAtendimento.style.display = 'none';
+             const loginSenha = document.getElementById('loginSenha');
+             if (loginSenha) loginSenha.style.display = 'none';
+
+             if (tipo === 'atendimento') {
+                 if (loginAtendimento) loginAtendimento.style.display = 'block';
+                 const select = document.getElementById('atendenteNome');
+                 if (select) {
+                     select.innerHTML = '<option value="">Selecione o Atendente...</option>';
+                     Object.keys(ATENDENTES).sort().forEach(nome => {
+                         select.innerHTML += `<option value="${nome}">${nome}</option>`;
+                     });
+                 }
+             } else {
+                 if (loginSenha) loginSenha.style.display = 'block';
+                 const select = document.getElementById('loginNome');
+                 if (select) {
+                     select.innerHTML = '<option value="">Selecione o Usuário...</option>';
+                     const users = tipo === 'fiscal' ? GESTORES : ENTREGADORES;
+                     Object.keys(users).sort().forEach(nome => {
+                         select.innerHTML += `<option value="${nome}">${nome}</option>`;
+                     });
+                 }
+             }
+             mostrarTela('screenLogin');
+         }
+         
+         function fazerLogin() {
+             const loginNome = document.getElementById('loginNome');
+             const loginSenhaInput = document.getElementById('loginSenhaInput');
+             const nome = loginNome ? loginNome.value : '';
+             const senha = loginSenhaInput ? loginSenhaInput.value : '';
+             const users = tipoLoginAtual === 'fiscal' ? GESTORES : ENTREGADORES;
+             
+             if (!nome || !senha) {
+                 showMessageBox('⚠️ Erro', 'Nome e senha são obrigatórios.');
+                 return;
+             }
+
+             if (users[nome] && users[nome].senha === senha) {
+                 usuarioLogado = nome;
+                 tipoUsuario = tipoLoginAtual;
+                 if (loginSenhaInput) loginSenhaInput.value = '';
+                 
+                 if (tipoUsuario === 'entregador') {
+                     const nomeEntregador = document.getElementById('nomeEntregador');
+                     if (nomeEntregador) nomeEntregador.textContent = usuarioLogado;
+                     mostrarTela('screenEntregador');
+                 } else if (tipoUsuario === 'fiscal') {
+                     const nomeFiscal = document.getElementById('nomeFiscal');
+                     if (nomeFiscal) nomeFiscal.textContent = usuarioLogado;
+                     irParaDashboardFiscal();
+                 }
+                 atualizarTelas();
+             } else {
+                 showMessageBox('❌ Erro', 'Usuário ou senha inválidos.');
+             }
+         }
+         
+         function loginAtendimento() {
+             const atendenteNome = document.getElementById('atendenteNome');
+             const atendenteSenha = document.getElementById('atendenteSenha');
+             const nome = atendenteNome ? atendenteNome.value : '';
+             const senha = atendenteSenha ? atendenteSenha.value : '';
+             
+             if (!nome || !senha) {
+                 showMessageBox('⚠️ Erro', 'Nome e senha são obrigatórios.');
+                 return;
+             }
+
+             if (ATENDENTES[nome] && ATENDENTES[nome].senha === senha) {
+                 usuarioLogado = nome;
+                 tipoUsuario = 'atendimento';
+                 const operadorLogado = document.getElementById('operadorLogado');
+                 if (operadorLogado) operadorLogado.textContent = usuarioLogado;
+                 if (atendenteSenha) atendenteSenha.value = '';
+                 
+                 mostrarTela('screenCriarEntrega');
+             } else {
+                 showMessageBox('❌ Erro', 'Atendente ou senha inválidos.');
+             }
+         }
+         
+         function irParaDashboardFiscal() {
+             mostrarTela('screenFiscal');
+             const dataFiscal = document.getElementById('dataFiscal');
+             const dataInicial = document.getElementById('dataInicial');
+             const dataFinal = document.getElementById('dataFinal');
+             if (dataFiscal && dataInicial && dataFinal) {
+                 dataFiscal.textContent = `Dados de: ${dataInicial.value || 'Início'} até ${dataFinal.value || 'Hoje'}`;
+             }
+             atualizarTelas();
+         }
+         
+         function mostrarPerformanceEntregadores() {
+             const performancePeriodo = document.getElementById('performancePeriodo');
+             const dataInicial = document.getElementById('dataInicial');
+             const dataFinal = document.getElementById('dataFinal');
+             if (performancePeriodo && dataInicial && dataFinal) {
+                 performancePeriodo.textContent = `Período: ${dataInicial.value || 'Início'} até ${dataFinal.value || 'Hoje'}`;
+             }
+             carregarPerformanceEntregadores();
+             mostrarTela('screenPerformance');
+         }
+
+        function atualizarTelas() {
+            if (tipoUsuario === 'entregador') {
+                carregarEntregasEntregador();
+            } else if (tipoUsuario === 'fiscal') {
+                carregarDashboardFiscal();
+            } else if (tipoUsuario === 'atendimento') {
+                mostrarTela('screenCriarEntrega');
+            }
+        }
+        
+        // --- FUNÇÃO DE INICIALIZAÇÃO MAIS RESILIENTE (CORREÇÃO FINAL) ---
+        
+        window.init = function() {
+            // MOSTRA A INTERFACE APÓS A CONEXÃO
+            const loader = document.getElementById('loader');
+            const appContainer = document.getElementById('appContainer');
+            if (loader) loader.style.display = 'none';
+            if (appContainer) appContainer.style.display = 'block';
+
+            // Carregamento de dados locais (Entregadores e Atendentes)
+            const storedEntregadores = localStorage.getItem('ENTREGADORES');
+            const storedAtendentes = localStorage.getItem('ATENDENTES');
+            
+            if (storedEntregadores) ENTREGADORES = JSON.parse(storedEntregadores); else salvarEntregadores();
+            if (storedAtendentes) ATENDENTES = JSON.parse(storedAtendentes); else salvarEntregadores();
+
+            // Handlers de input
+            const fotoInput = document.getElementById('fotoInput');
+            if (fotoInput) fotoInput.addEventListener('change', function(event) {
+                const previewFoto = document.getElementById('previewFoto');
+                if (previewFoto) {
+                    if (!event.target.files[0]) previewFoto.innerHTML = '';
+                }
+            });
+
+            setupSupabaseListener();
+            voltarInicio(); 
+        }
+
+        window.initSupabase = function() {
+            try {
+                if (window.supabase) return;
+                
+                // Tenta criar o cliente imediatamente, usando o objeto global 'supabase'
+                if (typeof supabase === 'undefined' || !supabase.createClient) {
+                     throw new Error("Objeto 'supabase' não encontrado.");
+                }
+                
+                window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log("Supabase inicializado e conectado!");
+                window.init(); 
+
+            } catch (error) {
+                // Se falhou (por timing ou erro de credencial), tenta novamente 1 vez
+                initializationAttempts++;
+                if (initializationAttempts < 2) {
+                    setTimeout(window.initSupabase, 500); 
+                    return;
+                }
+                
+                console.error("Erro fatal ao inicializar Supabase:", error);
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.innerHTML = `
+                        <h3 style="color: #d63031;">❌ Erro de Conexão</h3>
+                        <p>Não foi possível iniciar o Supabase. Verifique a URL e a chave. Detalhes: ${error.message}</p>
+                    `;
+                }
+            }
+        };
+
+        // Gatilho Final: Inicia a tentativa de conexão do Supabase quando o DOM está pronto.
+        document.addEventListener('DOMContentLoaded', window.initSupabase);
+
     </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="logout-btn" id="logoutBtn" onclick="logout()" style="display:none;">🚪 Sair</button>
+            <h1>🚚 Entregas Rio Branco</h1>
+            <p>Sistema de Gestão de Entregas</p>
+        </div>
+
+        <div class="content">
+            <div id="loader" style="text-align: center; padding: 50px;">
+                <h3 style="color: #3d4b7a;">Carregando dados...</h3>
+                <p>Aguarde a conexão com o banco.</p>
+            </div>
+            
+            <div id="appContainer" style="display:none;">
+                <div id="screenInicio" class="screen active">
+                    <h2>Selecione seu Painel</h2>
+                    
+                    <button class="role-btn" onclick="mostrarLogin('atendimento')">
+                        📦 CRIAR ENTREGA (CAIXA)
+                    </button>
+                    <button class="role-btn" onclick="mostrarLogin('entregador')">
+                        🚴 ENTREGADOR
+                    </button>
+                     <button class="role-btn" onclick="mostrarLogin('fiscal')">
+                        📊 GESTÃO (ADM)
+                    </button>
+                </div>
+
+                <div id="screenLogin" class="screen">
+                    <h2 id="loginTitulo">Login</h2>
+                    
+                    <div id="loginAtendimento" style="display:none;">
+                         <div class="form-group">
+                             <label>Nome do Atendente/Caixa *</label>
+                             <select id="atendenteNome"></select>
+                         </div>
+                        <div class="form-group">
+                             <label>Senha *</label>
+                             <input type="password" id="atendenteSenha" placeholder="Digite sua senha">
+                         </div>
+                         <button class="btn-primary" onclick="loginAtendimento()">Entrar →</button>
+                    </div>
+                    
+                    <div id="loginSenha" style="display:none;">
+                        <div class="form-group">
+                            <label>Nome / Usuário</label>
+                            <select id="loginNome"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Senha</label>
+                            <input type="password" id="loginSenhaInput" placeholder="Digite sua senha">
+                        </div>
+                        <button class="btn-primary" onclick="fazerLogin()">Entrar →</button>
+                    </div>
+
+                    <button class="btn-voltar" onclick="voltarInicio()">← Voltar</button>
+                </div>
+
+                <div id="screenCriarEntrega" class="screen">
+                    <h2>Criar Entrega</h2>
+                    <form id="formEntrega">
+                        <p style="text-align: center; margin-bottom: 15px;">Operador Logado: <strong id="operadorLogado"></strong></p>
+                        
+                        <div class="form-group">
+                            <label>Caixa (Onde o pedido foi fechado) *</label>
+                            <select id="caixaSelect" required onchange="toggleOutroCaixa()">
+                                <option value="">Selecione o Caixa...</option>
+                                <option value="Caixa 1">Caixa 1</option>
+                                <option value="Caixa 2">Caixa 2</option>
+                                <option value="Caixa 3">Caixa 3</option>
+                                <option value="Outro">Outro (Explique o motivo)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="outroCaixaMotivo" style="display: none;">
+                            <label>Motivo do 'Outro' Caixa *</label>
+                            <input type="text" id="caixaMotivoInput" placeholder="Ex: Caixa 4 / Balcão">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nome do Cliente *</label>
+                            <input type="text" id="clienteNome" required placeholder="Nome completo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Endereço Completo *</label>
+                            <textarea id="clienteEndereco" required placeholder="Rua, número, complemento"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bairro *</label>
+                                <input type="text" id="clienteBairro" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone *</label>
+                                <input type="tel" id="clienteTelefone" required placeholder="(66) 99999-9999">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Geladeira? (Produtos refrigerados) *</label>
+                            <select id="temGeladeira" required>
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Status do Pagamento *</label>
+                                <select id="statusPagamento" required onchange="togglePagamentoFields()">
+                                    <option value="NÃO">💰 Cobrar na entrega</option>
+                                    <option value="SIM">✅ Já Pago (Antecipado)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="formaPagamentoGroup" style="display: none;">
+                                <label>Forma de Pagamento *</label>
+                                <select id="formaPagamento" required onchange="togglePagamentoFields()">
+                                    <option value="">Selecione...</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Pix">Pix</option>
+                                    <option value="Cartão">Cartão</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="trocoGroup" style="display: none;">
+                            <label>Precisa de Troco Para (R$)? *</label>
+                            <input type="text" id="valorTroco" placeholder="Valor que o entregador deve levar para troco">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Valor Total *</label>
+                                <input type="text" id="valorTotal" required placeholder="R$ 0,00">
+                            </div>
+                            <div class="form-group">
+                                <label>Recibo/NFe</label>
+                            <input type="number" id="numeroRecibo" placeholder="Nº da NFe/Recibo (Opcional)">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="fotoComprovante" style="display: none;">
+                            <label>📸 Comprovante (Max: 5MB) *</label>
+                            <input type="file" id="fotoInput" accept="image/*" capture="environment" style="border: none; padding: 8px;">
+                            <div id="previewFoto" style="margin-top: 10px;"></div>
+                        </div>
+
+                        <button type="button" onclick="criarEntrega()" class="btn-primary">📤 Enviar Nova Entrega</button>
+                    </form>
+                    <button class="btn-voltar" onclick="logout()">← Sair</button>
+                </div>
+
+                <div id="screenEntregador" class="screen">
+                    <h2>🚴 Minhas Entregas</h2>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <p style="color: #666;">Olá, <strong id="nomeEntregador"></strong>! Entregas em rota: <span id="entregasEmRotaCount">0</span></p>
+                    </div>
+                    
+                    <h3 style="color: #3d4b7a; margin: 20px 0 10px;">📋 Fila de Entregas (Disponíveis)</h3>
+                    <div id="listaEntregasPendentes"></div>
+
+                    <h3 style="color: #3d4b7a; margin: 20px 0 10px;">🚴 Em Rota (Minhas)</h3>
+                    <div id="listaEntregasEmRota"></div>
+
+                    <h3 style="color: #3d4b7a; margin: 20px 0 10px;">✅ Histórico de Entregas Hoje</h3>
+                    <div id="listaEntregasEntregues"></div>
+
+                    <button class="btn-voltar" onclick="logout()">← Sair</button>
+                </div>
+
+                <div id="screenFiscal" class="screen">
+                    <h2>📊 Dashboard - Gestão</h2>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <p style="color: #666;">Gestor: <strong id="nomeFiscal"></strong></p>
+                        <p style="color: #666;" id="dataFiscal"></p>
+                    </div>
+                    
+                    <h4 style="color: #d63031;">Filtro de Período</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Data Inicial:</label>
+                            <input type="date" id="dataInicial" onchange="setupSupabaseListener()">
+                        </div>
+                        <div class="form-group">
+                            <label>Data Final:</label>
+                            <input type="date" id="dataFinal" onchange="setupSupabaseListener()">
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid full">
+                        <div class="stat-card" style="border-color: #28a745;">
+                            <div class="stat-number green" id="totalArrecadado">R$ 0,00</div>
+                            <div class="stat-label">Valor Total das Entregas Finalizadas no Período</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalPendentes">0</div>
+                            <div class="stat-label">Pendentes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalEmRota">0</div>
+                            <div class="stat-label">Em Rota</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalEntregues">0</div>
+                            <div class="stat-label">Entregues (Sucesso)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Distribuição de Entregas por Status</h3>
+                        <div id="statusChart"></div>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="mostrarPerformanceEntregadores()">🚴 Performance por Entregador</button>
+                    <button class="btn-primary" onclick="mostrarTela('screenCriarEntrega')">📦 Criar Nova Entrega</button>
+                    <button class="btn-voltar" style="background: #3d4b7a;" onclick="carregarGestaoAdm()">⚙️ Gestão de Usuários</button>
+
+                    <h3 style="color: #3d4b7a; margin: 20px 0 10px;">Todas as Entregas no Período</h3>
+                    <div id="listaTodasEntregas"></div>
+
+                    <button class="btn-voltar" onclick="logout()">← Sair</button>
+                </div>
+                
+                <div id="screenPerformance" class="screen">
+                    <h2>🏆 Performance dos Entregadores</h2>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <p style="color: #666;" id="performancePeriodo"></p>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Métricas de Entrega</h3>
+                        <div id="performanceList">
+                            <table class="performance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Entregador</th>
+                                        <th>Atribuídas</th>
+                                        <th>Entregues</th>
+                                        <th>Sucesso (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="performanceBody">
+                                    <tr><td colspan="4" style="text-align: center;">Carregando dados...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button class="btn-voltar" onclick="irParaDashboardFiscal()">← Voltar ao Dashboard</button>
+                </div>
+                
+                <div id="screenAdmin" class="screen">
+                    <h2>⚙️ Gestão de Entregadores</h2>
+                    
+                    <h4 style="color: #3d4b7a;">Selecione o Entregador para Gerenciar:</h4>
+                    <div class="form-group">
+                        <select id="entregadorGestaoSelect" onchange="carregarDetalhesGestao()"></select>
+                    </div>
+
+                    <div id="gestaoDetalhesContainer">
+                        <div id="gestaoCard" class="gestao-card" style="display:none;">
+                            <p>Colaborador: <strong><span id="colabGestaoNome"></span></strong></p>
+                            <p>Senha: <strong><span id="colabGestaoSenha"></span></strong></p>
+                            <h3 style="margin-top: 10px;">Pontuação Atual: <span id="colabGestaoPontos" style="color: #d63031;">0 Pts</span></h3>
+                            
+                            <div class="gestao-actions-grid">
+                                <button class="btn-add-points" onclick="ajustarPontosEntregador('adicionar')">➕ Adicionar Pontos</button>
+                                <button class="btn-remove-points" onclick="ajustarPontosEntregador('remover')">➖ Retirar Pontos</button>
+                                <button class="btn-small btn-reset-senha" onclick="resetarSenhaEntregador()">🔒 Resetar Senha</button>
+                                <button class="btn-small btn-remover-user" onclick="removerEntregadorAcao()">🗑️ Remover Usuário</button>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #3d4b7a; margin: 20px 0 10px;">Lista de Entregadores</h4>
+                        <div id="listaEntregadoresAdm"></div>
+                    </div>
+
+                    <h4 style="color: #3d4b7a;">➕ Adicionar Novo Entregador</h4>
+                    <div class="form-group">
+                        <input type="text" id="novoEntregadorNome" placeholder="Nome do Entregador">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="novoEntregadorSenha" placeholder="Senha">
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="novoEntregadorTelefone" placeholder="Telefone (opcional)">
+                    </div>
+                    <button class="btn-primary" onclick="adicionarEntregador()">Adicionar</button>
+
+
+                    <button class="btn-voltar" onclick="irParaDashboardFiscal()">← Voltar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="customModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h4 id="modalTitle"></h4>
+            <p id="modalMessage"></p>
+            <div id="modalButtons" class="modal-buttons">
+                </div>
+        </div>
+    </div>
+    
+    <div id="modalCancelamento" class="custom-modal">
+        <div class="custom-modal-content wide">
+            <h4 id="modalCancelTitle"></h4>
+            <div class="form-group">
+                <label for="motivoCancelamentoInput">Motivo do Cancelamento/Falha *</label>
+                <input type="text" id="motivoCancelamentoInput" placeholder="Ex: Cliente ausente / Endereço incorreto" required>
+            </div>
+            <div class="form-group">
+                <label for="obsCancelamentoTextarea">Observações Adicionais (Opcional)</label>
+                <textarea id="obsCancelamentoTextarea" placeholder="Detalhes importantes para o fiscal..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="fecharModalCancelamento()">↩️ Cancelar</button>
+                <button class="modal-btn danger" id="btnConfirmarCancelamento">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modalDetalhes" class="detalhes-modal">
+        <div class="detalhes-content">
+            <button class="btn-fechar" onclick="fecharModal()">×</button>
+            <div id="modalConteudo"></div>
+        </div>
+    </div>
+    
+    <div id="modalAnexo" class="detalhes-modal">
+        <div class="detalhes-content">
+            <h3 style="color: #3d4b7a;">📸 Anexar Comprovante (Max: 5MB)</h3>
+            <p style="margin-bottom: 15px; color: #d63031;">Necessário para finalizar a entrega (Pix/Cartão).</p>
+            
+            <input type="file" id="anexoInputEntregador" accept="image/*" capture="environment">
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <label>Observações (Opcional):</label>
+                <textarea id="obsAnexoEntregador" placeholder="Observações sobre a entrega"></textarea>
+            </div>
+            
+            <button class="btn-primary" onclick="confirmarAnexo()">✅ Confirmar Anexo</button>
+            <button class="btn-voltar" onclick="fecharModalAnexo()">↩️ Cancelar</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 AutoVizion. Todos os direitos reservados. Soluções inteligentes em automação e marketing digital.
+    </div>
 </body>
 </html>
